@@ -263,6 +263,16 @@ td.cmt .cmt-preview{display:block;font-size:12px;color:#6b6459;max-width:110px;o
 .hof-head{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap}
 .hof-head h4{font-size:15px;font-weight:800}
 .hof-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(218px,1fr));gap:10px;font-family:'Noto Sans KR',sans-serif}
+.hof-attr-row{margin-top:12px;font-family:'Noto Sans KR',sans-serif}
+.hof-pair2{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin-top:6px}
+.pd-sub{font-size:11.5px;font-weight:700;color:#6b6459;text-align:center;padding:2px 0 0}
+.pd-sub.mine{color:var(--red)}
+.hof-sel{width:auto !important;margin:0 !important;padding:7px 10px !important;font-size:13px !important}
+@media (max-width:559px){
+  .pd-name{font-size:9.5px}
+  .pd-score{font-size:11.5px}
+  .hof-pair2 .hof-no{min-width:20px;height:20px;line-height:20px;font-size:10.5px}
+}
 .hof-no{display:inline-block;min-width:24px;height:24px;line-height:24px;border-radius:50%;color:#fff;font-size:12px;font-weight:700;padding:0 4px}
 .hof-empty{font-size:12.5px;color:#8a8378;text-align:center;padding:14px 0;font-family:'Noto Sans KR',sans-serif;grid-column:1/-1}
 /* 시상대 */
@@ -495,6 +505,7 @@ td.cmt .cmt-preview{display:block;font-size:12px;color:#6b6459;max-width:110px;o
     <h3 id="infoName" style="line-height:1.5"></h3>
     <img id="infoImg" alt="간장 사진" style="display:none">
     <div id="infoDesc" class="info-desc"></div>
+    <div id="infoScores" style="display:none"></div>
     <div class="mrow"><button class="ok" id="infoClose">닫기</button></div>
   </div>
 </div>
@@ -585,11 +596,28 @@ async function phonePid(phone){
 }
 function itemName(no){ return ITEMS[no] || DEFAULT_ITEMS[no] || ("장 "+no); }
 function hasInfo(no){ const i=ITEM_INFO[no]; return !!(i && ((i.desc&&i.desc.trim()) || i.img)); }
-function openInfo(no){
+function openInfo(no, withScores){
   const i=ITEM_INFO[no]||{};
   $("infoName").innerHTML=`<span class="no" style="display:inline-block;min-width:22px;height:22px;line-height:22px;text-align:center;background:${itemColor(no)};color:#fff;border-radius:50%;font-size:12px;margin-right:6px;font-family:'Noto Sans KR'">${no}</span>${esc(itemName(no))}`;
   if(i.img){ $("infoImg").src=i.img; $("infoImg").style.display="block"; } else $("infoImg").style.display="none";
   $("infoDesc").textContent=i.desc||"";
+  const box=$("infoScores");
+  if(withScores){
+    const mePid=viewPid||me?.pid;
+    const meResp=(mePid&&allResp[mePid]) || (me&&mePid===me.pid?myResp:null);
+    let h=`<div class="bars" style="margin-top:12px;border-top:1px dashed var(--line);padding-top:10px">`;
+    for(const [a,label] of ATTRS){
+      const r=agg(no,a); const mv=meResp?scoreOf(meResp,no,a):null;
+      h+=`<div class="bar-row"><span class="bl">${label}</span><span class="bar-track">
+        <span class="bar-fill" style="width:${r?r.avg/5*100:0}%"></span>
+        ${mv?`<span class="bar-me" style="left:${mv/5*100}%"></span>`:""}
+      </span><span class="bv">평균 ${r?r.avg.toFixed(1):"-"}${mv?` · <b>나 ${mv}</b>`:""}</span></div>`;
+    }
+    h+=`</div>`;
+    const myCmt=meResp?.comments?.[no];
+    if(myCmt) h+=`<div class="ri-cmts"><div class="cline mine"><b>내 코멘트</b>${esc(myCmt)}</div></div>`;
+    box.innerHTML=h; box.style.display="block";
+  } else { box.style.display="none"; }
   $("infoModal").classList.add("on");
 }
 function itemShort(no){ const n=itemName(no); return n.length>14 ? n.slice(0,14)+"…" : n; }
@@ -960,39 +988,45 @@ function startListen(){ if(unsubAll) return; unsubAll = store.listenAll(m=>{ got
 function stopListen(){ if(unsubAll){ unsubAll(); unsubAll=null; } }
 
 /* 명예의 전당 */
-const hofMode = {}; // g.key -> 'avg' | 'me'
-function hofHTML(g, meResp){
-  const mode = hofMode[g.key] || "avg";
-  let pods="";
-  for(const [a,label] of ATTRS){
-    const ranked=[];
-    for(const no of g.items){
-      let v=null;
-      if(mode==="avg"){ const r=agg(no,a); if(r) v=r.avg; }
-      else if(meResp){ v=scoreOf(meResp,no,a); }
-      if(v!=null) ranked.push({no,v});
-    }
-    ranked.sort((x,y)=>y.v-x.v);
-    const top=ranked.slice(0,3);
-    const order=[{t:top[1],rk:2},{t:top[0],rk:1},{t:top[2],rk:3}]; // 시상대: 2위-1위-3위
-    let cols="";
-    for(const {t,rk} of order){
-      if(!t){ cols+=`<div class="pd-col empty"><div class="pd-block b${rk}"></div></div>`; continue; }
-      cols+=`<div class="pd-col" data-no="${t.no}" title="눌러서 상세 보기">
-        <span class="hof-no" style="background:${itemColor(t.no)}">${t.no}번</span>
-        <div class="pd-name">${esc(itemShort(t.no).replace(/\s*[\(-].*$/,""))}</div>
-        <div class="pd-score">${mode==="avg"?t.v.toFixed(1):t.v}점</div>
-        <div class="pd-block b${rk}">${rk===1?"🏆 ":""}${rk}위</div></div>`;
-    }
-    pods+=`<div class="podium"><div class="pd-title">${label}</div><div class="pd-row">${top.length?cols:'<div class="hof-empty">-</div>'}</div></div>`;
+const hofAttr = {}; // g.key -> 'all' | 'c' | 's' | ...
+function podiumHTML(g, a, mode, meResp){
+  const ranked=[];
+  for(const no of g.items){
+    let v=null;
+    if(mode==="avg"){ const r=agg(no,a); if(r) v=r.avg; }
+    else if(meResp){ v=scoreOf(meResp,no,a); }
+    if(v!=null) ranked.push({no,v});
   }
-  if(mode==="me" && !meResp)
-    pods = `<div class="hof-empty">내 설문 정보가 없어 전체 평균만 볼 수 있습니다</div>`;
+  ranked.sort((x,y)=>y.v-x.v);
+  const top=ranked.slice(0,3);
+  const order=[{t:top[1],rk:2},{t:top[0],rk:1},{t:top[2],rk:3}]; // 시상대: 2위-1위-3위
+  let cols="";
+  for(const {t,rk} of order){
+    if(!t){ cols+=`<div class="pd-col empty"><div class="pd-block b${rk}"></div></div>`; continue; }
+    cols+=`<div class="pd-col" data-no="${t.no}" title="눌러서 내 평가·간장 정보 보기">
+      <span class="hof-no" style="background:${itemColor(t.no)}">${t.no}번</span>
+      <div class="pd-name">${esc(itemShort(t.no).replace(/\s*[\(-].*$/,""))}</div>
+      <div class="pd-score">${mode==="avg"?t.v.toFixed(1):t.v}점</div>
+      <div class="pd-block b${rk}">${rk===1?"🏆 ":""}${rk}위</div></div>`;
+  }
+  return `<div class="podium"><div class="pd-sub ${mode==='me'?'mine':''}">${mode==="avg"?"전체 평균":"내 선택"}</div>
+    <div class="pd-row">${top.length?cols:`<div class="hof-empty">${mode==="avg"?"아직 평가가 없습니다":"내 점수가 없습니다"}</div>`}</div></div>`;
+}
+function hofHTML(g, meResp){
+  const sel = hofAttr[g.key] || "all";
+  const attrs = sel==="all" ? ATTRS : ATTRS.filter(([a])=>a===sel);
+  let rows="";
+  for(const [a,label] of attrs){
+    rows+=`<div class="hof-attr-row"><div class="pd-title">${label}</div><div class="hof-pair2">`
+      + podiumHTML(g,a,"avg",null)
+      + (meResp ? podiumHTML(g,a,"me",meResp) : "")
+      + `</div></div>`;
+  }
   return `<div class="hof"><div class="hof-head"><h4>🏆 명예의 전당</h4>
-    <span class="ct-tg hof-tg" data-g="${g.key}">
-      <button class="${mode==='avg'?'on':''}" data-m="avg">전체 평균</button>
-      <button class="${mode==='me'?'on':''}" data-m="me">내 선택</button>
-    </span></div><div class="hof-grid">${pods}</div></div>`;
+    <select class="hub-sel hof-sel" data-g="${g.key}">
+      <option value="all">전체 분야</option>
+      ${ATTRS.map(([a,l])=>`<option value="${a}" ${a===sel?"selected":""}>${l}만 보기</option>`).join("")}
+    </select></div>${rows}</div>`;
 }
 function agg(no, a){
   const vals=[];
@@ -1057,16 +1091,12 @@ function renderResults(){
       if(t) t.scrollIntoView({behavior:"smooth", block:"start"});
     };
   });
-  // 명예의 전당 토글 + 시상대 클릭 → 해당 장 상세로 이동
-  document.querySelectorAll(".hof-tg button").forEach(b=>{
-    b.onclick=()=>{ hofMode[b.parentElement.dataset.g]=b.dataset.m; renderResults(); };
+  // 명예의 전당: 분야 드롭다운 + 시상대 클릭 → 내 평가·간장 정보 창
+  document.querySelectorAll(".hof-sel").forEach(s=>{
+    s.onchange=()=>{ hofAttr[s.dataset.g]=s.value; renderResults(); };
   });
   document.querySelectorAll(".pd-col[data-no]").forEach(c=>{
-    c.onclick=()=>{
-      const t=$("resitem-"+c.dataset.no); if(!t) return;
-      t.scrollIntoView({behavior:"smooth", block:"center"});
-      t.classList.remove("flash"); void t.offsetWidth; t.classList.add("flash");
-    };
+    c.onclick=()=>openInfo(+c.dataset.no, true);
   });
   document.querySelectorAll(".ri-name[data-no]").forEach(nm=>{
     nm.onclick=()=>{ if(hasInfo(+nm.dataset.no)) openInfo(+nm.dataset.no); };
