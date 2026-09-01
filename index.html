@@ -117,6 +117,28 @@ td.cmt .cmt-preview{display:block;font-size:12px;color:#6b6459;max-width:110px;o
 .legend .lg{display:flex;align-items:center;gap:4px;font-size:10.5px;color:#4a453d;border:1px solid transparent;border-radius:6px;padding:1px 5px;cursor:pointer}
 .legend .lg.off{opacity:.3}
 .legend .lg i{width:14px;height:3px;border-radius:2px;display:inline-block}
+.ct-row{display:flex;align-items:center;justify-content:space-between;gap:6px;padding:0 2px 4px}
+.ct-row h4{flex:1;text-align:left !important}
+.ct-tg{display:flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;font-family:'Noto Sans KR',sans-serif}
+.ct-tg button{padding:5px 10px;font-size:11.5px;border:none;background:#fff;color:#8a8378;font-weight:700}
+.ct-tg button.on{background:var(--ink);color:#fff}
+.mini-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:2px 6px;padding-bottom:6px}
+.mini-name{display:flex;align-items:center;gap:4px;font-size:11px;font-weight:700;color:#4a453d;
+  font-family:'Noto Sans KR',sans-serif;justify-content:center;padding-top:4px}
+.mini-name i{width:12px;height:3px;border-radius:2px;display:inline-block;flex-shrink:0}
+
+/* ── 결과 종류별 탭 ── */
+.res-tabs{display:flex;gap:6px;overflow-x:auto;position:sticky;top:0;z-index:45;
+  background:rgba(250,248,244,.96);backdrop-filter:blur(6px);padding:10px 16px;margin:0 -16px;
+  font-family:'Noto Sans KR',sans-serif;-webkit-overflow-scrolling:touch}
+.res-tabs button{padding:8px 15px;border-radius:20px;border:1px solid var(--line);background:#fff;
+  font-size:13px;font-weight:700;white-space:nowrap;color:#4a453d}
+.res-tabs button.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+@media (min-width:1120px){
+  .res-tabs{position:fixed;left:calc(50% - 540px);top:110px;flex-direction:column;overflow:visible;
+    background:none;backdrop-filter:none;padding:0;margin:0;width:150px}
+  .res-tabs button{text-align:left;padding:10px 16px}
+}
 
 /* ── 하단 내비 ── */
 .navbar{
@@ -135,16 +157,19 @@ td.cmt .cmt-preview{display:block;font-size:12px;color:#6b6459;max-width:110px;o
 .pagedots i.on{background:var(--ink)}
 .progress-line{font-size:12px;color:#6b6459;text-align:center;font-family:'Noto Sans KR',sans-serif;margin-top:4px}
 
-/* ── 점수 선택 시트 ── */
+/* ── 점수 선택 창 (중앙) ── */
 .dim{position:fixed;inset:0;background:rgba(20,17,12,.45);z-index:90;display:none}
 .dim.on{display:block}
 .picker{
-  position:fixed;left:0;right:0;bottom:-100%;z-index:100;transition:bottom .18s ease;
-  background:#fff;border-radius:18px 18px 0 0;padding:18px 18px calc(22px + env(safe-area-inset-bottom));
-  max-width:520px;margin:0 auto;
+  position:fixed;left:50%;top:50%;transform:translate(-50%,-50%) scale(.94);z-index:100;
+  opacity:0;pointer-events:none;transition:opacity .15s ease, transform .15s ease;
+  background:#fff;border-radius:18px;padding:22px 20px 24px;
+  width:calc(100% - 44px);max-width:400px;
 }
-.picker.on{bottom:0}
-.picker .pk-title{font-size:14px;font-weight:700;text-align:center;margin-bottom:4px}
+.picker.on{opacity:1;pointer-events:auto;transform:translate(-50%,-50%) scale(1)}
+.pk-close{position:absolute;top:10px;right:12px;width:34px;height:34px;border:none;background:none;
+  font-size:18px;color:#8a8378;font-family:'Noto Sans KR',sans-serif}
+.picker .pk-title{font-size:15px;font-weight:700;text-align:center;margin-bottom:4px}
 .picker .pk-item{font-size:12px;color:#8a8378;text-align:center;margin-bottom:14px;font-family:'Noto Sans KR',sans-serif}
 .pk-btns{display:flex;gap:8px;justify-content:center}
 .pk-btns button{
@@ -241,12 +266,12 @@ td.cmt .cmt-preview{display:block;font-size:12px;color:#6b6459;max-width:110px;o
 <div class="page on" id="page-cover">
   <div class="brandbar">
     <svg class="mark" viewBox="0 0 24 24" aria-hidden="true">
-      <g fill="#1c1a17">
-        <ellipse cx="12" cy="5.4" rx="2.6" ry="3.4"/>
-        <ellipse cx="18.3" cy="10" rx="2.6" ry="3.4" transform="rotate(72 18.3 10)"/>
-        <ellipse cx="15.9" cy="17.4" rx="2.6" ry="3.4" transform="rotate(144 15.9 17.4)"/>
-        <ellipse cx="8.1" cy="17.4" rx="2.6" ry="3.4" transform="rotate(216 8.1 17.4)"/>
-        <ellipse cx="5.7" cy="10" rx="2.6" ry="3.4" transform="rotate(288 5.7 10)"/>
+      <g fill="#b3573b">
+        <ellipse cx="9.4" cy="7.2" rx="3.1" ry="2.1" transform="rotate(24 9.4 7.2)"/>
+        <ellipse cx="16.8" cy="8.2" rx="2.3" ry="1.6" transform="rotate(-14 16.8 8.2)"/>
+        <ellipse cx="6.3" cy="12.8" rx="2.5" ry="1.9" transform="rotate(8 6.3 12.8)"/>
+        <ellipse cx="10.3" cy="17.6" rx="2.3" ry="1.5" transform="rotate(72 10.3 17.6)"/>
+        <ellipse cx="16.3" cy="15.3" rx="3.3" ry="2.3" transform="rotate(33 16.3 15.3)"/>
       </g>
     </svg>
     <span class="bname">꽃, 밥에피다</span>
@@ -280,32 +305,35 @@ td.cmt .cmt-preview{display:block;font-size:12px;color:#6b6459;max-width:110px;o
   <div class="cover-foot">꽃, 밥에피다 북촌 그로서란트</div>
 </div>
 
-<!-- ═══════════ 설문 1~3 페이지 (JS 렌더) ═══════════ -->
+<!-- ═══════════ 설문 1~5 페이지 (JS 렌더) ═══════════ -->
 <div class="page" id="page-s1"><div class="wrap" id="sheet1"></div></div>
 <div class="page" id="page-s2"><div class="wrap" id="sheet2"></div></div>
 <div class="page" id="page-s3"><div class="wrap" id="sheet3"></div></div>
+<div class="page" id="page-s4"><div class="wrap" id="sheet4"></div></div>
+<div class="page" id="page-s5"><div class="wrap" id="sheet5"></div></div>
 
 <!-- ═══════════ 결과 페이지 ═══════════ -->
 <div class="page" id="page-result">
   <div class="brandbar">
     <svg class="mark" viewBox="0 0 24 24" aria-hidden="true">
-      <g fill="#1c1a17">
-        <ellipse cx="12" cy="5.4" rx="2.6" ry="3.4"/>
-        <ellipse cx="18.3" cy="10" rx="2.6" ry="3.4" transform="rotate(72 18.3 10)"/>
-        <ellipse cx="15.9" cy="17.4" rx="2.6" ry="3.4" transform="rotate(144 15.9 17.4)"/>
-        <ellipse cx="8.1" cy="17.4" rx="2.6" ry="3.4" transform="rotate(216 8.1 17.4)"/>
-        <ellipse cx="5.7" cy="10" rx="2.6" ry="3.4" transform="rotate(288 5.7 10)"/>
+      <g fill="#b3573b">
+        <ellipse cx="9.4" cy="7.2" rx="3.1" ry="2.1" transform="rotate(24 9.4 7.2)"/>
+        <ellipse cx="16.8" cy="8.2" rx="2.3" ry="1.6" transform="rotate(-14 16.8 8.2)"/>
+        <ellipse cx="6.3" cy="12.8" rx="2.5" ry="1.9" transform="rotate(8 6.3 12.8)"/>
+        <ellipse cx="10.3" cy="17.6" rx="2.3" ry="1.5" transform="rotate(72 10.3 17.6)"/>
+        <ellipse cx="16.3" cy="15.3" rx="3.3" ry="2.3" transform="rotate(33 16.3 15.3)"/>
       </g>
     </svg>
     <span class="bname">꽃, 밥에피다</span>
   </div>
   <div class="wrap">
+    <div class="res-tabs" id="resTabs"></div>
     <div class="res-head">
       <h2>테이스팅 결과</h2>
       <div><span class="res-live"><span class="dot"></span><span id="liveCnt">실시간 집계 중</span></span></div>
       <div class="res-mename" id="resMeName"></div>
       <div class="share-row" id="shareRow">
-        <button class="kakao" id="btnShare">📎 결과 링크 공유 (카톡)</button>
+        <button class="kakao" id="btnShare">카톡으로 결과 공유</button>
         <button id="btnCopy">링크 복사</button>
       </div>
     </div>
@@ -356,6 +384,7 @@ td.cmt .cmt-preview{display:block;font-size:12px;color:#6b6459;max-width:110px;o
 <!-- 점수 선택 시트 -->
 <div class="dim" id="dim"></div>
 <div class="picker" id="picker">
+  <button class="pk-close" id="pkClose">✕</button>
   <div class="pk-title" id="pkTitle">짠맛</div>
   <div class="pk-item" id="pkItem"></div>
   <div class="pk-btns" id="pkBtns">
@@ -406,15 +435,17 @@ const DEFAULT_ITEMS = {
 const GROUPS = [
   {key:"cheong", name:"청장", sub:"숙성 0~3년, 맑고 가벼운 맛", cnt:"6종", items:[1,2,3,4,5,6], page:1, col:"청장 종류"},
   {key:"jung",   name:"중장", sub:"숙성 3~5년",                cnt:"4종", items:[7,8,9,10], page:2, col:"중장 종류"},
-  {key:"jin",    name:"진장", sub:"숙성 10년 이상",            cnt:"4종", items:[11,12,13,14], page:2, col:"진장 종류"},
-  {key:"tongil", name:"통일간장", sub:"",                      cnt:"2종", items:[15,16], page:3, col:"통일간장 종류"},
-  {key:"jangryu",name:"장류", sub:"된장·막장·어육장 계열",      cnt:"4종", items:[17,18,19,20], page:3, col:"장류 종류"}
+  {key:"jin",    name:"진장", sub:"숙성 10년 이상",            cnt:"4종", items:[11,12,13,14], page:3, col:"진장 종류"},
+  {key:"tongil", name:"통일간장", sub:"된장을 블렌딩한 간장",   cnt:"2종", items:[15,16], page:4, col:"통일간장 종류"},
+  {key:"jangryu",name:"장류", sub:"된장·막장·어육장 계열",      cnt:"4종", items:[17,18,19,20], page:5, col:"장류 종류"}
 ];
 const PAGE_TITLES = [
   null,
   {t:"청장", s:"숙성 0~3년, 맑고 가벼운 맛 [6종]", d:"아래 6종을 시음하시고, 1~5점으로 맛을 평가해 주세요"},
-  {t:"중장·진장", s:"중장 3~5년 [4종] / 진장 10년 이상 [4종]", d:"아래 8종을 시음하시고, 1~5점으로 맛을 평가해 주세요"},
-  {t:"통일간장·장류", s:"통일간장 [2종] / 장류 (된장·막장·어육장 계열) [4종]", d:"아래 6종을 시음하시고, 1~5점으로 맛을 평가해 주세요"}
+  {t:"중장", s:"숙성 3~5년 [4종]", d:"아래 4종을 시음하시고, 1~5점으로 맛을 평가해 주세요"},
+  {t:"진장", s:"숙성 10년 이상 [4종]", d:"아래 4종을 시음하시고, 1~5점으로 맛을 평가해 주세요"},
+  {t:"통일간장", s:"된장을 블렌딩한 간장 [2종]", d:"아래 2종을 시음하시고, 1~5점으로 맛을 평가해 주세요"},
+  {t:"장류", s:"된장·막장·어육장 계열 [4종]", d:"아래 4종을 시음하시고, 1~5점으로 맛을 평가해 주세요"}
 ];
 const SERIES_COLORS = ["#8a6f4d","#b0402f","#4d6b4d","#3e5a78","#9a7bb0","#c2913a"];
 const ADMIN_ID = "goodbab", ADMIN_PW = "goodbab0801";
@@ -437,7 +468,7 @@ let myResp = {scores:{}, comments:{}};
 let allResp = {};              // pid -> {name, scores, comments}
 let isAdmin = false;
 let viewPid = null;            // ?r= 결과보기 대상
-let curPage = 0;               // 0 cover, 1~3 survey, 4 result
+let curPage = 0;               // 0 cover, 1~5 survey, 6 result
 let unsubAll = null;
 const $ = id => document.getElementById(id);
 
@@ -569,7 +600,8 @@ function demoSeed(){
 <script>
 /* ═══════════════ 오각형 레이더 차트 (SVG) ═══════════════ */
 function radarSVG(series, opts={}){
-  const size = opts.size||300, cx=size/2, cy=size/2+8, R=size/2-46;
+  const size = opts.size||300, mini=!!opts.small;
+  const cx=size/2, cy=size/2+(mini?4:8), R=size/2-(mini?26:46);
   const N=5, labels=ATTRS.map(a=>a[1]);
   const pt=(i,r)=>{ const ang=-Math.PI/2 + i*2*Math.PI/N; return [cx+r*Math.cos(ang), cy+r*Math.sin(ang)]; };
   let s=`<svg viewBox="0 0 ${size} ${size}" style="width:100%;height:auto;display:block">`;
@@ -578,11 +610,11 @@ function radarSVG(series, opts={}){
     s+=`<polygon points="${pts}" fill="none" stroke="#d8d2c6" stroke-width="1"/>`;
   }
   for(let i=0;i<N;i++){ const [x,y]=pt(i,R); s+=`<line x1="${cx}" y1="${cy}" x2="${x}" y2="${y}" stroke="#e4dfd4" stroke-width="1"/>`; }
-  for(let lv=0; lv<=5; lv++){ const [x,y]=pt(0,R*lv/5); s+=`<text x="${x-4}" y="${y-3}" font-size="9" fill="#8a8378" text-anchor="end" font-family="Noto Sans KR">${lv}</text>`; }
+  if(!mini) for(let lv=0; lv<=5; lv++){ const [x,y]=pt(0,R*lv/5); s+=`<text x="${x-4}" y="${y-3}" font-size="9" fill="#8a8378" text-anchor="end" font-family="Noto Sans KR">${lv}</text>`; }
   for(let i=0;i<N;i++){
-    const [x,y]=pt(i,R+20);
+    const [x,y]=pt(i,R+(mini?13:20));
     const anch = Math.abs(x-cx)<10 ? "middle" : (x>cx?"start":"end");
-    s+=`<text x="${x}" y="${y+4}" font-size="12" font-weight="700" fill="#1c1a17" text-anchor="${anch}" font-family="Nanum Myeongjo">${labels[i]}</text>`;
+    s+=`<text x="${x}" y="${y+4}" font-size="${mini?9.5:12}" font-weight="700" fill="#1c1a17" text-anchor="${anch}" font-family="Nanum Myeongjo">${labels[i]}</text>`;
   }
   for(const sr of series){
     if(sr.hidden) continue;
@@ -601,7 +633,39 @@ function legendHTML(series, chartId){
     `<span class="lg ${sr.hidden?'off':''}" data-chart="${chartId}" data-idx="${i}"><i style="background:${sr.color}"></i>${esc(sr.label)}</span>`
   ).join("")+`</div>`;
 }
-const chartState = {}; // chartId -> {series 생성함수 재호출용 hidden set}
+const chartState = {}; // chartId -> {hidden:Set, mode:'all'|'each'}
+
+/* 차트 카드: 모아보기(전체 겹침) / 따로보기(항목별 작은 그래프) */
+function drawChartCard(el, chartId, title, series){
+  if(!el) return;
+  const st = chartState[chartId] ||= {hidden:new Set(), mode:"all"};
+  series.forEach(sr=>sr.hidden = st.hidden.has(sr.key));
+  let h=`<div class="ct-row"><h4>${title}</h4>
+    <span class="ct-tg">
+      <button class="${st.mode==='all'?'on':''}" data-m="all">모아보기</button>
+      <button class="${st.mode==='each'?'on':''}" data-m="each">따로보기</button>
+    </span></div>`;
+  if(st.mode==="all"){
+    h += radarSVG(series,{size:300}) + legendHTML(series, chartId);
+  }else{
+    h += `<div class="mini-grid">`+series.map(sr=>
+      `<div class="mini-cell"><div class="mini-name"><i style="background:${sr.color}"></i>${esc(sr.label)}</div>${radarSVG([{...sr,hidden:false}],{size:170,small:true})}</div>`
+    ).join("")+`</div>`;
+  }
+  el.innerHTML=h;
+  el.querySelectorAll(".ct-tg button").forEach(b=>b.onclick=()=>{ st.mode=b.dataset.m; drawChartCard(el, chartId, title, series); });
+  el.querySelectorAll(".lg").forEach(lg=>{
+    lg.onclick=()=>{
+      const k=series[+lg.dataset.idx].key;
+      st.hidden.has(k)?st.hidden.delete(k):st.hidden.add(k);
+      drawChartCard(el, chartId, title, series);
+    };
+  });
+}
+function itemColor(no){
+  const g=GROUPS.find(g=>g.items.includes(+no));
+  return SERIES_COLORS[g.items.indexOf(+no)%SERIES_COLORS.length];
+}
 
 /* ═══════════════ 설문 페이지 렌더 ═══════════════ */
 function renderSurveyPage(p){
@@ -619,10 +683,11 @@ function renderSurveyPage(p){
     h+=`<th style="width:64px" class="th-cmt">한줄 코멘트</th></tr></thead><tbody>`;
     for(const no of g.items){
       const cIn=myResp.comments?.[no];
-      h+=`<tr><td class="no">${no}</td><td class="iname">${esc(itemName(no)).replace(/\[실내발효\]/,'<span class="tag">실내발효</span>')}<button class="cmt-inline ${cIn?'filled':''}" data-no="${no}">✎ ${cIn?esc(cIn.length>10?cIn.slice(0,10)+"…":cIn):"코멘트"}</button></td>`;
+      const col=itemColor(no);
+      h+=`<tr><td class="no" style="background:${col};color:#fff;font-weight:700">${no}</td><td class="iname">${esc(itemName(no)).replace(/\[실내발효\]/,'<span class="tag">실내발효</span>')}<button class="cmt-inline ${cIn?'filled':''}" data-no="${no}">✎ ${cIn?esc(cIn.length>10?cIn.slice(0,10)+"…":cIn):"코멘트"}</button></td>`;
       for(const [a] of ATTRS){
         const v=scoreOf(myResp,no,a);
-        h+=`<td class="score ${v?'filled':''}" data-no="${no}" data-attr="${a}">${v??"·"}</td>`;
+        h+=`<td class="score ${v?'filled':''}" data-no="${no}" data-attr="${a}" style="${v?`background:${col}26;color:${col};`:''}">${v??"·"}</td>`;
       }
       const c=myResp.comments?.[no];
       h+=`<td class="cmt ${c?'filled':''}" data-no="${no}">${c?`<span class="cmt-preview">${esc(c)}</span>`:`<span class="cmt-ic">✎ 입력</span>`}</td></tr>`;
@@ -635,23 +700,17 @@ function renderSurveyPage(p){
   host.innerHTML=h;
   for(const g of groups) renderGroupChart(g);
 }
-function renderGroupChart(g){
-  const el=$("chart-"+g.key); if(!el) return;
-  const st = chartState[g.key] ||= {hidden:new Set()};
-  const series = g.items.map((no,i)=>({
-    label:"⑴⑵⑶⑷⑸⑹⑺⑻⑼⑽⑾⑿⒀⒁⒂⒃⒄⒅⒆⒇"[no-1]+" "+itemShort(no).replace(/\s*\(.*$/,""),
+function groupSeries(g, valueFn){
+  return g.items.map((no,i)=>({
+    key:no,
+    label:no+"번 "+itemShort(no).replace(/\s*[\(-].*$/,""),
     color:SERIES_COLORS[i%SERIES_COLORS.length],
-    values:ATTRS.map(([a])=>scoreOf(myResp,no,a)),
-    hidden:st.hidden.has(no), _no:no
+    values:ATTRS.map(([a])=>valueFn(no,a))
   }));
-  el.innerHTML = `<h4>${esc(g.name)} ${g.cnt}</h4>` + radarSVG(series,{size:300}) + legendHTML(series, g.key);
-  el.querySelectorAll(".lg").forEach(lg=>{
-    lg.onclick=()=>{
-      const no=series[+lg.dataset.idx]._no;
-      st.hidden.has(no)?st.hidden.delete(no):st.hidden.add(no);
-      renderGroupChart(g);
-    };
-  });
+}
+function renderGroupChart(g){
+  const series=groupSeries(g,(no,a)=>scoreOf(myResp,no,a));
+  drawChartCard($("chart-"+g.key), g.key, `${esc(g.name)} ${g.cnt} · 내 점수`, series);
 }
 
 /* ═══════════════ 점수 선택 / 코멘트 ═══════════════ */
@@ -711,24 +770,25 @@ function saveIndicator(st){
 }
 
 /* ═══════════════ 페이지 이동 ═══════════════ */
-const PAGE_IDS=["page-cover","page-s1","page-s2","page-s3","page-result"];
+const PAGE_IDS=["page-cover","page-s1","page-s2","page-s3","page-s4","page-s5","page-result"];
+const LAST_SURVEY=5, RESULT_PAGE=6;
 function go(p){
   curPage=p;
   PAGE_IDS.forEach((id,i)=>$(id).classList.toggle("on", i===p));
   $("page-admin").classList.remove("on");
   $("navbar").style.display = (p>=1 && me) ? "block" : "none";
-  if(p>=1&&p<=3) renderSurveyPage(p);
-  if(p===4) renderResults();
+  if(p>=1&&p<=LAST_SURVEY) renderSurveyPage(p);
+  if(p===RESULT_PAGE) renderResults();
   updateNav(); updateProgressLine();
   window.scrollTo(0,0);
-  if(p===4) startListen(); else if(!isAdmin) stopListen();
+  if(p===RESULT_PAGE) startListen(); else if(!isAdmin) stopListen();
 }
 function updateNav(){
   const prev=$("btnPrev"), next=$("btnNext");
   prev.style.display = curPage<=1 ? "none":"block";
-  if(curPage===4){ prev.style.display="block"; prev.textContent="설문 수정"; next.style.display="none"; }
-  else{ prev.textContent="이전"; next.style.display="block"; next.textContent = curPage===3 ? "결과 보기" : "다음"; }
-  $("pageDots").innerHTML=[1,2,3,4].map(i=>`<i class="${i===curPage?'on':''}"></i>`).join("");
+  if(curPage===RESULT_PAGE){ prev.style.display="block"; prev.textContent="설문 수정"; next.style.display="none"; }
+  else{ prev.textContent="이전"; next.style.display="block"; next.textContent = curPage===LAST_SURVEY ? "결과 보기" : "다음"; }
+  $("pageDots").innerHTML=[1,2,3,4,5,6].map(i=>`<i class="${i===curPage?'on':''}"></i>`).join("");
 }
 function updateProgressLine(){
   if(!me){ $("progLine").textContent=""; return; }
@@ -737,7 +797,7 @@ function updateProgressLine(){
 }
 
 /* ═══════════════ 결과 페이지 ═══════════════ */
-function startListen(){ if(unsubAll) return; unsubAll = store.listenAll(m=>{ allResp=m; if(curPage===4) renderResults(); if($("page-admin").classList.contains("on")) renderAdmin(); }); }
+function startListen(){ if(unsubAll) return; unsubAll = store.listenAll(m=>{ allResp=m; if(curPage===RESULT_PAGE) renderResults(); if($("page-admin").classList.contains("on")) renderAdmin(); }); }
 function stopListen(){ if(unsubAll){ unsubAll(); unsubAll=null; } }
 
 function agg(no, a){
@@ -757,7 +817,7 @@ function renderResults(){
 
   let h="";
   for(const g of GROUPS){
-    h+=`<div class="res-group"><h3>${esc(g.name)} <small style="font-size:13px;font-weight:400">${g.sub?esc(g.sub)+" · ":""}${g.cnt}</small></h3><div class="rg-sub"></div>`;
+    h+=`<div class="res-group" id="resg-${g.key}"><h3>${esc(g.name)} <small style="font-size:13px;font-weight:400">${g.sub?esc(g.sub)+" · ":""}${g.cnt}</small></h3><div class="rg-sub"></div>`;
     // 항목별 1위
     const bests=[];
     for(const [a,label] of ATTRS){
@@ -766,12 +826,8 @@ function renderResults(){
       if(best) bests.push(`<span>${label} 1위 <b>${best.no}번</b> ${best.avg.toFixed(1)}점</span>`);
     }
     if(bests.length) h+=`<div class="best-strip">${bests.join("")}</div>`;
-    // 그룹 레이더 (전체 평균)
-    const rSeries=g.items.map((no,i)=>({
-      label:no+"번", color:SERIES_COLORS[i%SERIES_COLORS.length],
-      values:ATTRS.map(([a])=>{const r=agg(no,a); return r?+r.avg.toFixed(2):null;})
-    }));
-    h+=`<div class="radar-pair"><div class="chart-card"><h4>${esc(g.name)} 전체 평균</h4>${radarSVG(rSeries,{size:300})}${legendHTML(rSeries,"res-"+g.key)}</div></div>`;
+    // 그룹 레이더: 전체 평균 vs 내 점수 나란히
+    h+=`<div class="radar-pair"><div class="chart-card" id="reschart-${g.key}-avg"></div>${meResp?`<div class="chart-card" id="reschart-${g.key}-me"></div>`:""}</div>`;
     // 항목 카드
     for(const no of g.items){
       h+=`<div class="res-item"><div class="ri-name"><span class="no">${no}</span>${esc(itemName(no))}</div><div class="bars">`;
@@ -799,6 +855,23 @@ function renderResults(){
     h+=`</div>`;
   }
   body.innerHTML=h;
+  // 종류별 탭
+  $("resTabs").innerHTML=GROUPS.map(g=>`<button data-g="${g.key}">${esc(g.name)}</button>`).join("");
+  $("resTabs").querySelectorAll("button").forEach(b=>{
+    b.onclick=()=>{
+      $("resTabs").querySelectorAll("button").forEach(x=>x.classList.toggle("on",x===b));
+      const t=$("resg-"+b.dataset.g);
+      if(t) t.scrollIntoView({behavior:"smooth", block:"start"});
+    };
+  });
+  // 그룹별 차트: 전체 평균 vs 내 점수
+  for(const g of GROUPS){
+    drawChartCard($("reschart-"+g.key+"-avg"), "resA-"+g.key, `${esc(g.name)} · 전체 평균`,
+      groupSeries(g,(no,a)=>{const r=agg(no,a); return r?+r.avg.toFixed(2):null;}));
+    if(meResp)
+      drawChartCard($("reschart-"+g.key+"-me"), "resM-"+g.key, `${esc(g.name)} · ${esc(meName)}님`,
+        groupSeries(g,(no,a)=>scoreOf(meResp,no,a)));
+  }
   $("resNote").textContent=`${n}명의 평가를 실시간으로 집계한 결과입니다`;
 }
 
@@ -847,7 +920,7 @@ function renderAdmin(){
       <td><button class="danger" data-del="${pid}">삭제</button></td></tr>`;
   }).join("");
   rows.querySelectorAll("[data-cp]").forEach(b=>b.onclick=async()=>{ try{await navigator.clipboard.writeText(b.dataset.cp); toast("결과 링크 복사됨");}catch(e){prompt("복사하세요",b.dataset.cp);} });
-  rows.querySelectorAll("[data-open]").forEach(b=>b.onclick=()=>{ viewPid=b.dataset.open; PAGE_IDS.forEach(id=>$(id).classList.remove("on")); $("page-admin").classList.remove("on"); $("page-result").classList.add("on"); curPage=4; renderResults(); $("navbar").style.display="none"; addAdminBack(); });
+  rows.querySelectorAll("[data-open]").forEach(b=>b.onclick=()=>{ viewPid=b.dataset.open; PAGE_IDS.forEach(id=>$(id).classList.remove("on")); $("page-admin").classList.remove("on"); $("page-result").classList.add("on"); curPage=RESULT_PAGE; renderResults(); $("navbar").style.display="none"; addAdminBack(); });
   rows.querySelectorAll("[data-del]").forEach(b=>b.onclick=async()=>{
     const nm=allResp[b.dataset.del]?.name||"";
     if(!confirm(`'${nm}' 참석자의 설문을 삭제할까요? 되돌릴 수 없습니다.`)) return;
@@ -937,14 +1010,14 @@ function bindEvents(){
     const sc=e.target.closest("td.score"); if(sc){ openPicker(+sc.dataset.no, sc.dataset.attr); return; }
     const cm=e.target.closest("td.cmt"); if(cm){ openCmt(+cm.dataset.no); return; }
   });
-  $("dim").onclick=closePicker;
+  $("pkClose").onclick=closePicker;   // 여백을 눌러도 닫히지 않음 (닫기 버튼·점수 선택으로만 닫힘)
   $("pkBtns").querySelectorAll("button").forEach(b=>b.onclick=()=>{ setScore(pk.no,pk.attr,+b.dataset.v); closePicker(); });
   $("pkClear").onclick=()=>{ setScore(pk.no,pk.attr,null); closePicker(); };
   $("cmtCancel").onclick=()=>$("cmtModal").classList.remove("on");
   $("cmtSave").onclick=saveCmt;
   $("btnShare").onclick=shareResult;
   $("btnCopy").onclick=copyLink;
-  $("btnAdmResult").onclick=()=>{ viewPid=null; PAGE_IDS.forEach(id=>$(id).classList.remove("on")); $("page-admin").classList.remove("on"); $("page-result").classList.add("on"); curPage=4; renderResults(); addAdminBack(); };
+  $("btnAdmResult").onclick=()=>{ viewPid=null; PAGE_IDS.forEach(id=>$(id).classList.remove("on")); $("page-admin").classList.remove("on"); $("page-result").classList.add("on"); curPage=RESULT_PAGE; renderResults(); addAdminBack(); };
   $("btnAdmCsv").onclick=admCsv;
   $("btnAdmItems").onclick=renderItemEdit;
   $("btnItemsSave").onclick=saveItemsEdit;
@@ -960,7 +1033,7 @@ async function boot(){
     // 결과 보기 전용 모드
     try{ const saved=JSON.parse(localStorage.getItem("jangMe")||"null"); if(saved) me=saved; }catch(e){}
     PAGE_IDS.forEach(id=>$(id).classList.remove("on"));
-    $("page-result").classList.add("on"); curPage=4;
+    $("page-result").classList.add("on"); curPage=RESULT_PAGE;
     startListen(); renderResults();
     if(me && me.pid===viewPid){ $("navbar").style.display="block"; updateNav(); updateProgressLine(); }
     return;
