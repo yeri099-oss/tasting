@@ -146,8 +146,19 @@ td.cmt .cmt-preview{display:block;font-size:12px;color:#6b6459;max-width:110px;o
   .chart-card.wide .mini-name i{width:16px}
 }
 .mini-name{display:flex;align-items:center;gap:4px;font-size:11px;font-weight:700;color:#4a453d;
-  font-family:'Noto Sans KR',sans-serif;justify-content:center;padding-top:4px}
+  font-family:'Noto Sans KR',sans-serif;justify-content:center;padding:3px 7px;margin:4px auto 0;
+  border-radius:9px;cursor:pointer;width:fit-content;max-width:100%}
 .mini-name i{width:12px;height:3px;border-radius:2px;display:inline-block;flex-shrink:0}
+/* 간장 정보 목록(결과지 정보탭) */
+.il-row{display:flex;align-items:center;gap:10px;background:#fff;border:1px solid var(--line);border-radius:12px;
+  padding:10px 12px;margin-top:8px;cursor:pointer;font-family:'Noto Sans KR',sans-serif}
+.il-row:active{background:var(--paper2)}
+.il-thumb{width:52px;height:52px;object-fit:cover;border-radius:8px;border:1px solid var(--line);flex-shrink:0}
+.il-body{flex:1;min-width:0}
+.il-name{font-size:13.5px;font-weight:700;word-break:keep-all}
+.il-desc{font-size:12px;color:#8a8378;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;
+  -webkit-line-clamp:2;-webkit-box-orient:vertical;margin-top:2px}
+.il-empty{text-align:center;color:#8a8378;padding:30px 0;font-size:13.5px;font-family:'Noto Sans KR',sans-serif}
 
 /* ── 결과 종류별 탭 ── */
 .res-tabs{display:flex;gap:6px;overflow-x:auto;position:sticky;top:0;z-index:45;
@@ -269,9 +280,10 @@ td.cmt .cmt-preview{display:block;font-size:12px;color:#6b6459;max-width:110px;o
 .pd-sub.mine{color:var(--red)}
 .hof-sel{width:auto !important;margin:0 !important;padding:7px 10px !important;font-size:13px !important}
 @media (max-width:559px){
-  .pd-name{font-size:9.5px}
+  .hof-pair2{grid-template-columns:1fr}
+  .pd-name{font-size:11.5px}
   .pd-score{font-size:11.5px}
-  .hof-pair2 .hof-no{min-width:20px;height:20px;line-height:20px;font-size:10.5px}
+  .pd-col{max-width:120px}
 }
 .hof-no{display:inline-block;min-width:24px;height:24px;line-height:24px;border-radius:50%;color:#fff;font-size:12px;font-weight:700;padding:0 4px}
 .hof-empty{font-size:12.5px;color:#8a8378;text-align:center;padding:14px 0;font-family:'Noto Sans KR',sans-serif;grid-column:1/-1}
@@ -281,9 +293,10 @@ td.cmt .cmt-preview{display:block;font-size:12px;color:#6b6459;max-width:110px;o
 .pd-row{display:flex;align-items:flex-end;justify-content:center;gap:5px;margin-top:8px}
 .pd-col{flex:1;max-width:96px;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;cursor:pointer}
 .pd-col.empty{visibility:hidden}
-.pd-name{font-size:10.5px;color:#4a453d;line-height:1.3;word-break:keep-all;text-align:center;margin-top:3px;
+.pd-name{font-size:12.5px;color:var(--ink);font-weight:800;line-height:1.35;word-break:keep-all;text-align:center;
   display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-.pd-score{font-size:12.5px;font-weight:800;margin:2px 0 4px;color:var(--ink)}
+.pd-meta{display:flex;align-items:center;gap:5px;margin:4px 0 5px}
+.pd-score{font-size:12.5px;font-weight:700;color:#6b6459}
 .pd-block{width:100%;border-radius:8px 8px 0 0;color:#fff;text-align:center;font-size:11.5px;font-weight:700;padding-top:5px}
 .pd-block.b1{height:58px;background:linear-gradient(180deg,#d3aa42,#b8912f)}
 .pd-block.b2{height:38px;background:linear-gradient(180deg,#b4b4b4,#9a9a9a)}
@@ -485,8 +498,8 @@ td.cmt .cmt-preview{display:block;font-size:12px;color:#6b6459;max-width:110px;o
 <!-- 한줄 코멘트 모아쓰기/모아보기 -->
 <div class="modal" id="cmtHub">
   <div class="mbox">
-    <h3>한줄 코멘트</h3>
-    <div class="mi">간장을 고르고 코멘트를 적어주세요. "전체보기"를 고르면 작성한 코멘트를 한눈에 볼 수 있어요.</div>
+    <h3>내 코멘트 모아보기</h3>
+    <div class="mi">지금까지 작성한 한줄 코멘트입니다. 코멘트 작성은 설문 표에서 간장 이름을 누르면 열려요.</div>
     <select id="hubSel" class="hub-sel"></select>
     <div id="hubEdit">
       <textarea id="hubText" placeholder="맛에 대한 느낌을 자유롭게 적어주세요" maxlength="200"></textarea>
@@ -506,7 +519,11 @@ td.cmt .cmt-preview{display:block;font-size:12px;color:#6b6459;max-width:110px;o
     <img id="infoImg" alt="간장 사진" style="display:none">
     <div id="infoDesc" class="info-desc"></div>
     <div id="infoScores" style="display:none"></div>
-    <div class="mrow"><button class="ok" id="infoClose">닫기</button></div>
+    <div id="infoCmt" style="display:none">
+      <div style="font-size:13px;font-weight:700;margin:12px 0 6px;border-top:1px dashed var(--line);padding-top:10px">✎ 한줄 코멘트</div>
+      <textarea id="infoCmtText" placeholder="맛에 대한 느낌을 자유롭게 적어주세요" maxlength="200"></textarea>
+    </div>
+    <div class="mrow"><button id="infoClose">닫기</button><button class="ok" id="infoCmtSave" style="display:none">코멘트 저장</button></div>
   </div>
 </div>
 
@@ -576,6 +593,7 @@ let viewPid = null;            // ?r= 결과보기 대상
 let curPage = 0;               // 0 cover, 1~5 survey, 6 result
 let unsubAll = null;
 let gotSnap = false;           // 서버에서 첫 데이터 수신 여부 (결과 로딩 표시용)
+let infoSearchVal = "";        // 결과지 간장정보 검색어 (재렌더 시 유지)
 const $ = id => document.getElementById(id);
 
 /* ═══════════════ 유틸 ═══════════════ */
@@ -596,7 +614,10 @@ async function phonePid(phone){
 }
 function itemName(no){ return ITEMS[no] || DEFAULT_ITEMS[no] || ("장 "+no); }
 function hasInfo(no){ const i=ITEM_INFO[no]; return !!(i && ((i.desc&&i.desc.trim()) || i.img)); }
-function openInfo(no, withScores){
+function openInfo(no, opts){
+  if(opts===true) opts={scores:true};
+  opts=opts||{};
+  const withScores=opts.scores;
   const i=ITEM_INFO[no]||{};
   $("infoName").innerHTML=`<span class="no" style="display:inline-block;min-width:22px;height:22px;line-height:22px;text-align:center;background:${itemColor(no)};color:#fff;border-radius:50%;font-size:12px;margin-right:6px;font-family:'Noto Sans KR'">${no}</span>${esc(itemName(no))}`;
   if(i.img){ $("infoImg").src=i.img; $("infoImg").style.display="block"; } else $("infoImg").style.display="none";
@@ -618,7 +639,23 @@ function openInfo(no, withScores){
     if(myCmt) h+=`<div class="ri-cmts"><div class="cline mine"><b>내 코멘트</b>${esc(myCmt)}</div></div>`;
     box.innerHTML=h; box.style.display="block";
   } else { box.style.display="none"; }
+  // 한줄 코멘트 작성 (설문 중)
+  const cbox=$("infoCmt");
+  if(opts.comment && me){
+    $("infoCmtText").value=myResp.comments?.[no]||"";
+    cbox.style.display="block";
+    $("infoCmtSave").style.display="block";
+    $("infoCmtSave").onclick=async()=>{
+      const v=$("infoCmtText").value.trim();
+      $("infoModal").classList.remove("on");
+      await saveCommentValue(no, v);
+      if(v) toast(no+"번 코멘트 저장됨");
+    };
+  } else { cbox.style.display="none"; $("infoCmtSave").style.display="none"; }
+  if(!i.img && !(i.desc&&i.desc.trim()))
+    $("infoDesc").textContent = opts.comment ? "아직 등록된 간장 정보가 없습니다. 아래에 코멘트를 남겨주세요." : "아직 등록된 간장 정보가 없습니다.";
   $("infoModal").classList.add("on");
+  if(opts.comment) setTimeout(()=>$("infoCmtText").focus(),80);
 }
 function itemShort(no){ const n=itemName(no); return n.length>14 ? n.slice(0,14)+"…" : n; }
 function scoreOf(resp,no,a){ const v=resp?.scores?.[no]?.[a]; return (typeof v==="number"&&v>=1&&v<=5)?v:null; }
@@ -790,7 +827,7 @@ function drawChartCard(el, chartId, title, series, opts={}){
     h += radarSVG(series,{size:300, big:opts.big}) + legendHTML(series, chartId);
   }else{
     h += `<div class="mini-grid">`+series.map(sr=>
-      `<div class="mini-cell"><div class="mini-name"><i style="background:${sr.color}"></i>${esc(sr.label)}</div>${radarSVG([{...sr,hidden:false}],{size:170,small:true})}</div>`
+      `<div class="mini-cell"><div class="mini-name" data-no="${sr.key}" style="border:2px solid ${sr.color}" title="눌러서 간장 정보 보기"><i style="background:${sr.color}"></i>${esc(sr.label)}</div>${radarSVG([{...sr,hidden:false}],{size:170,small:true})}</div>`
     ).join("")+`</div>`;
   }
   el.innerHTML=h;
@@ -801,6 +838,9 @@ function drawChartCard(el, chartId, title, series, opts={}){
       st.hidden.has(k)?st.hidden.delete(k):st.hidden.add(k);
       drawChartCard(el, chartId, title, series, opts);
     };
+  });
+  el.querySelectorAll(".mini-name[data-no]").forEach(nm=>{
+    nm.onclick=()=>openInfo(+nm.dataset.no, opts.infoOpts||{});
   });
 }
 function itemColor(no){
@@ -814,7 +854,7 @@ function renderSurveyPage(p){
   const groups=GROUPS.filter(g=>g.page===p);
   let h=`<div class="sheet-head">
     <div class="sheet-title">${esc(info.t)} <small>- ${esc(info.s)}</small></div>
-    <div class="sheet-desc">${esc(info.d)} · 칸을 누르면 점수를 고를 수 있어요</div>
+    <div class="sheet-desc">${esc(info.d)} · 점수 칸을 누르면 점수를, 간장 이름을 누르면 정보·코멘트 창이 열려요</div>
   </div>`;
   for(const g of groups){
     if(groups.length>1) h+=`<div class="group-sub">${esc(g.name)} ${g.sub?("- "+esc(g.sub)):""} [${g.cnt}]</div>`;
@@ -824,7 +864,7 @@ function renderSurveyPage(p){
     h+=`<th style="width:64px" class="th-cmt">한줄 코멘트</th></tr></thead><tbody>`;
     for(const no of g.items){
       const col=itemColor(no);
-      h+=`<tr><td class="no" style="background:${col};color:#fff;font-weight:700">${no}</td><td class="iname" data-no="${no}" ${hasInfo(no)?'style="cursor:pointer"':''}>${esc(itemName(no)).replace(/\[실내발효\]/,'<span class="tag">실내발효</span>')}${hasInfo(no)?'<span class="info-ic">ⓘ 정보</span>':''}</td>`;
+      h+=`<tr><td class="no" style="background:${col};color:#fff;font-weight:700">${no}</td><td class="iname" data-no="${no}" style="cursor:pointer;border:2.5px solid ${col}">${esc(itemName(no)).replace(/\[실내발효\]/,'<span class="tag">실내발효</span>')}<span class="info-ic" style="background:${col}">${hasInfo(no)?"ⓘ 정보·코멘트":"✎ 코멘트"}</span></td>`;
       for(const [a] of ATTRS){
         const v=scoreOf(myResp,no,a);
         h+=`<td class="score ${v?'filled':''}" data-no="${no}" data-attr="${a}" style="${v?`background:${col}26;color:${col};`:''}">${v??"·"}</td>`;
@@ -834,7 +874,7 @@ function renderSurveyPage(p){
     }
     const myCnt=Object.keys(myResp.comments||{}).filter(no=>myResp.comments[no]).length;
     h+=`</tbody></table></div>
-    <button class="btn-cmt-open" data-page="${p}">✎ 한줄 코멘트 쓰기 · 모아보기${myCnt?`<span class="cnt">${myCnt}개 작성</span>`:""}</button>`;
+    <button class="btn-cmt-open" data-page="${p}">📖 내 코멘트 모아보기${myCnt?`<span class="cnt">${myCnt}개 작성</span>`:""}</button>`;
   }
   h+=`<div class="chart-note">채점하면 아래에 나만의 맛 그래프가 자동으로 그려집니다</div><div class="charts-row">`;
   for(const g of groups) h+=`<div class="chart-card" id="chart-${g.key}"></div>`;
@@ -852,7 +892,7 @@ function groupSeries(g, valueFn){
 }
 function renderGroupChart(g){
   const series=groupSeries(g,(no,a)=>scoreOf(myResp,no,a));
-  drawChartCard($("chart-"+g.key), g.key, `${esc(g.name)} ${g.cnt} · 내 점수`, series);
+  drawChartCard($("chart-"+g.key), g.key, `${esc(g.name)} ${g.cnt} · 내 점수`, series, {infoOpts:{comment:true}});
 }
 
 /* ═══════════════ 점수 선택 / 코멘트 ═══════════════ */
@@ -903,46 +943,21 @@ async function saveCmt(){
   await saveCommentValue(cmtNo, v);
 }
 
-/* ── 코멘트 모아쓰기/모아보기 (모바일) ── */
-function openCmtHub(page){
-  const g=GROUPS.find(x=>x.page===page);
-  const sel=$("hubSel");
-  let opts=`<option value="all">📖 전체보기 - 내 코멘트 모아보기</option>`;
-  for(const gg of GROUPS){
-    opts+=`<optgroup label="${esc(gg.name)} (${gg.cnt})">`+
-      gg.items.map(no=>`<option value="${no}">${no}번 · ${esc(itemName(no))}</option>`).join("")+`</optgroup>`;
+/* ── 내 코멘트 모아보기 ── */
+function openCmtHub(){
+  $("hubSel").style.display="none";
+  $("hubEdit").style.display="none"; $("hubSave").style.display="none";
+  let h="", any=false;
+  for(const g of GROUPS){
+    const lines=g.items.filter(no=>myResp.comments?.[no]);
+    if(!lines.length) continue;
+    any=true;
+    h+=`<div class="ha-group">${esc(g.name)}</div>`+
+      lines.map(no=>`<div class="ha-line"><b>${no}번</b> ${esc(itemName(no))}<br>→ ${esc(myResp.comments[no])}</div>`).join("");
   }
-  sel.innerHTML=opts;
-  sel.value=String(g.items[0]);
-  hubShow();
+  $("hubAll").innerHTML = any? h : `<div class="ha-empty">아직 작성한 코멘트가 없습니다<br>간장 이름을 누르면 코멘트를 쓸 수 있어요</div>`;
+  $("hubAll").style.display="block";
   $("cmtHub").classList.add("on");
-}
-function hubShow(){
-  const v=$("hubSel").value;
-  if(v==="all"){
-    $("hubEdit").style.display="none"; $("hubSave").style.display="none";
-    let h="", any=false;
-    for(const g of GROUPS){
-      const lines=g.items.filter(no=>myResp.comments?.[no]);
-      if(!lines.length) continue;
-      any=true;
-      h+=`<div class="ha-group">${esc(g.name)}</div>`+
-        lines.map(no=>`<div class="ha-line"><b>${no}번</b> ${esc(itemName(no))}<br>→ ${esc(myResp.comments[no])}</div>`).join("");
-    }
-    $("hubAll").innerHTML = any? h : `<div class="ha-empty">아직 작성한 코멘트가 없습니다</div>`;
-    $("hubAll").style.display="block";
-  }else{
-    $("hubAll").style.display="none";
-    $("hubEdit").style.display="block"; $("hubSave").style.display="block";
-    $("hubText").value=myResp.comments?.[+v]||"";
-  }
-}
-async function hubSave(){
-  const v=$("hubSel").value;
-  if(v==="all") return;
-  await saveCommentValue(+v, $("hubText").value.trim());
-  toast(v+"번 코멘트 저장됨");
-  hubShow();
 }
 function refreshAfterInput(no){
   const p=GROUPS.find(g=>g.items.includes(+no)).page;
@@ -1004,28 +1019,26 @@ function podiumHTML(g, a, mode, meResp){
   for(const {t,rk} of order){
     if(!t){ cols+=`<div class="pd-col empty"><div class="pd-block b${rk}"></div></div>`; continue; }
     cols+=`<div class="pd-col" data-no="${t.no}" title="눌러서 내 평가·간장 정보 보기">
-      <span class="hof-no" style="background:${itemColor(t.no)}">${t.no}번</span>
-      <div class="pd-name">${esc(itemShort(t.no).replace(/\s*[\(-].*$/,""))}</div>
-      <div class="pd-score">${mode==="avg"?t.v.toFixed(1):t.v}점</div>
+      <div class="pd-name">${esc(itemName(t.no).replace(/\s*\[.*\]\s*/,"").replace(/\s*-.*$/,""))}</div>
+      <div class="pd-meta"><span class="hof-no" style="background:${itemColor(t.no)}">${t.no}번</span><span class="pd-score">${mode==="avg"?t.v.toFixed(1):t.v}점</span></div>
       <div class="pd-block b${rk}">${rk===1?"🏆 ":""}${rk}위</div></div>`;
   }
   return `<div class="podium"><div class="pd-sub ${mode==='me'?'mine':''}">${mode==="avg"?"전체 평균":"내 선택"}</div>
     <div class="pd-row">${top.length?cols:`<div class="hof-empty">${mode==="avg"?"아직 평가가 없습니다":"내 점수가 없습니다"}</div>`}</div></div>`;
 }
 function hofHTML(g, meResp){
-  const sel = hofAttr[g.key] || "all";
-  const attrs = sel==="all" ? ATTRS : ATTRS.filter(([a])=>a===sel);
+  const sel = hofAttr[g.key] || ATTRS[0][0];
+  const attrs = ATTRS.filter(([a])=>a===sel);
   let rows="";
-  for(const [a,label] of attrs){
-    rows+=`<div class="hof-attr-row"><div class="pd-title">${label}</div><div class="hof-pair2">`
+  for(const [a] of attrs){
+    rows+=`<div class="hof-attr-row"><div class="hof-pair2">`
       + podiumHTML(g,a,"avg",null)
       + (meResp ? podiumHTML(g,a,"me",meResp) : "")
       + `</div></div>`;
   }
   return `<div class="hof"><div class="hof-head"><h4>🏆 명예의 전당</h4>
     <select class="hub-sel hof-sel" data-g="${g.key}">
-      <option value="all">전체 분야</option>
-      ${ATTRS.map(([a,l])=>`<option value="${a}" ${a===sel?"selected":""}>${l}만 보기</option>`).join("")}
+      ${ATTRS.map(([a,l])=>`<option value="${a}" ${a===sel?"selected":""}>${l}</option>`).join("")}
     </select></div>${rows}</div>`;
 }
 function agg(no, a){
@@ -1081,9 +1094,35 @@ function renderResults(){
     }
     h+=`</div>`;
   }
+  // 간장 정보 탭 섹션
+  h+=`<div class="res-group" id="resg-info"><h3>간장 정보 <small style="font-size:13px;font-weight:400">눌러서 상세 보기</small></h3>
+    <input id="infoSearch" class="hub-sel" style="margin-top:10px" placeholder="🔍 간장 이름·번호·설명 검색" value="${esc(infoSearchVal)}">
+    <div id="infoList">`;
+  for(const g of GROUPS) for(const no of g.items){
+    const i=ITEM_INFO[no]||{};
+    h+=`<div class="il-row" data-no="${no}" data-search="${esc((no+" "+itemName(no)+" "+g.name+" "+(i.desc||"")).toLowerCase())}" style="border-left:5px solid ${itemColor(no)}">
+      ${i.img?`<img class="il-thumb" src="${i.img}">`:""}
+      <div class="il-body"><div class="il-name"><span style="color:${itemColor(no)}">${no}번</span> ${esc(itemName(no))}</div>
+      ${i.desc?`<div class="il-desc">${esc(i.desc)}</div>`:""}</div><span style="color:#b9b2a4">›</span></div>`;
+  }
+  h+=`<div class="il-empty" id="ilEmpty" style="display:none">검색 결과가 없습니다</div></div></div>`;
   body.innerHTML=h;
+  // 정보 검색
+  const doFilter=()=>{
+    const q=infoSearchVal.trim().toLowerCase();
+    let shown=0;
+    document.querySelectorAll("#infoList .il-row").forEach(r=>{
+      const on=!q || r.dataset.search.includes(q);
+      r.style.display=on?"flex":"none"; if(on) shown++;
+    });
+    $("ilEmpty").style.display=shown?"none":"block";
+  };
+  $("infoSearch").oninput=e=>{ infoSearchVal=e.target.value; doFilter(); };
+  doFilter();
+  document.querySelectorAll("#infoList .il-row").forEach(r=>r.onclick=()=>openInfo(+r.dataset.no, {scores:true}));
   // 종류별 탭
-  $("resTabs").innerHTML=GROUPS.map(g=>`<button data-g="${g.key}">${esc(g.name)}</button>`).join("");
+  $("resTabs").innerHTML=GROUPS.map(g=>`<button data-g="${g.key}">${esc(g.name)}</button>`).join("")
+    +`<button data-g="info">ⓘ 정보</button>`;
   $("resTabs").querySelectorAll("button").forEach(b=>{
     b.onclick=()=>{
       $("resTabs").querySelectorAll("button").forEach(x=>x.classList.toggle("on",x===b));
@@ -1104,10 +1143,10 @@ function renderResults(){
   // 그룹별 차트: 전체 평균 vs 내 점수 (나란히)
   for(const g of GROUPS){
     drawChartCard($("reschart-"+g.key+"-avg"), "resA-"+g.key, `${esc(g.name)} · 전체 평균`,
-      groupSeries(g,(no,a)=>{const r=agg(no,a); return r?+r.avg.toFixed(2):null;}), {big:true});
+      groupSeries(g,(no,a)=>{const r=agg(no,a); return r?+r.avg.toFixed(2):null;}), {big:true, infoOpts:{scores:true}});
     if(meResp)
       drawChartCard($("reschart-"+g.key+"-me"), "resM-"+g.key, `${esc(g.name)} · ${esc(meName)}님`,
-        groupSeries(g,(no,a)=>scoreOf(meResp,no,a)), {big:true});
+        groupSeries(g,(no,a)=>scoreOf(meResp,no,a)), {big:true, infoOpts:{scores:true}});
   }
   $("resNote").textContent=`${n}명의 평가를 실시간으로 집계한 결과입니다`;
 }
@@ -1300,7 +1339,7 @@ function bindEvents(){
   $("btnNext").onclick=()=>go(curPage+1);
   document.body.addEventListener("click",e=>{
     const hb=e.target.closest(".btn-cmt-open"); if(hb){ openCmtHub(+hb.dataset.page); return; }
-    const inm=e.target.closest("td.iname"); if(inm && hasInfo(+inm.dataset.no)){ openInfo(+inm.dataset.no); return; }
+    const inm=e.target.closest("td.iname"); if(inm){ openInfo(+inm.dataset.no, {comment:true}); return; }
     const sc=e.target.closest("td.score"); if(sc){ openPicker(+sc.dataset.no, sc.dataset.attr); return; }
     const cm=e.target.closest("td.cmt"); if(cm){ openCmt(+cm.dataset.no); return; }
   });
@@ -1309,9 +1348,7 @@ function bindEvents(){
   $("pkClear").onclick=()=>{ setScore(pk.no,pk.attr,null); closePicker(); };
   $("cmtCancel").onclick=()=>$("cmtModal").classList.remove("on");
   $("cmtSave").onclick=saveCmt;
-  $("hubSel").onchange=hubShow;
   $("hubClose").onclick=()=>$("cmtHub").classList.remove("on");
-  $("hubSave").onclick=hubSave;
   $("infoClose").onclick=()=>$("infoModal").classList.remove("on");
   $("btnShare").onclick=shareResult;
   $("btnCopy").onclick=copyLink;
