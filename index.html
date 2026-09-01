@@ -81,24 +81,32 @@ input,textarea{font-family:'Noto Sans KR',sans-serif}
 .group-sub{font-size:17px;font-weight:800;margin:26px 0 8px;letter-spacing:.02em}
 
 /* 표 */
-.tbl{width:100%;border-collapse:collapse;background:#fff;font-size:13px}
+.tbl{width:100%;border-collapse:collapse;background:#fff;font-size:15px}
 .tbl th{
-  background:#26221d;color:#f5f1e8;font-weight:700;padding:8px 2px;font-size:12px;
-  letter-spacing:.04em;border:1px solid #26221d;
+  background:#26221d;color:#f5f1e8;font-weight:700;padding:11px 5px;font-size:14px;
+  letter-spacing:.03em;border:1px solid #26221d;white-space:nowrap;
 }
-.tbl td{border:1px solid var(--line);text-align:center;vertical-align:middle;height:44px}
-.tbl td.no{width:30px;color:#6b6459;font-size:12px}
-.tbl td.iname{text-align:left;padding:6px 8px;line-height:1.4;font-size:12.5px;word-break:keep-all}
-.tbl td.iname .tag{display:inline-block;font-size:10.5px;color:var(--accent);border:1px solid var(--accent2);
-  border-radius:4px;padding:0 4px;margin-left:4px;vertical-align:1px;font-family:'Noto Sans KR',sans-serif}
-td.score{width:40px;font-family:'Noto Sans KR',sans-serif;font-weight:700;font-size:16px;color:#b9b2a4;cursor:pointer;user-select:none}
+.tbl td{border:1px solid var(--line);text-align:center;vertical-align:middle;height:54px}
+.tbl td.no{width:36px;color:#6b6459;font-size:14px}
+.tbl td.iname{text-align:left;padding:8px 10px;line-height:1.45;font-size:15px;word-break:keep-all}
+.tbl td.iname .tag{display:inline-block;font-size:12px;color:var(--accent);border:1px solid var(--accent2);
+  border-radius:4px;padding:0 5px;margin-left:5px;vertical-align:1px;font-family:'Noto Sans KR',sans-serif}
+td.score{width:54px;font-family:'Noto Sans KR',sans-serif;font-weight:700;font-size:18px;color:#b9b2a4;cursor:pointer;user-select:none}
 td.score.filled{background:var(--paper2);color:var(--ink)}
 td.score:active{background:#eae4d8}
-td.cmt{width:56px;cursor:pointer;font-family:'Noto Sans KR',sans-serif}
-td.cmt .cmt-ic{font-size:11px;color:#b9b2a4}
+td.cmt{width:88px;cursor:pointer;font-family:'Noto Sans KR',sans-serif}
+td.cmt .cmt-ic{font-size:13px;color:#b9b2a4}
 td.cmt.filled .cmt-ic{color:var(--accent);font-weight:700}
-td.cmt .cmt-preview{display:block;font-size:10.5px;color:#6b6459;max-width:80px;overflow:hidden;
+td.cmt .cmt-preview{display:block;font-size:12px;color:#6b6459;max-width:110px;overflow:hidden;
   text-overflow:ellipsis;white-space:nowrap;margin:0 auto}
+@media (min-width:560px){ .tbl td.iname{white-space:nowrap} }
+.cmt-inline{display:none;margin-top:5px;padding:3px 9px;font-size:12px;border:1px solid var(--line);
+  border-radius:14px;background:#fff;color:#b9b2a4;font-family:'Noto Sans KR',sans-serif}
+.cmt-inline.filled{color:var(--accent);border-color:var(--accent2)}
+@media (max-width:559px){
+  .tbl th.th-cmt, .tbl td.cmt{display:none}
+  .cmt-inline{display:inline-block;margin-left:0}
+}
 
 /* 그래프 영역 */
 .chart-note{font-size:14px;color:#5c564c;margin:26px 0 4px}
@@ -217,8 +225,12 @@ td.cmt .cmt-preview{display:block;font-size:10.5px;color:#6b6459;max-width:80px;
 
 @media (max-width:480px){
   .cover-title{font-size:36px}
-  .tbl td.iname{font-size:11.5px}
-  td.score{width:34px;font-size:15px}
+  .tbl{font-size:13.5px}
+  .tbl th{font-size:12.5px;padding:9px 3px}
+  .tbl td.no{width:28px;font-size:12.5px}
+  .tbl td.iname{font-size:13px;padding:6px 8px}
+  td.score{width:42px;font-size:16px}
+  td.cmt{width:66px}
   .bar-row .bv{width:70px}
 }
 </style>
@@ -604,9 +616,10 @@ function renderSurveyPage(p){
     h+=`<div style="overflow-x:auto"><table class="tbl"><thead><tr>
       <th style="width:30px">번호</th><th>${esc(g.col)}</th>`;
     for(const [,label] of ATTRS) h+=`<th style="width:40px">${label}</th>`;
-    h+=`<th style="width:64px">한줄 코멘트</th></tr></thead><tbody>`;
+    h+=`<th style="width:64px" class="th-cmt">한줄 코멘트</th></tr></thead><tbody>`;
     for(const no of g.items){
-      h+=`<tr><td class="no">${no}</td><td class="iname">${esc(itemName(no)).replace(/\[실내발효\]/,'<span class="tag">실내발효</span>')}</td>`;
+      const cIn=myResp.comments?.[no];
+      h+=`<tr><td class="no">${no}</td><td class="iname">${esc(itemName(no)).replace(/\[실내발효\]/,'<span class="tag">실내발효</span>')}<button class="cmt-inline ${cIn?'filled':''}" data-no="${no}">✎ ${cIn?esc(cIn.length>10?cIn.slice(0,10)+"…":cIn):"코멘트"}</button></td>`;
       for(const [a] of ATTRS){
         const v=scoreOf(myResp,no,a);
         h+=`<td class="score ${v?'filled':''}" data-no="${no}" data-attr="${a}">${v??"·"}</td>`;
@@ -920,6 +933,7 @@ function bindEvents(){
   $("btnPrev").onclick=()=>go(curPage-1);
   $("btnNext").onclick=()=>go(curPage+1);
   document.body.addEventListener("click",e=>{
+    const ci=e.target.closest(".cmt-inline"); if(ci){ openCmt(+ci.dataset.no); return; }
     const sc=e.target.closest("td.score"); if(sc){ openPicker(+sc.dataset.no, sc.dataset.attr); return; }
     const cm=e.target.closest("td.cmt"); if(cm){ openCmt(+cm.dataset.no); return; }
   });
