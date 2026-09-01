@@ -845,7 +845,7 @@ function drawChartCard(el, chartId, title, series, opts={}){
     h += radarSVG(series,{size:300, big:opts.big}) + legendHTML(series, chartId);
   }else{
     h += `<div class="mini-grid">`+series.map(sr=>
-      `<div class="mini-cell"><div class="mini-name" data-no="${sr.key}" style="border:2px solid ${sr.color}" title="눌러서 간장 정보 보기"><i style="background:${sr.color}"></i>${esc(sr.label)}</div>${radarSVG([{...sr,hidden:false}],{size:170,small:true})}</div>`
+      `<div class="mini-cell" data-no="${sr.key}"><div class="mini-name" data-no="${sr.key}" style="border:2px solid ${sr.color}" title="눌러서 간장 정보 보기"><i style="background:${sr.color}"></i>${esc(sr.label)}</div><div class="mini-svg" data-no="${sr.key}" ${opts.pickOnGraph?'style="cursor:pointer" title="눌러서 점수 매기기"':''}>${radarSVG([{...sr,hidden:false}],{size:170,small:true})}</div></div>`
     ).join("")+`</div>`;
   }
   el.innerHTML=h;
@@ -859,6 +859,9 @@ function drawChartCard(el, chartId, title, series, opts={}){
   });
   el.querySelectorAll(".mini-name[data-no]").forEach(nm=>{
     nm.onclick=()=>openInfo(+nm.dataset.no, opts.infoOpts||{});
+  });
+  if(opts.pickOnGraph) el.querySelectorAll(".mini-svg[data-no]").forEach(sv=>{
+    sv.onclick=()=>openPicker(+sv.dataset.no, null);
   });
 }
 function itemColor(no){
@@ -910,7 +913,7 @@ function groupSeries(g, valueFn){
 }
 function renderGroupChart(g){
   const series=groupSeries(g,(no,a)=>scoreOf(myResp,no,a));
-  drawChartCard($("chart-"+g.key), g.key, `${esc(g.name)} ${g.cnt} · 내 점수`, series, {infoOpts:{comment:true}});
+  drawChartCard($("chart-"+g.key), g.key, `${esc(g.name)} ${g.cnt} · 내 점수`, series, {infoOpts:{comment:true}, pickOnGraph:true});
 }
 
 /* ═══════════════ 점수 선택 / 코멘트 ═══════════════ */
