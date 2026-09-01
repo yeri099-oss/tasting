@@ -1,0 +1,964 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>옹기뜸골 전통장 20가지 테이스팅</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700;800&family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+<style>
+:root{
+  --ink:#1c1a17;
+  --paper:#faf8f4;
+  --paper2:#f3efe8;
+  --line:#d8d2c6;
+  --accent:#8a6f4d;
+  --accent2:#b5a284;
+  --sel:#3d3428;
+  --red:#b0402f;
+  --green:#4d6b4d;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{
+  font-family:'Nanum Myeongjo','Noto Sans KR',serif;
+  background:var(--paper);color:var(--ink);
+  font-size:15px;line-height:1.55;
+  -webkit-font-smoothing:antialiased;
+}
+button{font-family:inherit;cursor:pointer}
+input,textarea{font-family:'Noto Sans KR',sans-serif}
+.sans{font-family:'Noto Sans KR',sans-serif}
+
+/* ── 공통 레이아웃 ── */
+.page{display:none;min-height:100dvh;padding-bottom:96px}
+.page.on{display:block}
+.wrap{max-width:760px;margin:0 auto;padding:0 16px}
+
+/* 상단 브랜드 */
+.brandbar{display:flex;justify-content:flex-end;align-items:center;gap:8px;padding:14px 18px 0}
+.brandbar .mark{width:22px;height:22px}
+.brandbar .bname{font-size:13px;letter-spacing:.06em}
+
+/* ── 표지(로그인) ── */
+#page-cover.on{display:flex;flex-direction:column}
+.cover-inner{flex:1;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:24px 20px 40px}
+.cover-title{font-size:44px;font-weight:800;letter-spacing:.18em;margin-bottom:14px}
+.cover-sub{font-size:22px;font-weight:700;letter-spacing:.1em;margin-bottom:10px}
+.cover-date{font-size:15px;color:#4a453d;margin-bottom:38px;letter-spacing:.05em}
+.login-box{width:100%;max-width:340px;text-align:left}
+.login-box label{display:block;font-size:14px;margin:14px 0 6px;letter-spacing:.04em}
+.login-box input{
+  width:100%;padding:12px 12px;font-size:16px;border:1px solid var(--line);
+  border-radius:8px;background:#fff;outline:none;
+}
+.login-box input:focus{border-color:var(--accent)}
+.hint{font-size:12px;color:#8a8378;margin-top:6px}
+.btn-main{
+  width:100%;margin-top:26px;padding:15px;font-size:17px;font-weight:700;letter-spacing:.14em;
+  background:var(--ink);color:#fff;border:none;border-radius:10px;
+}
+.btn-main:disabled{opacity:.45}
+.cover-foot{padding:18px;text-align:center;font-size:12px;color:#8a8378;letter-spacing:.08em}
+.admin-link{background:none;border:none;color:#a39a8b;font-size:12px;margin-top:22px;text-decoration:underline}
+.adminbox{display:none;width:100%;max-width:340px;margin-top:10px;text-align:left}
+.adminbox.on{display:block}
+.errmsg{color:var(--red);font-size:13px;margin-top:10px;display:none;font-family:'Noto Sans KR',sans-serif}
+.errmsg.on{display:block}
+.notice-banner{display:none;background:#fdf3e3;border:1px solid #e8cf9e;color:#6b5322;font-size:13px;
+  padding:10px 14px;border-radius:8px;margin:14px auto 0;max-width:520px;font-family:'Noto Sans KR',sans-serif;text-align:left}
+.notice-banner.on{display:block}
+
+/* ── 설문 페이지 ── */
+.sheet-head{padding:26px 0 6px}
+.sheet-title{font-size:22px;font-weight:800;letter-spacing:.02em}
+.sheet-title small{font-size:15px;font-weight:700}
+.sheet-desc{font-size:14px;color:#5c564c;margin-top:6px}
+.group-sub{font-size:17px;font-weight:800;margin:26px 0 8px;letter-spacing:.02em}
+
+/* 표 */
+.tbl{width:100%;border-collapse:collapse;background:#fff;font-size:13px}
+.tbl th{
+  background:#26221d;color:#f5f1e8;font-weight:700;padding:8px 2px;font-size:12px;
+  letter-spacing:.04em;border:1px solid #26221d;
+}
+.tbl td{border:1px solid var(--line);text-align:center;vertical-align:middle;height:44px}
+.tbl td.no{width:30px;color:#6b6459;font-size:12px}
+.tbl td.iname{text-align:left;padding:6px 8px;line-height:1.4;font-size:12.5px;word-break:keep-all}
+.tbl td.iname .tag{display:inline-block;font-size:10.5px;color:var(--accent);border:1px solid var(--accent2);
+  border-radius:4px;padding:0 4px;margin-left:4px;vertical-align:1px;font-family:'Noto Sans KR',sans-serif}
+td.score{width:40px;font-family:'Noto Sans KR',sans-serif;font-weight:700;font-size:16px;color:#b9b2a4;cursor:pointer;user-select:none}
+td.score.filled{background:var(--paper2);color:var(--ink)}
+td.score:active{background:#eae4d8}
+td.cmt{width:56px;cursor:pointer;font-family:'Noto Sans KR',sans-serif}
+td.cmt .cmt-ic{font-size:11px;color:#b9b2a4}
+td.cmt.filled .cmt-ic{color:var(--accent);font-weight:700}
+td.cmt .cmt-preview{display:block;font-size:10.5px;color:#6b6459;max-width:80px;overflow:hidden;
+  text-overflow:ellipsis;white-space:nowrap;margin:0 auto}
+
+/* 그래프 영역 */
+.chart-note{font-size:14px;color:#5c564c;margin:26px 0 4px}
+.charts-row{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:8px}
+.chart-card{background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px 10px 6px;flex:1 1 300px;max-width:360px}
+.chart-card h4{font-size:14px;font-weight:800;text-align:center;margin-bottom:2px}
+.legend{display:flex;flex-wrap:wrap;gap:4px 8px;justify-content:center;padding:6px 4px 8px;font-family:'Noto Sans KR',sans-serif}
+.legend .lg{display:flex;align-items:center;gap:4px;font-size:10.5px;color:#4a453d;border:1px solid transparent;border-radius:6px;padding:1px 5px;cursor:pointer}
+.legend .lg.off{opacity:.3}
+.legend .lg i{width:14px;height:3px;border-radius:2px;display:inline-block}
+
+/* ── 하단 내비 ── */
+.navbar{
+  position:fixed;left:0;right:0;bottom:0;z-index:50;
+  background:rgba(250,248,244,.96);backdrop-filter:blur(6px);
+  border-top:1px solid var(--line);
+}
+.navbar .nv{max-width:760px;margin:0 auto;display:flex;align-items:center;gap:10px;padding:10px 16px calc(10px + env(safe-area-inset-bottom))}
+.nv button{padding:12px 0;font-size:15px;font-weight:700;border-radius:10px;border:1px solid var(--ink);background:#fff;letter-spacing:.06em}
+.nv .prev{flex:1;color:var(--ink)}
+.nv .next{flex:2;background:var(--ink);color:#fff}
+.nv .save-state{position:absolute;top:-24px;right:14px;font-size:11px;color:#8a8378;font-family:'Noto Sans KR',sans-serif;
+  background:rgba(250,248,244,.9);padding:2px 8px;border-radius:6px}
+.pagedots{display:flex;gap:6px;justify-content:center;padding-top:8px}
+.pagedots i{width:7px;height:7px;border-radius:50%;background:#d5cec1}
+.pagedots i.on{background:var(--ink)}
+.progress-line{font-size:12px;color:#6b6459;text-align:center;font-family:'Noto Sans KR',sans-serif;margin-top:4px}
+
+/* ── 점수 선택 시트 ── */
+.dim{position:fixed;inset:0;background:rgba(20,17,12,.45);z-index:90;display:none}
+.dim.on{display:block}
+.picker{
+  position:fixed;left:0;right:0;bottom:-100%;z-index:100;transition:bottom .18s ease;
+  background:#fff;border-radius:18px 18px 0 0;padding:18px 18px calc(22px + env(safe-area-inset-bottom));
+  max-width:520px;margin:0 auto;
+}
+.picker.on{bottom:0}
+.picker .pk-title{font-size:14px;font-weight:700;text-align:center;margin-bottom:4px}
+.picker .pk-item{font-size:12px;color:#8a8378;text-align:center;margin-bottom:14px;font-family:'Noto Sans KR',sans-serif}
+.pk-btns{display:flex;gap:8px;justify-content:center}
+.pk-btns button{
+  flex:1;max-width:64px;aspect-ratio:1;font-size:20px;font-weight:700;border-radius:12px;
+  border:1.5px solid var(--line);background:#fff;font-family:'Noto Sans KR',sans-serif;
+}
+.pk-btns button.sel{background:var(--ink);color:#fff;border-color:var(--ink)}
+.pk-clear{display:block;margin:14px auto 0;background:none;border:none;color:#a39a8b;font-size:13px;text-decoration:underline;font-family:'Noto Sans KR',sans-serif}
+
+/* ── 코멘트 모달 ── */
+.modal{position:fixed;inset:0;z-index:110;display:none;align-items:center;justify-content:center;padding:20px;background:rgba(20,17,12,.5)}
+.modal.on{display:flex}
+.modal .mbox{background:#fff;border-radius:14px;width:100%;max-width:420px;padding:20px}
+.mbox h3{font-size:16px;font-weight:800;margin-bottom:2px}
+.mbox .mi{font-size:12.5px;color:#8a8378;margin-bottom:12px;font-family:'Noto Sans KR',sans-serif}
+.mbox textarea{width:100%;height:96px;border:1px solid var(--line);border-radius:10px;padding:10px;font-size:15px;resize:none;outline:none}
+.mbox textarea:focus{border-color:var(--accent)}
+.mbox .mrow{display:flex;gap:8px;margin-top:12px}
+.mbox .mrow button{flex:1;padding:12px;border-radius:10px;font-size:15px;font-weight:700;border:1px solid var(--line);background:#fff}
+.mbox .mrow .ok{background:var(--ink);color:#fff;border-color:var(--ink)}
+
+/* ── 결과 페이지 ── */
+.res-head{padding:26px 0 4px;text-align:center}
+.res-head h2{font-size:24px;font-weight:800;letter-spacing:.06em}
+.res-live{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;color:var(--green);font-family:'Noto Sans KR',sans-serif;margin-top:8px}
+.res-live .dot{width:8px;height:8px;border-radius:50%;background:var(--green);animation:pulse 1.6s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.res-mename{font-size:14px;color:#5c564c;margin-top:6px}
+.share-row{display:flex;gap:8px;max-width:420px;margin:16px auto 0}
+.share-row button{flex:1;padding:13px;border-radius:10px;font-size:14.5px;font-weight:700;border:1px solid var(--ink);background:#fff}
+.share-row .kakao{background:#FEE500;border-color:#FEE500;color:#191600}
+.res-group{margin-top:34px}
+.res-group>h3{font-size:19px;font-weight:800;border-bottom:2px solid var(--ink);padding-bottom:6px;margin-bottom:4px}
+.res-group>.rg-sub{font-size:13px;color:#6b6459;margin-bottom:12px}
+.best-strip{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 4px;font-family:'Noto Sans KR',sans-serif}
+.best-strip span{font-size:11.5px;background:var(--paper2);border:1px solid var(--line);border-radius:20px;padding:3px 10px;color:#4a453d}
+.best-strip b{color:var(--ink)}
+.res-item{background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px 14px 10px;margin-top:12px}
+.res-item .ri-name{font-size:14px;font-weight:800;word-break:keep-all}
+.res-item .ri-name .no{display:inline-block;min-width:20px;height:20px;line-height:20px;text-align:center;background:var(--ink);color:#fff;
+  border-radius:50%;font-size:11px;margin-right:6px;font-family:'Noto Sans KR',sans-serif}
+.bars{margin-top:10px;font-family:'Noto Sans KR',sans-serif}
+.bar-row{display:flex;align-items:center;gap:8px;margin:5px 0}
+.bar-row .bl{width:44px;font-size:12px;color:#5c564c;flex-shrink:0}
+.bar-track{flex:1;height:14px;background:var(--paper2);border-radius:7px;position:relative;overflow:visible}
+.bar-fill{height:100%;background:var(--accent2);border-radius:7px;transition:width .4s}
+.bar-me{position:absolute;top:-3px;width:4px;height:20px;background:var(--red);border-radius:2px;transform:translateX(-2px);transition:left .4s}
+.bar-row .bv{width:74px;font-size:11px;color:#6b6459;text-align:right;flex-shrink:0}
+.bar-row .bv b{color:var(--red);font-weight:700}
+.ri-cmts{margin-top:10px;border-top:1px dashed var(--line);padding-top:8px}
+.ri-cmts .cline{font-size:12.5px;color:#4a453d;margin:3px 0;font-family:'Noto Sans KR',sans-serif}
+.ri-cmts .cline b{color:var(--accent);font-weight:500;margin-right:5px}
+.ri-cmts .cline.mine b{color:var(--red)}
+.cmt-toggle{background:none;border:none;font-size:12px;color:#8a8378;text-decoration:underline;margin-top:8px;font-family:'Noto Sans KR',sans-serif}
+.res-cnt-note{text-align:center;font-size:13px;color:#6b6459;margin-top:10px;font-family:'Noto Sans KR',sans-serif}
+.radar-pair{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:14px}
+
+/* ── 관리자 ── */
+.adm-head{padding:26px 0 10px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px}
+.adm-head h2{font-size:22px;font-weight:800}
+.adm-actions{display:flex;gap:8px;flex-wrap:wrap;font-family:'Noto Sans KR',sans-serif}
+.adm-actions button{padding:9px 14px;border-radius:8px;font-size:13px;font-weight:700;border:1px solid var(--ink);background:#fff}
+.adm-tbl{width:100%;border-collapse:collapse;background:#fff;font-size:13px;font-family:'Noto Sans KR',sans-serif}
+.adm-tbl th{background:#26221d;color:#f5f1e8;padding:8px 6px;font-size:12px;border:1px solid #26221d}
+.adm-tbl td{border:1px solid var(--line);padding:8px 6px;text-align:center}
+.adm-tbl td.l{text-align:left}
+.adm-tbl button{padding:5px 9px;border-radius:6px;border:1px solid var(--line);background:#fff;font-size:12px}
+.adm-tbl button.danger{color:var(--red);border-color:#e0b7ae}
+.adm-note{font-size:12.5px;color:#6b6459;margin:10px 0;font-family:'Noto Sans KR',sans-serif}
+.itemedit-row{display:flex;gap:6px;align-items:center;margin:6px 0;font-family:'Noto Sans KR',sans-serif}
+.itemedit-row .no{width:26px;font-size:12px;color:#6b6459;text-align:right}
+.itemedit-row input{flex:1;padding:8px;border:1px solid var(--line);border-radius:7px;font-size:13px}
+
+.toast{position:fixed;left:50%;bottom:110px;transform:translateX(-50%);background:var(--ink);color:#fff;
+  padding:10px 18px;border-radius:24px;font-size:13.5px;z-index:200;opacity:0;transition:opacity .25s;pointer-events:none;
+  font-family:'Noto Sans KR',sans-serif;white-space:nowrap}
+.toast.on{opacity:1}
+
+@media (max-width:480px){
+  .cover-title{font-size:36px}
+  .tbl td.iname{font-size:11.5px}
+  td.score{width:34px;font-size:15px}
+  .bar-row .bv{width:70px}
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════════ 표지 / 로그인 ═══════════ -->
+<div class="page on" id="page-cover">
+  <div class="brandbar">
+    <svg class="mark" viewBox="0 0 24 24" aria-hidden="true">
+      <g fill="#1c1a17">
+        <ellipse cx="12" cy="5.4" rx="2.6" ry="3.4"/>
+        <ellipse cx="18.3" cy="10" rx="2.6" ry="3.4" transform="rotate(72 18.3 10)"/>
+        <ellipse cx="15.9" cy="17.4" rx="2.6" ry="3.4" transform="rotate(144 15.9 17.4)"/>
+        <ellipse cx="8.1" cy="17.4" rx="2.6" ry="3.4" transform="rotate(216 8.1 17.4)"/>
+        <ellipse cx="5.7" cy="10" rx="2.6" ry="3.4" transform="rotate(288 5.7 10)"/>
+      </g>
+    </svg>
+    <span class="bname">꽃, 밥에피다</span>
+  </div>
+  <div class="cover-inner">
+    <div class="cover-title">옹기뜸골</div>
+    <div class="cover-sub">전통장 20가지 테이스팅</div>
+    <div class="cover-date">2026.09.06(일) 18:30</div>
+
+    <div class="notice-banner" id="netBanner"></div>
+
+    <div class="login-box" id="loginBox">
+      <label for="inName">참석자 이름</label>
+      <input id="inName" type="text" placeholder="이름을 입력해 주세요" autocomplete="name" maxlength="20">
+      <label for="inPhone">전화번호</label>
+      <input id="inPhone" type="tel" placeholder="010-0000-0000" autocomplete="tel" maxlength="13" inputmode="numeric">
+      <div class="hint">전화번호는 결과 안내 용도로만 사용되며, 다른 참석자에게 공개되지 않습니다. 같은 번호로 다시 접속하면 작성하던 설문을 이어서 할 수 있어요.</div>
+      <div class="errmsg" id="loginErr"></div>
+      <button class="btn-main" id="btnStart">테이스팅 시작하기</button>
+      <button class="admin-link" id="btnAdminLink">관리자 로그인</button>
+      <div class="adminbox" id="adminBox">
+        <label for="admId">관리자 아이디</label>
+        <input id="admId" type="text" autocomplete="off">
+        <label for="admPw">비밀번호</label>
+        <input id="admPw" type="password" autocomplete="off">
+        <div class="errmsg" id="admErr"></div>
+        <button class="btn-main" id="btnAdmLogin">관리자로 로그인</button>
+      </div>
+    </div>
+  </div>
+  <div class="cover-foot">꽃, 밥에피다 북촌 그로서란트</div>
+</div>
+
+<!-- ═══════════ 설문 1~3 페이지 (JS 렌더) ═══════════ -->
+<div class="page" id="page-s1"><div class="wrap" id="sheet1"></div></div>
+<div class="page" id="page-s2"><div class="wrap" id="sheet2"></div></div>
+<div class="page" id="page-s3"><div class="wrap" id="sheet3"></div></div>
+
+<!-- ═══════════ 결과 페이지 ═══════════ -->
+<div class="page" id="page-result">
+  <div class="brandbar">
+    <svg class="mark" viewBox="0 0 24 24" aria-hidden="true">
+      <g fill="#1c1a17">
+        <ellipse cx="12" cy="5.4" rx="2.6" ry="3.4"/>
+        <ellipse cx="18.3" cy="10" rx="2.6" ry="3.4" transform="rotate(72 18.3 10)"/>
+        <ellipse cx="15.9" cy="17.4" rx="2.6" ry="3.4" transform="rotate(144 15.9 17.4)"/>
+        <ellipse cx="8.1" cy="17.4" rx="2.6" ry="3.4" transform="rotate(216 8.1 17.4)"/>
+        <ellipse cx="5.7" cy="10" rx="2.6" ry="3.4" transform="rotate(288 5.7 10)"/>
+      </g>
+    </svg>
+    <span class="bname">꽃, 밥에피다</span>
+  </div>
+  <div class="wrap">
+    <div class="res-head">
+      <h2>테이스팅 결과</h2>
+      <div><span class="res-live"><span class="dot"></span><span id="liveCnt">실시간 집계 중</span></span></div>
+      <div class="res-mename" id="resMeName"></div>
+      <div class="share-row" id="shareRow">
+        <button class="kakao" id="btnShare">📎 결과 링크 공유 (카톡)</button>
+        <button id="btnCopy">링크 복사</button>
+      </div>
+    </div>
+    <div id="resBody"></div>
+    <div class="res-cnt-note" id="resNote"></div>
+  </div>
+</div>
+
+<!-- ═══════════ 관리자 페이지 ═══════════ -->
+<div class="page" id="page-admin">
+  <div class="wrap">
+    <div class="adm-head">
+      <h2>관리자</h2>
+      <div class="adm-actions">
+        <button id="btnAdmResult">전체 결과 보기</button>
+        <button id="btnAdmCsv">CSV 다운로드</button>
+        <button id="btnAdmItems">항목명 수정</button>
+        <button id="btnAdmLogout">로그아웃</button>
+      </div>
+    </div>
+    <div class="adm-note">참석자별 진행률과 결과 링크입니다. 결과 링크를 복사해 문자·카톡으로 보내면, 받는 사람은 자기 결과가 강조된 결과 화면을 보게 됩니다.</div>
+    <div style="overflow-x:auto"><table class="adm-tbl">
+      <thead><tr><th>이름</th><th>전화번호</th><th>진행</th><th>결과 링크</th><th>관리</th></tr></thead>
+      <tbody id="admRows"></tbody>
+    </table></div>
+    <div id="admItemEdit" style="display:none;margin-top:22px">
+      <h3 style="font-size:16px;font-weight:800;margin-bottom:6px">장 항목명 수정</h3>
+      <div class="adm-note">수정 후 저장하면 모든 참석자 화면에 바로 반영됩니다.</div>
+      <div id="itemEditRows"></div>
+      <button class="btn-main" id="btnItemsSave" style="max-width:340px">항목명 저장</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ 하단 내비 ═══════════ -->
+<div class="navbar" id="navbar" style="display:none">
+  <div class="nv" style="position:relative">
+    <span class="save-state" id="saveState"></span>
+    <button class="prev" id="btnPrev">이전</button>
+    <button class="next" id="btnNext">다음</button>
+  </div>
+  <div style="padding-bottom:6px">
+    <div class="pagedots" id="pageDots"></div>
+    <div class="progress-line" id="progLine"></div>
+  </div>
+</div>
+
+<!-- 점수 선택 시트 -->
+<div class="dim" id="dim"></div>
+<div class="picker" id="picker">
+  <div class="pk-title" id="pkTitle">짠맛</div>
+  <div class="pk-item" id="pkItem"></div>
+  <div class="pk-btns" id="pkBtns">
+    <button data-v="1">1</button><button data-v="2">2</button><button data-v="3">3</button><button data-v="4">4</button><button data-v="5">5</button>
+  </div>
+  <button class="pk-clear" id="pkClear">선택 지우기</button>
+</div>
+
+<!-- 코멘트 모달 -->
+<div class="modal" id="cmtModal">
+  <div class="mbox">
+    <h3>한줄 코멘트</h3>
+    <div class="mi" id="cmtItemName"></div>
+    <textarea id="cmtText" placeholder="맛에 대한 느낌을 자유롭게 적어주세요" maxlength="200"></textarea>
+    <div class="mrow">
+      <button id="cmtCancel">취소</button>
+      <button class="ok" id="cmtSave">저장</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+<script>
+/* ═══════════════ 기본 데이터 ═══════════════ */
+const ATTRS = [["c","색"],["s","짠맛"],["b","바디감"],["u","감칠맛"],["w","단맛"]];
+const DEFAULT_ITEMS = {
+  1:"1년 숙성 양장 청장 (백태, 천일염)",
+  2:"1년 숙성 양장 청장 (백태, 죽염)",
+  3:"1년 숙성 양장 청장 (백태, 용융소금)",
+  4:"1년 숙성 양장 청장 (백태, 자염)",
+  5:"1년 숙성 양장 청장 (흑산콩, 천일염)",
+  6:"2년 숙성 음장 (백태, 천일염) [실내발효]",
+  7:"3년 숙성 양장 중장 (백태, 천일염)",
+  8:"3년 숙성 양장 중장 (백태, 죽염)",
+  9:"3년 숙성 양장 중장 (백태, 용융소금)",
+  10:"4년 숙성 양장 대나무간장 (백태, 천일염)",
+  11:"20년 숙성 양장 씨간장 (백태, 천일염)",
+  12:"20년 숙성 음장 (백태, 천일염) [실내발효]",
+  13:"12년 숙성 양장 진장 (백태, 용융소금)",
+  14:"10년 숙성 양장 진장 (백태, 천일염)",
+  15:"3년 숙성 양장 통일간장 (백태, 35곳 된장 블렌딩)",
+  16:"1년 숙성 양장 통일간장 (백태, 15곳 된장 블렌딩)",
+  17:"용융소금 된장",
+  18:"통일된장",
+  19:"밀막장 - 밀로 만든 가볍고 산뜻한 쌈장용도의 막장",
+  20:"어육장 - 간장에 생선·육류를 넣어 감칠맛 강화"
+};
+const GROUPS = [
+  {key:"cheong", name:"청장", sub:"숙성 0~3년, 맑고 가벼운 맛", cnt:"6종", items:[1,2,3,4,5,6], page:1, col:"청장 종류"},
+  {key:"jung",   name:"중장", sub:"숙성 3~5년",                cnt:"4종", items:[7,8,9,10], page:2, col:"중장 종류"},
+  {key:"jin",    name:"진장", sub:"숙성 10년 이상",            cnt:"4종", items:[11,12,13,14], page:2, col:"진장 종류"},
+  {key:"tongil", name:"통일간장", sub:"",                      cnt:"2종", items:[15,16], page:3, col:"통일간장 종류"},
+  {key:"jangryu",name:"장류", sub:"된장·막장·어육장 계열",      cnt:"4종", items:[17,18,19,20], page:3, col:"장류 종류"}
+];
+const PAGE_TITLES = [
+  null,
+  {t:"청장", s:"숙성 0~3년, 맑고 가벼운 맛 [6종]", d:"아래 6종을 시음하시고, 1~5점으로 맛을 평가해 주세요"},
+  {t:"중장·진장", s:"중장 3~5년 [4종] / 진장 10년 이상 [4종]", d:"아래 8종을 시음하시고, 1~5점으로 맛을 평가해 주세요"},
+  {t:"통일간장·장류", s:"통일간장 [2종] / 장류 (된장·막장·어육장 계열) [4종]", d:"아래 6종을 시음하시고, 1~5점으로 맛을 평가해 주세요"}
+];
+const SERIES_COLORS = ["#8a6f4d","#b0402f","#4d6b4d","#3e5a78","#9a7bb0","#c2913a"];
+const ADMIN_ID = "goodbab", ADMIN_PW = "goodbab0801";
+const ADMIN_EMAIL = "goodbab@jang-tasting.app";
+const FIREBASE_CONFIG = {
+  apiKey: "AIzaSyCIvN2Y1a9ByNmz4UpgdmaTFrd5SAYZZGY",
+  authDomain: "trip-84bd3.firebaseapp.com",
+  projectId: "trip-84bd3",
+  storageBucket: "trip-84bd3.firebasestorage.app",
+  messagingSenderId: "830387988854",
+  appId: "1:830387988854:web:85d1c46b3f4f374214b257"
+};
+const COL = { resp:"jangApp_responses", phone:"jangApp_phones", meta:"jangApp_meta" };
+
+/* ═══════════════ 전역 상태 ═══════════════ */
+const DEMO = location.protocol === "file:" || /[?&]demo/.test(location.search);
+let ITEMS = {...DEFAULT_ITEMS};
+let me = null;                 // {pid, name, phone}
+let myResp = {scores:{}, comments:{}};
+let allResp = {};              // pid -> {name, scores, comments}
+let isAdmin = false;
+let viewPid = null;            // ?r= 결과보기 대상
+let curPage = 0;               // 0 cover, 1~3 survey, 4 result
+let unsubAll = null;
+const $ = id => document.getElementById(id);
+
+/* ═══════════════ 유틸 ═══════════════ */
+function toast(msg){ const t=$("toast"); t.textContent=msg; t.classList.add("on"); clearTimeout(t._tm); t._tm=setTimeout(()=>t.classList.remove("on"),1900); }
+function esc(s){ return String(s??"").replace(/[&<>"']/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
+function normPhone(p){ return String(p||"").replace(/\D/g,""); }
+function fmtPhone(d){ d=normPhone(d); if(d.length===11) return d.slice(0,3)+"-"+d.slice(3,7)+"-"+d.slice(7); if(d.length===10) return d.slice(0,3)+"-"+d.slice(3,6)+"-"+d.slice(6); return d; }
+async function phonePid(phone){
+  const s = "jang2026|" + normPhone(phone);
+  try{
+    const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(s));
+    return [...new Uint8Array(buf)].map(b=>b.toString(16).padStart(2,"0")).join("").slice(0,20);
+  }catch(e){ // 비보안 컨텍스트 대비 단순 해시
+    let h1=5381,h2=52711;
+    for(let i=0;i<s.length;i++){ const c=s.charCodeAt(i); h1=(h1*33+c)>>>0; h2=(h2*31+c)>>>0; }
+    return (h1.toString(16)+h2.toString(16)+normPhone(phone).split("").reverse().join("")).slice(0,20);
+  }
+}
+function itemName(no){ return ITEMS[no] || DEFAULT_ITEMS[no] || ("장 "+no); }
+function itemShort(no){ const n=itemName(no); return n.length>14 ? n.slice(0,14)+"…" : n; }
+function scoreOf(resp,no,a){ const v=resp?.scores?.[no]?.[a]; return (typeof v==="number"&&v>=1&&v<=5)?v:null; }
+function myProgress(resp){
+  let f=0; for(const g of GROUPS) for(const no of g.items) for(const [a] of ATTRS) if(scoreOf(resp,no,a)) f++;
+  return {filled:f, total:100, pct:Math.round(f/100*100)};
+}
+
+/* ═══════════════ 데이터 계층 (Firebase / 데모) ═══════════════ */
+let db=null, auth=null;
+const store = {
+  async init(){
+    if(DEMO){ demoSeed(); return; }
+    firebase.initializeApp(FIREBASE_CONFIG);
+    auth = firebase.auth(); db = firebase.firestore();
+    try{ await auth.signInAnonymously(); }
+    catch(e){
+      const b=$("netBanner");
+      b.innerHTML = "접속 준비 중 문제가 발생했습니다.<br>관리자에게 알려주세요. ("+esc(e.code||e.message)+")";
+      if(e.code==="auth/operation-not-allowed" || e.code==="auth/admin-restricted-operation")
+        b.innerHTML = "Firebase 콘솔에서 <b>익명 로그인</b>이 아직 켜져 있지 않습니다.<br>Authentication → Sign-in method → 익명 → 사용 설정을 켜주세요.";
+      b.classList.add("on");
+      throw e;
+    }
+    // 항목명 오버라이드
+    try{
+      const m = await db.collection(COL.meta).doc("config").get();
+      if(m.exists && m.data().items) ITEMS = {...DEFAULT_ITEMS, ...m.data().items};
+    }catch(e){}
+  },
+  async loadResponse(pid){
+    if(DEMO) return demoDB.resp[pid] || null;
+    const d = await db.collection(COL.resp).doc(pid).get();
+    return d.exists ? d.data() : null;
+  },
+  async saveResponse(pid, partial){
+    if(DEMO){
+      demoDB.resp[pid] = deepMerge(demoDB.resp[pid]||{}, partial);
+      demoNotify(); return;
+    }
+    await db.collection(COL.resp).doc(pid).set({...partial, updatedAt: firebase.firestore.FieldValue.serverTimestamp()}, {merge:true});
+  },
+  async deleteField(pid, path){ // path e.g. "scores.3.c"
+    if(DEMO){
+      const seg=path.split("."); let o=demoDB.resp[pid]; for(let i=0;i<seg.length-1&&o;i++) o=o[seg[i]];
+      if(o) delete o[seg[seg.length-1]]; demoNotify(); return;
+    }
+    await db.collection(COL.resp).doc(pid).update({[path]: firebase.firestore.FieldValue.delete()});
+  },
+  async savePhone(pid, name, phone){
+    if(DEMO){ demoDB.phone[pid]={name,phone}; return; }
+    await db.collection(COL.phone).doc(pid).set({name, phone, updatedAt: firebase.firestore.FieldValue.serverTimestamp()}, {merge:true});
+  },
+  listenAll(cb){
+    if(DEMO){ demoDB.listeners.push(cb); cb({...demoDB.resp}); return ()=>{demoDB.listeners=demoDB.listeners.filter(f=>f!==cb);}; }
+    return db.collection(COL.resp).onSnapshot(qs=>{
+      const m={}; qs.forEach(d=>{ m[d.id]=d.data(); }); cb(m);
+    }, err=>{ toast("실시간 연결 오류: "+(err.code||"")); });
+  },
+  async adminLogin(){
+    if(DEMO) return true;
+    try{ await auth.signInWithEmailAndPassword(ADMIN_EMAIL, ADMIN_PW+"jang"); return true; }
+    catch(e){
+      if(e.code==="auth/user-not-found"){
+        try{ await auth.createUserWithEmailAndPassword(ADMIN_EMAIL, ADMIN_PW+"jang"); return true; }
+        catch(e2){ throw e2; }
+      }
+      if(e.code==="auth/invalid-credential" || e.code==="auth/wrong-password"){
+        // 최초 1회: 계정이 아직 없어서 invalid-credential이 뜨는 경우 생성 시도
+        try{ await auth.createUserWithEmailAndPassword(ADMIN_EMAIL, ADMIN_PW+"jang"); return true; }
+        catch(e2){ if(e2.code==="auth/email-already-in-use") throw e; throw e2; }
+      }
+      throw e;
+    }
+  },
+  async adminLogout(){ if(DEMO) return; await auth.signOut(); await auth.signInAnonymously().catch(()=>{}); },
+  async getPhones(){
+    if(DEMO) return {...demoDB.phone};
+    const qs = await db.collection(COL.phone).get();
+    const m={}; qs.forEach(d=>m[d.id]=d.data()); return m;
+  },
+  async deleteParticipant(pid){
+    if(DEMO){ delete demoDB.resp[pid]; delete demoDB.phone[pid]; demoNotify(); return; }
+    await db.collection(COL.resp).doc(pid).delete();
+    await db.collection(COL.phone).doc(pid).delete().catch(()=>{});
+  },
+  async saveItems(items){
+    if(DEMO){ ITEMS={...DEFAULT_ITEMS,...items}; return; }
+    await db.collection(COL.meta).doc("config").set({items}, {merge:true});
+  }
+};
+function deepMerge(t,s){ for(const k in s){ if(s[k]&&typeof s[k]==="object"&&!Array.isArray(s[k])){ t[k]=deepMerge(t[k]&&typeof t[k]==="object"?t[k]:{}, s[k]); } else t[k]=s[k]; } return t; }
+
+/* 데모 모드(파일로 직접 열었을 때 미리보기·테스트용) */
+const demoDB = {resp:{}, phone:{}, listeners:[]};
+function demoNotify(){ demoDB.listeners.forEach(f=>f({...demoDB.resp})); }
+function demoSeed(){
+  const names=["김수현","박지은","이도윤"];
+  names.forEach((nm,i)=>{
+    const pid="demo"+i, scores={}, comments={};
+    for(const g of GROUPS) for(const no of g.items){
+      scores[no]={}; for(const [a] of ATTRS) scores[no][a]=1+Math.floor(Math.random()*5);
+    }
+    comments[1+i*3]="구수하고 깊은 맛이에요"; comments[11]="확실히 진하고 묵직합니다";
+    demoDB.resp[pid]={name:nm, scores, comments};
+    demoDB.phone[pid]={name:nm, phone:"010-1234-000"+i};
+  });
+}
+</script>
+<script>
+/* ═══════════════ 오각형 레이더 차트 (SVG) ═══════════════ */
+function radarSVG(series, opts={}){
+  const size = opts.size||300, cx=size/2, cy=size/2+8, R=size/2-46;
+  const N=5, labels=ATTRS.map(a=>a[1]);
+  const pt=(i,r)=>{ const ang=-Math.PI/2 + i*2*Math.PI/N; return [cx+r*Math.cos(ang), cy+r*Math.sin(ang)]; };
+  let s=`<svg viewBox="0 0 ${size} ${size}" style="width:100%;height:auto;display:block">`;
+  for(let lv=1; lv<=5; lv++){
+    const pts=[...Array(N)].map((_,i)=>pt(i,R*lv/5).join(",")).join(" ");
+    s+=`<polygon points="${pts}" fill="none" stroke="#d8d2c6" stroke-width="1"/>`;
+  }
+  for(let i=0;i<N;i++){ const [x,y]=pt(i,R); s+=`<line x1="${cx}" y1="${cy}" x2="${x}" y2="${y}" stroke="#e4dfd4" stroke-width="1"/>`; }
+  for(let lv=0; lv<=5; lv++){ const [x,y]=pt(0,R*lv/5); s+=`<text x="${x-4}" y="${y-3}" font-size="9" fill="#8a8378" text-anchor="end" font-family="Noto Sans KR">${lv}</text>`; }
+  for(let i=0;i<N;i++){
+    const [x,y]=pt(i,R+20);
+    const anch = Math.abs(x-cx)<10 ? "middle" : (x>cx?"start":"end");
+    s+=`<text x="${x}" y="${y+4}" font-size="12" font-weight="700" fill="#1c1a17" text-anchor="${anch}" font-family="Nanum Myeongjo">${labels[i]}</text>`;
+  }
+  for(const sr of series){
+    if(sr.hidden) continue;
+    const has = sr.values.some(v=>v!=null);
+    if(!has) continue;
+    const pts=sr.values.map((v,i)=>pt(i, R*Math.max(0,Math.min(5,v??0))/5));
+    const ptsStr=pts.map(p=>p.join(",")).join(" ");
+    s+=`<polygon points="${ptsStr}" fill="${sr.color}" fill-opacity="0.06" stroke="${sr.color}" stroke-width="2" ${sr.dash?'stroke-dasharray="5,4"':''} stroke-linejoin="round"/>`;
+    pts.forEach(p=>{ s+=`<circle cx="${p[0]}" cy="${p[1]}" r="2.6" fill="${sr.color}"/>`; });
+  }
+  s+="</svg>";
+  return s;
+}
+function legendHTML(series, chartId){
+  return `<div class="legend">`+series.map((sr,i)=>
+    `<span class="lg ${sr.hidden?'off':''}" data-chart="${chartId}" data-idx="${i}"><i style="background:${sr.color}"></i>${esc(sr.label)}</span>`
+  ).join("")+`</div>`;
+}
+const chartState = {}; // chartId -> {series 생성함수 재호출용 hidden set}
+
+/* ═══════════════ 설문 페이지 렌더 ═══════════════ */
+function renderSurveyPage(p){
+  const host=$("sheet"+p); const info=PAGE_TITLES[p];
+  const groups=GROUPS.filter(g=>g.page===p);
+  let h=`<div class="sheet-head">
+    <div class="sheet-title">${esc(info.t)} <small>- ${esc(info.s)}</small></div>
+    <div class="sheet-desc">${esc(info.d)} · 칸을 누르면 점수를 고를 수 있어요</div>
+  </div>`;
+  for(const g of groups){
+    if(groups.length>1) h+=`<div class="group-sub">${esc(g.name)} ${g.sub?("- "+esc(g.sub)):""} [${g.cnt}]</div>`;
+    h+=`<div style="overflow-x:auto"><table class="tbl"><thead><tr>
+      <th style="width:30px">번호</th><th>${esc(g.col)}</th>`;
+    for(const [,label] of ATTRS) h+=`<th style="width:40px">${label}</th>`;
+    h+=`<th style="width:64px">한줄 코멘트</th></tr></thead><tbody>`;
+    for(const no of g.items){
+      h+=`<tr><td class="no">${no}</td><td class="iname">${esc(itemName(no)).replace(/\[실내발효\]/,'<span class="tag">실내발효</span>')}</td>`;
+      for(const [a] of ATTRS){
+        const v=scoreOf(myResp,no,a);
+        h+=`<td class="score ${v?'filled':''}" data-no="${no}" data-attr="${a}">${v??"·"}</td>`;
+      }
+      const c=myResp.comments?.[no];
+      h+=`<td class="cmt ${c?'filled':''}" data-no="${no}">${c?`<span class="cmt-preview">${esc(c)}</span>`:`<span class="cmt-ic">✎ 입력</span>`}</td></tr>`;
+    }
+    h+=`</tbody></table></div>`;
+  }
+  h+=`<div class="chart-note">채점하면 아래에 나만의 맛 그래프가 자동으로 그려집니다</div><div class="charts-row">`;
+  for(const g of groups) h+=`<div class="chart-card" id="chart-${g.key}"></div>`;
+  h+=`</div>`;
+  host.innerHTML=h;
+  for(const g of groups) renderGroupChart(g);
+}
+function renderGroupChart(g){
+  const el=$("chart-"+g.key); if(!el) return;
+  const st = chartState[g.key] ||= {hidden:new Set()};
+  const series = g.items.map((no,i)=>({
+    label:"⑴⑵⑶⑷⑸⑹⑺⑻⑼⑽⑾⑿⒀⒁⒂⒃⒄⒅⒆⒇"[no-1]+" "+itemShort(no).replace(/\s*\(.*$/,""),
+    color:SERIES_COLORS[i%SERIES_COLORS.length],
+    values:ATTRS.map(([a])=>scoreOf(myResp,no,a)),
+    hidden:st.hidden.has(no), _no:no
+  }));
+  el.innerHTML = `<h4>${esc(g.name)} ${g.cnt}</h4>` + radarSVG(series,{size:300}) + legendHTML(series, g.key);
+  el.querySelectorAll(".lg").forEach(lg=>{
+    lg.onclick=()=>{
+      const no=series[+lg.dataset.idx]._no;
+      st.hidden.has(no)?st.hidden.delete(no):st.hidden.add(no);
+      renderGroupChart(g);
+    };
+  });
+}
+
+/* ═══════════════ 점수 선택 / 코멘트 ═══════════════ */
+let pk={no:null, attr:null};
+function openPicker(no, attr){
+  pk={no,attr};
+  const label=ATTRS.find(a=>a[0]===attr)[1];
+  $("pkTitle").textContent=label+" 점수";
+  $("pkItem").textContent=no+"번 · "+itemName(no);
+  const cur=scoreOf(myResp,no,attr);
+  $("pkBtns").querySelectorAll("button").forEach(b=>b.classList.toggle("sel",+b.dataset.v===cur));
+  $("dim").classList.add("on"); $("picker").classList.add("on");
+}
+function closePicker(){ $("dim").classList.remove("on"); $("picker").classList.remove("on"); }
+async function setScore(no, attr, v){
+  myResp.scores[no] ||= {};
+  if(v==null){ delete myResp.scores[no][attr]; } else myResp.scores[no][attr]=v;
+  refreshAfterInput(no);
+  saveIndicator("saving");
+  try{
+    if(v==null) await store.deleteField(me.pid, `scores.${no}.${attr}`);
+    else await store.saveResponse(me.pid, {scores:{[no]:{[attr]:v}}});
+    saveIndicator("saved");
+  }catch(e){ saveIndicator("err"); toast("저장 실패 - 네트워크를 확인해 주세요"); }
+}
+let cmtNo=null;
+function openCmt(no){
+  cmtNo=no;
+  $("cmtItemName").textContent=no+"번 · "+itemName(no);
+  $("cmtText").value=myResp.comments?.[no]||"";
+  $("cmtModal").classList.add("on");
+  setTimeout(()=>$("cmtText").focus(),80);
+}
+async function saveCmt(){
+  const v=$("cmtText").value.trim();
+  myResp.comments ||= {};
+  if(v) myResp.comments[cmtNo]=v; else delete myResp.comments[cmtNo];
+  $("cmtModal").classList.remove("on");
+  refreshAfterInput(cmtNo);
+  saveIndicator("saving");
+  try{
+    if(v) await store.saveResponse(me.pid,{comments:{[cmtNo]:v}});
+    else await store.deleteField(me.pid, `comments.${cmtNo}`);
+    saveIndicator("saved");
+  }catch(e){ saveIndicator("err"); toast("저장 실패 - 네트워크를 확인해 주세요"); }
+}
+function refreshAfterInput(no){
+  const p=GROUPS.find(g=>g.items.includes(+no)).page;
+  renderSurveyPage(p);
+  updateProgressLine();
+}
+function saveIndicator(st){
+  const el=$("saveState");
+  el.textContent = st==="saving"?"저장 중…" : st==="saved"?"✓ 저장됨" : "저장 실패";
+  el.style.color = st==="err" ? "var(--red)" : "#8a8378";
+  if(st==="saved"){ clearTimeout(el._tm); el._tm=setTimeout(()=>el.textContent="",1600); }
+}
+
+/* ═══════════════ 페이지 이동 ═══════════════ */
+const PAGE_IDS=["page-cover","page-s1","page-s2","page-s3","page-result"];
+function go(p){
+  curPage=p;
+  PAGE_IDS.forEach((id,i)=>$(id).classList.toggle("on", i===p));
+  $("page-admin").classList.remove("on");
+  $("navbar").style.display = (p>=1 && me) ? "block" : "none";
+  if(p>=1&&p<=3) renderSurveyPage(p);
+  if(p===4) renderResults();
+  updateNav(); updateProgressLine();
+  window.scrollTo(0,0);
+  if(p===4) startListen(); else if(!isAdmin) stopListen();
+}
+function updateNav(){
+  const prev=$("btnPrev"), next=$("btnNext");
+  prev.style.display = curPage<=1 ? "none":"block";
+  if(curPage===4){ prev.style.display="block"; prev.textContent="설문 수정"; next.style.display="none"; }
+  else{ prev.textContent="이전"; next.style.display="block"; next.textContent = curPage===3 ? "결과 보기" : "다음"; }
+  $("pageDots").innerHTML=[1,2,3,4].map(i=>`<i class="${i===curPage?'on':''}"></i>`).join("");
+}
+function updateProgressLine(){
+  if(!me){ $("progLine").textContent=""; return; }
+  const pr=myProgress(myResp);
+  $("progLine").textContent = `채점 ${pr.filled}/${pr.total} (${pr.pct}%)`;
+}
+
+/* ═══════════════ 결과 페이지 ═══════════════ */
+function startListen(){ if(unsubAll) return; unsubAll = store.listenAll(m=>{ allResp=m; if(curPage===4) renderResults(); if($("page-admin").classList.contains("on")) renderAdmin(); }); }
+function stopListen(){ if(unsubAll){ unsubAll(); unsubAll=null; } }
+
+function agg(no, a){
+  const vals=[];
+  for(const pid in allResp){ const v=scoreOf(allResp[pid],no,a); if(v) vals.push(v); }
+  return vals.length? {avg: vals.reduce((x,y)=>x+y,0)/vals.length, n:vals.length} : null;
+}
+function renderResults(){
+  const mePid = viewPid || me?.pid;
+  const meResp = mePid ? (allResp[mePid] || (mePid===me?.pid?myResp:null)) : null;
+  const meName = meResp?.name || me?.name || "";
+  const n=Object.keys(allResp).length;
+  $("liveCnt").textContent = `실시간 집계 중 · ${n}명 참여`;
+  $("resMeName").innerHTML = meName? `<b style="color:var(--red)">●</b> 빨간 표시가 <b>${esc(meName)}</b>님의 점수입니다` : "";
+  const body=$("resBody");
+  if(!n){ body.innerHTML=`<div style="text-align:center;padding:60px 0;color:#8a8378">아직 제출된 설문이 없습니다</div>`; $("resNote").textContent=""; return; }
+
+  let h="";
+  for(const g of GROUPS){
+    h+=`<div class="res-group"><h3>${esc(g.name)} <small style="font-size:13px;font-weight:400">${g.sub?esc(g.sub)+" · ":""}${g.cnt}</small></h3><div class="rg-sub"></div>`;
+    // 항목별 1위
+    const bests=[];
+    for(const [a,label] of ATTRS){
+      let best=null;
+      for(const no of g.items){ const r=agg(no,a); if(r&&(!best||r.avg>best.avg)) best={no,avg:r.avg}; }
+      if(best) bests.push(`<span>${label} 1위 <b>${best.no}번</b> ${best.avg.toFixed(1)}점</span>`);
+    }
+    if(bests.length) h+=`<div class="best-strip">${bests.join("")}</div>`;
+    // 그룹 레이더 (전체 평균)
+    const rSeries=g.items.map((no,i)=>({
+      label:no+"번", color:SERIES_COLORS[i%SERIES_COLORS.length],
+      values:ATTRS.map(([a])=>{const r=agg(no,a); return r?+r.avg.toFixed(2):null;})
+    }));
+    h+=`<div class="radar-pair"><div class="chart-card"><h4>${esc(g.name)} 전체 평균</h4>${radarSVG(rSeries,{size:300})}${legendHTML(rSeries,"res-"+g.key)}</div></div>`;
+    // 항목 카드
+    for(const no of g.items){
+      h+=`<div class="res-item"><div class="ri-name"><span class="no">${no}</span>${esc(itemName(no))}</div><div class="bars">`;
+      for(const [a,label] of ATTRS){
+        const r=agg(no,a); const mv=meResp?scoreOf(meResp,no,a):null;
+        const avgPct=r? r.avg/5*100 : 0;
+        h+=`<div class="bar-row"><span class="bl">${label}</span><span class="bar-track">
+          <span class="bar-fill" style="width:${avgPct}%"></span>
+          ${mv?`<span class="bar-me" style="left:${mv/5*100}%"></span>`:""}
+        </span><span class="bv">평균 ${r?r.avg.toFixed(1):"-"}${mv?` · <b>나 ${mv}</b>`:""}</span></div>`;
+      }
+      h+=`</div>`;
+      // 코멘트
+      const cl=[];
+      for(const pid in allResp){
+        const c=allResp[pid].comments?.[no];
+        if(c) cl.push({name:allResp[pid].name||"익명", c, mine:pid===mePid});
+      }
+      if(cl.length){
+        cl.sort((x,y)=>(y.mine?1:0)-(x.mine?1:0));
+        h+=`<div class="ri-cmts">`+cl.map(o=>`<div class="cline ${o.mine?'mine':''}"><b>${esc(o.name)}</b>${esc(o.c)}</div>`).join("")+`</div>`;
+      }
+      h+=`</div>`;
+    }
+    h+=`</div>`;
+  }
+  body.innerHTML=h;
+  $("resNote").textContent=`${n}명의 평가를 실시간으로 집계한 결과입니다`;
+}
+
+/* ═══════════════ 공유 ═══════════════ */
+function myResultUrl(){
+  const base=location.origin+location.pathname;
+  const pid=viewPid||me?.pid;
+  return pid? base+"?r="+pid : base;
+}
+async function shareResult(){
+  const url=myResultUrl();
+  const name=me?.name||allResp[viewPid]?.name||"";
+  const text=`[옹기뜸골 전통장 20가지 테이스팅]\n${name?name+"님의 ":""}테이스팅 결과와 전체 집계를 확인해 보세요`;
+  if(navigator.share){
+    try{ await navigator.share({title:"전통장 테이스팅 결과", text, url}); return; }catch(e){ if(e.name==="AbortError") return; }
+  }
+  copyLink();
+}
+async function copyLink(){
+  const url=myResultUrl();
+  try{ await navigator.clipboard.writeText(url); toast("링크가 복사되었습니다. 카톡에 붙여넣어 보내세요!"); }
+  catch(e){ prompt("아래 링크를 길게 눌러 복사하세요", url); }
+}
+
+/* ═══════════════ 관리자 ═══════════════ */
+let admPhones={};
+async function enterAdmin(){
+  isAdmin=true;
+  PAGE_IDS.forEach(id=>$(id).classList.remove("on"));
+  $("page-admin").classList.add("on");
+  $("navbar").style.display="none";
+  startListen();
+  try{ admPhones=await store.getPhones(); }catch(e){ admPhones={}; toast("전화번호 목록을 불러오지 못했습니다 (규칙 확인)"); }
+  renderAdmin();
+}
+function renderAdmin(){
+  const rows=$("admRows"); if(!rows) return;
+  const pids=Object.keys(allResp).sort((a,b)=>(allResp[a].name||"").localeCompare(allResp[b].name||"","ko"));
+  if(!pids.length){ rows.innerHTML=`<tr><td colspan="5" style="padding:24px;color:#8a8378">아직 참석자가 없습니다</td></tr>`; return; }
+  rows.innerHTML=pids.map(pid=>{
+    const r=allResp[pid], pr=myProgress(r);
+    const ph=admPhones[pid]?.phone||"-";
+    const url=location.origin+location.pathname+"?r="+pid;
+    return `<tr><td class="l">${esc(r.name||"-")}</td><td>${esc(ph)}</td><td>${pr.pct}%</td>
+      <td><button data-cp="${url}">링크 복사</button> <button data-open="${pid}">보기</button></td>
+      <td><button class="danger" data-del="${pid}">삭제</button></td></tr>`;
+  }).join("");
+  rows.querySelectorAll("[data-cp]").forEach(b=>b.onclick=async()=>{ try{await navigator.clipboard.writeText(b.dataset.cp); toast("결과 링크 복사됨");}catch(e){prompt("복사하세요",b.dataset.cp);} });
+  rows.querySelectorAll("[data-open]").forEach(b=>b.onclick=()=>{ viewPid=b.dataset.open; PAGE_IDS.forEach(id=>$(id).classList.remove("on")); $("page-admin").classList.remove("on"); $("page-result").classList.add("on"); curPage=4; renderResults(); $("navbar").style.display="none"; addAdminBack(); });
+  rows.querySelectorAll("[data-del]").forEach(b=>b.onclick=async()=>{
+    const nm=allResp[b.dataset.del]?.name||"";
+    if(!confirm(`'${nm}' 참석자의 설문을 삭제할까요? 되돌릴 수 없습니다.`)) return;
+    try{ await store.deleteParticipant(b.dataset.del); toast("삭제되었습니다"); }catch(e){ toast("삭제 실패: "+(e.code||"")); }
+  });
+}
+function addAdminBack(){
+  if($("admBackBtn")) return;
+  const b=document.createElement("button");
+  b.id="admBackBtn"; b.textContent="← 관리자 화면";
+  b.style.cssText="position:fixed;top:12px;left:12px;z-index:60;padding:8px 14px;border-radius:8px;border:1px solid var(--ink);background:#fff;font-size:13px;font-weight:700;font-family:'Noto Sans KR'";
+  b.onclick=()=>{ viewPid=null; b.remove(); enterAdmin(); };
+  document.body.appendChild(b);
+}
+function renderItemEdit(){
+  const box=$("admItemEdit"), rows=$("itemEditRows");
+  box.style.display = box.style.display==="none" ? "block":"none";
+  if(box.style.display==="none") return;
+  rows.innerHTML=Object.keys(DEFAULT_ITEMS).map(no=>
+    `<div class="itemedit-row"><span class="no">${no}</span><input data-no="${no}" value="${esc(itemName(+no))}"></div>`).join("");
+}
+async function saveItemsEdit(){
+  const items={};
+  $("itemEditRows").querySelectorAll("input").forEach(inp=>{ items[inp.dataset.no]=inp.value.trim()||DEFAULT_ITEMS[inp.dataset.no]; });
+  try{ await store.saveItems(items); ITEMS={...DEFAULT_ITEMS,...items}; toast("항목명이 저장되었습니다"); renderAdmin(); }
+  catch(e){ toast("저장 실패: "+(e.code||"")); }
+}
+function admCsv(){
+  const BOM="﻿";
+  let rows=[["이름","전화번호","번호","장 이름","색","짠맛","바디감","감칠맛","단맛","한줄 코멘트"]];
+  for(const pid of Object.keys(allResp)){
+    const r=allResp[pid], ph=admPhones[pid]?.phone||"";
+    for(const g of GROUPS) for(const no of g.items){
+      rows.push([r.name||"", ph, no, itemName(no),
+        ...ATTRS.map(([a])=>scoreOf(r,no,a)??""), r.comments?.[no]||""]);
+    }
+  }
+  const csv=BOM+rows.map(row=>row.map(c=>`"${String(c).replace(/"/g,'""')}"`).join(",")).join("\r\n");
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv;charset=utf-8"}));
+  a.download="전통장테이스팅_결과.csv"; a.click();
+}
+
+/* ═══════════════ 로그인 / 부팅 ═══════════════ */
+async function doStart(){
+  const name=$("inName").value.trim();
+  const phone=normPhone($("inPhone").value);
+  const err=$("loginErr"); err.classList.remove("on");
+  if(!name){ err.textContent="이름을 입력해 주세요"; err.classList.add("on"); return; }
+  if(!(phone.length===10||phone.length===11)){ err.textContent="전화번호를 정확히 입력해 주세요 (예: 010-1234-5678)"; err.classList.add("on"); return; }
+  $("btnStart").disabled=true; $("btnStart").textContent="확인 중…";
+  try{
+    const pid=await phonePid(phone);
+    me={pid, name, phone:fmtPhone(phone)};
+    const prev=await store.loadResponse(pid);
+    if(prev){ myResp={scores:prev.scores||{}, comments:prev.comments||{}}; if(prev.name && prev.name!==name){} }
+    else myResp={scores:{},comments:{}};
+    await store.saveResponse(pid,{name, createdAt: DEMO?Date.now():firebase.firestore.FieldValue.serverTimestamp()});
+    store.savePhone(pid,name,fmtPhone(phone)).catch(()=>{});
+    try{ localStorage.setItem("jangMe", JSON.stringify(me)); }catch(e){}
+    if(prev && Object.keys(prev.scores||{}).length) toast(name+"님, 작성하던 설문을 이어서 합니다");
+    go(1);
+  }catch(e){
+    err.textContent="시작할 수 없습니다: "+(e.code||e.message); err.classList.add("on");
+  }
+  $("btnStart").disabled=false; $("btnStart").textContent="테이스팅 시작하기";
+}
+async function doAdminLogin(){
+  const id=$("admId").value.trim(), pw=$("admPw").value;
+  const err=$("admErr"); err.classList.remove("on");
+  if(id!==ADMIN_ID || pw!==ADMIN_PW){ err.textContent="아이디 또는 비밀번호가 올바르지 않습니다"; err.classList.add("on"); return; }
+  $("btnAdmLogin").disabled=true;
+  try{ await store.adminLogin(); enterAdmin(); }
+  catch(e){ err.textContent="관리자 인증 실패: "+(e.code||e.message); err.classList.add("on"); }
+  $("btnAdmLogin").disabled=false;
+}
+
+function bindEvents(){
+  $("btnStart").onclick=doStart;
+  $("inPhone").addEventListener("input",e=>{ e.target.value=fmtPhone(e.target.value); });
+  $("btnAdminLink").onclick=()=>$("adminBox").classList.toggle("on");
+  $("btnAdmLogin").onclick=doAdminLogin;
+  $("btnPrev").onclick=()=>go(curPage-1);
+  $("btnNext").onclick=()=>go(curPage+1);
+  document.body.addEventListener("click",e=>{
+    const sc=e.target.closest("td.score"); if(sc){ openPicker(+sc.dataset.no, sc.dataset.attr); return; }
+    const cm=e.target.closest("td.cmt"); if(cm){ openCmt(+cm.dataset.no); return; }
+  });
+  $("dim").onclick=closePicker;
+  $("pkBtns").querySelectorAll("button").forEach(b=>b.onclick=()=>{ setScore(pk.no,pk.attr,+b.dataset.v); closePicker(); });
+  $("pkClear").onclick=()=>{ setScore(pk.no,pk.attr,null); closePicker(); };
+  $("cmtCancel").onclick=()=>$("cmtModal").classList.remove("on");
+  $("cmtSave").onclick=saveCmt;
+  $("btnShare").onclick=shareResult;
+  $("btnCopy").onclick=copyLink;
+  $("btnAdmResult").onclick=()=>{ viewPid=null; PAGE_IDS.forEach(id=>$(id).classList.remove("on")); $("page-admin").classList.remove("on"); $("page-result").classList.add("on"); curPage=4; renderResults(); addAdminBack(); };
+  $("btnAdmCsv").onclick=admCsv;
+  $("btnAdmItems").onclick=renderItemEdit;
+  $("btnItemsSave").onclick=saveItemsEdit;
+  $("btnAdmLogout").onclick=async()=>{ isAdmin=false; await store.adminLogout(); location.href=location.pathname; };
+}
+
+async function boot(){
+  bindEvents();
+  try{ await store.init(); }catch(e){ return; }
+  const q=new URLSearchParams(location.search);
+  if(q.get("r")){
+    viewPid=q.get("r");
+    // 결과 보기 전용 모드
+    try{ const saved=JSON.parse(localStorage.getItem("jangMe")||"null"); if(saved) me=saved; }catch(e){}
+    PAGE_IDS.forEach(id=>$(id).classList.remove("on"));
+    $("page-result").classList.add("on"); curPage=4;
+    startListen(); renderResults();
+    if(me && me.pid===viewPid){ $("navbar").style.display="block"; updateNav(); updateProgressLine(); }
+    return;
+  }
+  // 이어하기
+  try{
+    const saved=JSON.parse(localStorage.getItem("jangMe")||"null");
+    if(saved&&saved.pid&&saved.name){ $("inName").value=saved.name; $("inPhone").value=saved.phone||""; }
+  }catch(e){}
+  if(DEMO){ const b=$("netBanner"); b.innerHTML="지금은 <b>미리보기(데모) 모드</b>입니다. 가상 참석자 3명의 데이터가 들어 있고, 입력해도 서버에 저장되지 않습니다."; b.classList.add("on"); }
+}
+boot();
+</script>
+</body>
+</html>
