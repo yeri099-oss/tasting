@@ -139,6 +139,12 @@ td.cmt .cmt-preview{display:block;font-size:12px;color:#6b6459;max-width:110px;o
 .ct-tg button{padding:5px 10px;font-size:11.5px;border:none;background:#fff;color:#8a8378;font-weight:700}
 .ct-tg button.on{background:var(--ink);color:#fff}
 .mini-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:2px 6px;padding-bottom:6px}
+.chart-card.wide{max-width:none;flex:1 1 100%}
+@media (min-width:560px){
+  .chart-card.wide .mini-grid{grid-template-columns:repeat(auto-fill,minmax(215px,1fr));gap:6px 14px}
+  .chart-card.wide .mini-name{font-size:13px}
+  .chart-card.wide .mini-name i{width:16px}
+}
 .mini-name{display:flex;align-items:center;gap:4px;font-size:11px;font-weight:700;color:#4a453d;
   font-family:'Noto Sans KR',sans-serif;justify-content:center;padding-top:4px}
 .mini-name i{width:12px;height:3px;border-radius:2px;display:inline-block;flex-shrink:0}
@@ -231,7 +237,7 @@ td.cmt .cmt-preview{display:block;font-size:12px;color:#6b6459;max-width:110px;o
 .bar-row{display:flex;align-items:center;gap:8px;margin:5px 0}
 .bar-row .bl{width:44px;font-size:12px;color:#5c564c;flex-shrink:0}
 .bar-track{flex:1;height:14px;background:var(--paper2);border-radius:7px;position:relative;overflow:visible}
-.bar-fill{height:100%;background:var(--accent2);border-radius:7px;transition:width .4s}
+.bar-fill{display:block;height:100%;background:var(--accent2);border-radius:7px;transition:width .4s}
 .bar-me{position:absolute;top:-3px;width:4px;height:20px;background:var(--red);border-radius:2px;transform:translateX(-2px);transition:left .4s}
 .bar-row .bv{width:74px;font-size:11px;color:#6b6459;text-align:right;flex-shrink:0}
 .bar-row .bv b{color:var(--red);font-weight:700}
@@ -241,7 +247,29 @@ td.cmt .cmt-preview{display:block;font-size:12px;color:#6b6459;max-width:110px;o
 .ri-cmts .cline.mine b{color:var(--red)}
 .cmt-toggle{background:none;border:none;font-size:12px;color:#8a8378;text-decoration:underline;margin-top:8px;font-family:'Noto Sans KR',sans-serif}
 .res-cnt-note{text-align:center;font-size:13px;color:#6b6459;margin-top:10px;font-family:'Noto Sans KR',sans-serif}
-.radar-pair{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:14px}
+.radar-pair{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-top:14px}
+.radar-pair .chart-card{max-width:none;width:100%}
+.radar-pair .chart-card.wide{grid-column:1/-1}
+@media (max-width:559px){
+  .radar-pair{gap:6px}
+  .radar-pair .chart-card{padding:8px 6px 4px}
+  .radar-pair .ct-row h4{font-size:12px}
+  .radar-pair .ct-tg button{padding:4px 6px;font-size:10px}
+  .radar-pair .legend .lg{font-size:9.5px;padding:1px 3px}
+}
+
+/* ── 명예의 전당 ── */
+.hof{background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px 14px 14px;margin:10px 0 4px}
+.hof-head{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap}
+.hof-head h4{font-size:15px;font-weight:800}
+.hof-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;font-family:'Noto Sans KR',sans-serif}
+@media (max-width:559px){ .hof-grid{grid-template-columns:repeat(3,1fr)} }
+.hof-cell{background:var(--paper2);border-radius:10px;padding:9px 4px 8px;text-align:center}
+.hof-attr{font-size:11.5px;color:#6b6459;letter-spacing:.04em}
+.hof-no{display:inline-block;min-width:24px;height:24px;line-height:24px;border-radius:50%;color:#fff;font-size:12.5px;font-weight:700;margin:5px 0 3px;padding:0 4px}
+.hof-name{font-size:11px;color:#4a453d;line-height:1.35;word-break:keep-all}
+.hof-score{font-size:12.5px;font-weight:700;margin-top:3px;color:var(--ink)}
+.hof-empty{font-size:12.5px;color:#8a8378;text-align:center;padding:14px 0;font-family:'Noto Sans KR',sans-serif;grid-column:1/-1}
 
 /* ── 관리자 ── */
 .adm-head{padding:26px 0 10px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px}
@@ -644,11 +672,11 @@ function radarSVG(series, opts={}){
     s+=`<polygon points="${pts}" fill="none" stroke="#d8d2c6" stroke-width="1"/>`;
   }
   for(let i=0;i<N;i++){ const [x,y]=pt(i,R); s+=`<line x1="${cx}" y1="${cy}" x2="${x}" y2="${y}" stroke="#e4dfd4" stroke-width="1"/>`; }
-  if(!mini) for(let lv=0; lv<=5; lv++){ const [x,y]=pt(0,R*lv/5); s+=`<text x="${x-4}" y="${y-3}" font-size="9" fill="#8a8378" text-anchor="end" font-family="Noto Sans KR">${lv}</text>`; }
+  if(!mini) for(let lv=0; lv<=5; lv++){ const [x,y]=pt(0,R*lv/5); s+=`<text x="${x-4}" y="${y-3}" font-size="${opts.big?10.5:9}" fill="#8a8378" text-anchor="end" font-family="Noto Sans KR">${lv}</text>`; }
   for(let i=0;i<N;i++){
     const [x,y]=pt(i,R+(mini?13:20));
     const anch = Math.abs(x-cx)<10 ? "middle" : (x>cx?"start":"end");
-    s+=`<text x="${x}" y="${y+4}" font-size="${mini?9.5:12}" font-weight="700" fill="#1c1a17" text-anchor="${anch}" font-family="Nanum Myeongjo">${labels[i]}</text>`;
+    s+=`<text x="${x}" y="${y+4}" font-size="${mini?9.5:(opts.big?15:12)}" font-weight="700" fill="#1c1a17" text-anchor="${anch}" font-family="Nanum Myeongjo">${labels[i]}</text>`;
   }
   for(const sr of series){
     if(sr.hidden) continue;
@@ -670,29 +698,30 @@ function legendHTML(series, chartId){
 const chartState = {}; // chartId -> {hidden:Set, mode:'all'|'each'}
 
 /* 차트 카드: 모아보기(전체 겹침) / 따로보기(항목별 작은 그래프) */
-function drawChartCard(el, chartId, title, series){
+function drawChartCard(el, chartId, title, series, opts={}){
   if(!el) return;
   const st = chartState[chartId] ||= {hidden:new Set(), mode:"all"};
   series.forEach(sr=>sr.hidden = st.hidden.has(sr.key));
+  el.classList.toggle("wide", st.mode==="each");
   let h=`<div class="ct-row"><h4>${title}</h4>
     <span class="ct-tg">
       <button class="${st.mode==='all'?'on':''}" data-m="all">모아보기</button>
       <button class="${st.mode==='each'?'on':''}" data-m="each">따로보기</button>
     </span></div>`;
   if(st.mode==="all"){
-    h += radarSVG(series,{size:300}) + legendHTML(series, chartId);
+    h += radarSVG(series,{size:300, big:opts.big}) + legendHTML(series, chartId);
   }else{
     h += `<div class="mini-grid">`+series.map(sr=>
       `<div class="mini-cell"><div class="mini-name"><i style="background:${sr.color}"></i>${esc(sr.label)}</div>${radarSVG([{...sr,hidden:false}],{size:170,small:true})}</div>`
     ).join("")+`</div>`;
   }
   el.innerHTML=h;
-  el.querySelectorAll(".ct-tg button").forEach(b=>b.onclick=()=>{ st.mode=b.dataset.m; drawChartCard(el, chartId, title, series); });
+  el.querySelectorAll(".ct-tg button").forEach(b=>b.onclick=()=>{ st.mode=b.dataset.m; drawChartCard(el, chartId, title, series, opts); });
   el.querySelectorAll(".lg").forEach(lg=>{
     lg.onclick=()=>{
       const k=series[+lg.dataset.idx].key;
       st.hidden.has(k)?st.hidden.delete(k):st.hidden.add(k);
-      drawChartCard(el, chartId, title, series);
+      drawChartCard(el, chartId, title, series, opts);
     };
   });
 }
@@ -880,6 +909,34 @@ function updateProgressLine(){
 function startListen(){ if(unsubAll) return; unsubAll = store.listenAll(m=>{ gotSnap=true; allResp=m; if(curPage===RESULT_PAGE) renderResults(); if($("page-admin").classList.contains("on")) renderAdmin(); }); }
 function stopListen(){ if(unsubAll){ unsubAll(); unsubAll=null; } }
 
+/* 명예의 전당 */
+const hofMode = {}; // g.key -> 'avg' | 'me'
+function hofHTML(g, meResp){
+  const mode = hofMode[g.key] || "avg";
+  let cells="";
+  for(const [a,label] of ATTRS){
+    let best=null;
+    for(const no of g.items){
+      let v=null;
+      if(mode==="avg"){ const r=agg(no,a); if(r) v=r.avg; }
+      else if(meResp){ v=scoreOf(meResp,no,a); }
+      if(v!=null && (!best || v>best.v)) best={no, v};
+    }
+    cells += best
+      ? `<div class="hof-cell"><div class="hof-attr">${label} 1위</div>
+         <span class="hof-no" style="background:${itemColor(best.no)}">${best.no}번</span>
+         <div class="hof-name">${esc(itemShort(best.no).replace(/\s*[\(-].*$/,""))}</div>
+         <div class="hof-score">${mode==="avg"?best.v.toFixed(1):best.v}점</div></div>`
+      : `<div class="hof-cell"><div class="hof-attr">${label} 1위</div><div class="hof-name" style="padding:12px 0;color:#b9b2a4">-</div></div>`;
+  }
+  if(mode==="me" && !meResp)
+    cells = `<div class="hof-empty">내 설문 정보가 없어 전체 평균만 볼 수 있습니다</div>`;
+  return `<div class="hof"><div class="hof-head"><h4>🏆 명예의 전당</h4>
+    <span class="ct-tg hof-tg" data-g="${g.key}">
+      <button class="${mode==='avg'?'on':''}" data-m="avg">전체 평균</button>
+      <button class="${mode==='me'?'on':''}" data-m="me">내 선택</button>
+    </span></div><div class="hof-grid">${cells}</div></div>`;
+}
 function agg(no, a){
   const vals=[];
   for(const pid in allResp){ const v=scoreOf(allResp[pid],no,a); if(v) vals.push(v); }
@@ -903,14 +960,8 @@ function renderResults(){
   let h="";
   for(const g of GROUPS){
     h+=`<div class="res-group" id="resg-${g.key}"><h3>${esc(g.name)} <small style="font-size:13px;font-weight:400">${g.sub?esc(g.sub)+" · ":""}${g.cnt}</small></h3><div class="rg-sub"></div>`;
-    // 항목별 1위
-    const bests=[];
-    for(const [a,label] of ATTRS){
-      let best=null;
-      for(const no of g.items){ const r=agg(no,a); if(r&&(!best||r.avg>best.avg)) best={no,avg:r.avg}; }
-      if(best) bests.push(`<span>${label} 1위 <b>${best.no}번</b> ${best.avg.toFixed(1)}점</span>`);
-    }
-    if(bests.length) h+=`<div class="best-strip">${bests.join("")}</div>`;
+    // 명예의 전당 (분야별 1위)
+    h+=hofHTML(g, meResp);
     // 그룹 레이더: 전체 평균 vs 내 점수 나란히
     h+=`<div class="radar-pair"><div class="chart-card" id="reschart-${g.key}-avg"></div>${meResp?`<div class="chart-card" id="reschart-${g.key}-me"></div>`:""}</div>`;
     // 항목 카드
@@ -949,13 +1000,17 @@ function renderResults(){
       if(t) t.scrollIntoView({behavior:"smooth", block:"start"});
     };
   });
-  // 그룹별 차트: 전체 평균 vs 내 점수
+  // 명예의 전당 토글
+  document.querySelectorAll(".hof-tg button").forEach(b=>{
+    b.onclick=()=>{ hofMode[b.parentElement.dataset.g]=b.dataset.m; renderResults(); };
+  });
+  // 그룹별 차트: 전체 평균 vs 내 점수 (나란히)
   for(const g of GROUPS){
     drawChartCard($("reschart-"+g.key+"-avg"), "resA-"+g.key, `${esc(g.name)} · 전체 평균`,
-      groupSeries(g,(no,a)=>{const r=agg(no,a); return r?+r.avg.toFixed(2):null;}));
+      groupSeries(g,(no,a)=>{const r=agg(no,a); return r?+r.avg.toFixed(2):null;}), {big:true});
     if(meResp)
       drawChartCard($("reschart-"+g.key+"-me"), "resM-"+g.key, `${esc(g.name)} · ${esc(meName)}님`,
-        groupSeries(g,(no,a)=>scoreOf(meResp,no,a)));
+        groupSeries(g,(no,a)=>scoreOf(meResp,no,a)), {big:true});
   }
   $("resNote").textContent=`${n}명의 평가를 실시간으로 집계한 결과입니다`;
 }
