@@ -200,15 +200,20 @@ td.score:active{background:#eae4d8}
 .picker.on{opacity:1;pointer-events:auto;transform:translate(-50%,-50%) scale(1)}
 .pk-close{position:absolute;top:10px;right:12px;width:34px;height:34px;border:none;background:none;
   font-size:18px;color:#8a8378;font-family:'Noto Sans KR',sans-serif}
-.picker .pk-title{font-size:15px;font-weight:700;text-align:center;margin-bottom:4px}
-.picker .pk-item{font-size:12px;color:#8a8378;text-align:center;margin-bottom:14px;font-family:'Noto Sans KR',sans-serif}
-.pk-btns{display:flex;gap:8px;justify-content:center}
-.pk-btns button{
-  flex:1;max-width:64px;aspect-ratio:1;font-size:20px;font-weight:700;border-radius:12px;
+.picker .pk-item{font-size:14px;font-weight:700;text-align:center;margin-bottom:12px;padding:0 24px;word-break:keep-all}
+.pk-row{display:flex;align-items:center;gap:8px;margin:7px 0}
+.pk-row .pk-label{width:52px;font-size:14px;font-weight:700;flex-shrink:0;text-align:right}
+.pk-row.cur .pk-label{color:var(--accent)}
+.pk-btns5{display:flex;gap:6px;flex:1;justify-content:space-between}
+.pk-btns5 button{
+  flex:1;max-width:48px;aspect-ratio:1;font-size:17px;font-weight:700;border-radius:10px;
   border:1.5px solid var(--line);background:#fff;font-family:'Noto Sans KR',sans-serif;
 }
-.pk-btns button.sel{background:var(--ink);color:#fff;border-color:var(--ink)}
-.pk-clear{display:block;margin:14px auto 0;background:none;border:none;color:#a39a8b;font-size:13px;text-decoration:underline;font-family:'Noto Sans KR',sans-serif}
+.pk-btns5 button.sel{background:var(--ink);color:#fff;border-color:var(--ink)}
+.pk-hint{font-size:11.5px;color:#a39a8b;text-align:center;margin-top:10px;font-family:'Noto Sans KR',sans-serif}
+.picker .mrow{display:flex;gap:8px}
+.picker .mrow button{flex:1;padding:12px;border-radius:10px;font-size:15px;font-weight:700;border:1px solid var(--line);background:#fff}
+.picker .mrow .ok{background:var(--ink);color:#fff;border-color:var(--ink)}
 
 /* ── 코멘트 모달 ── */
 .modal{position:fixed;inset:0;z-index:110;display:none;align-items:center;justify-content:center;padding:20px;background:rgba(20,17,12,.5)}
@@ -471,12 +476,13 @@ td.score:active{background:#eae4d8}
 <div class="dim" id="dim"></div>
 <div class="picker" id="picker">
   <button class="pk-close" id="pkClose">✕</button>
-  <div class="pk-title" id="pkTitle">짠맛</div>
   <div class="pk-item" id="pkItem"></div>
-  <div class="pk-btns" id="pkBtns">
-    <button data-v="1">1</button><button data-v="2">2</button><button data-v="3">3</button><button data-v="4">4</button><button data-v="5">5</button>
+  <div id="pkRows"></div>
+  <div class="pk-hint">숫자를 눌러 선택하고, 같은 숫자를 다시 누르면 지워져요</div>
+  <div class="mrow" style="margin-top:14px">
+    <button id="pkCancel">닫기</button>
+    <button class="ok" id="pkSaveAll">저장</button>
   </div>
-  <button class="pk-clear" id="pkClear">선택 지우기</button>
 </div>
 
 <!-- 코멘트 모달 -->
@@ -747,6 +753,20 @@ const store = {
     if(DEMO){ ITEMS={...DEFAULT_ITEMS,...items}; return; }
     await db.collection(COL.meta).doc("config").set({items}, {merge:true});
   },
+  async saveScores(pid, no, vals, clears){
+    if(DEMO){
+      const r=(demoDB.resp[pid] ||= {});
+      r.scores ||= {};
+      r.scores[no] ||= {};
+      Object.assign(r.scores[no], vals);
+      clears.forEach(a=>delete r.scores[no][a]);
+      demoNotify(); return;
+    }
+    const obj={...vals};
+    clears.forEach(a=>obj[a]=firebase.firestore.FieldValue.delete());
+    await db.collection(COL.resp).doc(pid).set(
+      {scores:{[no]:obj}, updatedAt:firebase.firestore.FieldValue.serverTimestamp()}, {merge:true});
+  },
   async saveItemInfo(no, info){
     if(DEMO){ ITEM_INFO[no]=info; return; }
     await db.collection(COL.meta).doc("item_"+no).set(info);
@@ -894,25 +914,34 @@ function renderGroupChart(g){
 }
 
 /* ═══════════════ 점수 선택 / 코멘트 ═══════════════ */
-let pk={no:null, attr:null};
+let pk={no:null, vals:{}};
 function openPicker(no, attr){
-  pk={no,attr};
-  const label=ATTRS.find(a=>a[0]===attr)[1];
-  $("pkTitle").textContent=label+" 점수";
+  pk={no, vals:{}};
+  for(const [a] of ATTRS) pk.vals[a]=scoreOf(myResp,no,a);
   $("pkItem").textContent=no+"번 · "+itemName(no);
-  const cur=scoreOf(myResp,no,attr);
-  $("pkBtns").querySelectorAll("button").forEach(b=>b.classList.toggle("sel",+b.dataset.v===cur));
+  $("pkRows").innerHTML=ATTRS.map(([a,label])=>
+    `<div class="pk-row ${a===attr?'cur':''}" data-attr="${a}"><span class="pk-label">${label}</span><div class="pk-btns5">`+
+    [1,2,3,4,5].map(v=>`<button data-attr="${a}" data-v="${v}" class="${pk.vals[a]===v?'sel':''}">${v}</button>`).join("")+
+    `</div></div>`).join("");
   $("dim").classList.add("on"); $("picker").classList.add("on");
 }
 function closePicker(){ $("dim").classList.remove("on"); $("picker").classList.remove("on"); }
-async function setScore(no, attr, v){
+async function savePickerAll(){
+  const no=pk.no;
+  const prev={}; for(const [a] of ATTRS) prev[a]=scoreOf(myResp,no,a);
+  closePicker();
   myResp.scores[no] ||= {};
-  if(v==null){ delete myResp.scores[no][attr]; } else myResp.scores[no][attr]=v;
+  const vals={}, clears=[];
+  for(const [a] of ATTRS){
+    const v=pk.vals[a];
+    if(v!=null){ myResp.scores[no][a]=v; if(v!==prev[a]) vals[a]=v; }
+    else { delete myResp.scores[no][a]; if(prev[a]!=null) clears.push(a); }
+  }
   refreshAfterInput(no);
+  if(!Object.keys(vals).length && !clears.length) return;
   saveIndicator("saving");
   try{
-    if(v==null) await store.deleteField(me.pid, `scores.${no}.${attr}`);
-    else await store.saveResponse(me.pid, {scores:{[no]:{[attr]:v}}});
+    await store.saveScores(me.pid, no, vals, clears);
     saveIndicator("saved");
   }catch(e){ saveIndicator("err"); toast("저장 실패 - 네트워크를 확인해 주세요"); }
 }
@@ -1311,7 +1340,9 @@ async function doStart(){
     const prev=await store.loadResponse(pid);
     if(prev){ myResp={scores:prev.scores||{}, comments:prev.comments||{}}; if(prev.name && prev.name!==name){} }
     else myResp={scores:{},comments:{}};
-    await store.saveResponse(pid,{name, createdAt: DEMO?Date.now():firebase.firestore.FieldValue.serverTimestamp()});
+    // 이름·전화번호 저장은 기다리지 않고 백그라운드로 (모바일 로그인 속도 개선)
+    store.saveResponse(pid,{name, createdAt: DEMO?Date.now():firebase.firestore.FieldValue.serverTimestamp()})
+      .catch(()=>toast("이름 저장이 지연되고 있어요 - 네트워크를 확인해 주세요"));
     store.savePhone(pid,name,fmtPhone(phone)).catch(()=>{});
     try{ localStorage.setItem("jangMe", JSON.stringify(me)); }catch(e){}
     if(prev && Object.keys(prev.scores||{}).length) toast(name+"님, 작성하던 설문을 이어서 합니다");
@@ -1344,9 +1375,15 @@ function bindEvents(){
     const sc=e.target.closest("td.score"); if(sc){ openPicker(+sc.dataset.no, sc.dataset.attr); return; }
     const cl=e.target.closest("td.cmtline"); if(cl){ openInfo(+cl.dataset.no, {comment:true}); return; }
   });
-  $("pkClose").onclick=closePicker;   // 여백을 눌러도 닫히지 않음 (닫기 버튼·점수 선택으로만 닫힘)
-  $("pkBtns").querySelectorAll("button").forEach(b=>b.onclick=()=>{ setScore(pk.no,pk.attr,+b.dataset.v); closePicker(); });
-  $("pkClear").onclick=()=>{ setScore(pk.no,pk.attr,null); closePicker(); };
+  $("pkClose").onclick=closePicker;   // 여백을 눌러도 닫히지 않음 (닫기·저장 버튼으로만 닫힘)
+  $("pkCancel").onclick=closePicker;
+  $("pkSaveAll").onclick=savePickerAll;
+  $("pkRows").addEventListener("click",e=>{
+    const b=e.target.closest("button[data-v]"); if(!b) return;
+    const a=b.dataset.attr, v=+b.dataset.v;
+    pk.vals[a] = (pk.vals[a]===v) ? null : v;   // 같은 숫자 다시 누르면 해제
+    b.parentElement.querySelectorAll("button").forEach(x=>x.classList.toggle("sel", +x.dataset.v===pk.vals[a]));
+  });
   $("cmtCancel").onclick=()=>$("cmtModal").classList.remove("on");
   $("cmtSave").onclick=saveCmt;
   $("hubClose").onclick=()=>$("cmtHub").classList.remove("on");
