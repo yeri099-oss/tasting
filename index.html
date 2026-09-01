@@ -862,13 +862,13 @@ function renderSurveyPage(p){
     h+=`</tr></thead><tbody>`;
     for(const no of g.items){
       const col=itemColor(no);
-      h+=`<tr><td class="no" style="background:${col};color:#fff;font-weight:700">${no}</td><td class="iname" data-no="${no}" style="cursor:pointer;border:2.5px solid ${col}">${esc(itemName(no)).replace(/\[실내발효\]/,'<span class="tag">실내발효</span>')}<span class="info-ic" style="background:${col}">${hasInfo(no)?"ⓘ 정보·코멘트":"✎ 코멘트"}</span></td>`;
+      h+=`<tr><td class="no" style="background:${col};color:#fff;font-weight:700">${no}</td><td class="iname" data-no="${no}" style="cursor:pointer;border:2.5px solid ${col}">${esc(itemName(no)).replace(/\[실내발효\]/,'<span class="tag">실내발효</span>')}${hasInfo(no)?`<span class="info-ic" style="background:${col}">ⓘ 정보</span>`:""}</td>`;
       for(const [a] of ATTRS){
         const v=scoreOf(myResp,no,a);
         h+=`<td class="score ${v?'filled':''}" data-no="${no}" data-attr="${a}" style="${v?`background:${col}26;color:${col};`:''}">${v??"·"}</td>`;
       }
       const c=myResp.comments?.[no];
-      h+=`</tr><tr class="cmt-row"><td colspan="7" class="cmtline" data-no="${no}" style="border-left:2.5px solid ${col}">${c?`<span class="cl-txt">💬 ${esc(c)}</span>`:`<span class="cl-ph">✎ 한줄 코멘트 남기기</span>`}</td></tr>`;
+      h+=`</tr><tr class="cmt-row"><td colspan="7" class="cmtline" data-no="${no}" style="border:2.5px solid ${col}"><span class="info-ic" style="background:${col};margin-left:0;margin-right:7px">✎ 코멘트</span>${c?`<span class="cl-txt">${esc(c)}</span>`:`<span class="cl-ph">한줄 코멘트를 남겨보세요</span>`}</td></tr>`;
     }
     const myCnt=Object.keys(myResp.comments||{}).filter(no=>myResp.comments[no]).length;
     h+=`</tbody></table></div>
