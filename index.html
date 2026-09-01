@@ -9,10 +9,10 @@
 <meta property="og:type" content="website">
 <meta property="og:title" content="옹기뜸골 전통장 20가지 테이스팅">
 <meta property="og:description" content="2026.09.06(일) 18:30 · 꽃, 밥에피다 북촌 그로서란트 — 시음 평가에 참여하고 실시간 결과를 확인해 보세요">
-<meta property="og:image" content="https://yeri099-oss.github.io/tasting/logo.png">
-<meta property="og:image:width" content="512">
-<meta property="og:image:height" content="512">
-<meta name="twitter:card" content="summary">
+<meta property="og:image" content="https://yeri099-oss.github.io/tasting/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700;800&family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
@@ -103,17 +103,15 @@ input,textarea{font-family:'Noto Sans KR',sans-serif}
 td.score{width:54px;font-family:'Noto Sans KR',sans-serif;font-weight:700;font-size:18px;color:#b9b2a4;cursor:pointer;user-select:none}
 td.score.filled{background:var(--paper2);color:var(--ink)}
 td.score:active{background:#eae4d8}
-td.cmt{width:88px;cursor:pointer;font-family:'Noto Sans KR',sans-serif}
-td.cmt .cmt-ic{font-size:13px;color:#b9b2a4}
-td.cmt.filled .cmt-ic{color:var(--accent);font-weight:700}
-td.cmt .cmt-preview{display:block;font-size:12px;color:#6b6459;max-width:110px;overflow:hidden;
-  text-overflow:ellipsis;white-space:nowrap;margin:0 auto}
+.tbl tr.cmt-row td.cmtline{height:auto;text-align:left;padding:7px 10px;font-size:12.5px;cursor:pointer;
+  font-family:'Noto Sans KR',sans-serif;background:#fcfbf8}
+.cmtline .cl-ph{color:#b9b2a4}
+.cmtline .cl-txt{color:#4a453d}
 @media (min-width:560px){ .tbl td.iname{white-space:nowrap} }
 .btn-cmt-open{display:none;width:100%;margin-top:12px;padding:13px;font-size:15px;font-weight:700;
   border:1.5px solid var(--ink);border-radius:10px;background:#fff;color:var(--ink);letter-spacing:.04em}
 .btn-cmt-open .cnt{font-family:'Noto Sans KR',sans-serif;font-size:12px;color:var(--accent);margin-left:6px}
 @media (max-width:559px){
-  .tbl th.th-cmt, .tbl td.cmt{display:none}
   .btn-cmt-open{display:block}
 }
 .hub-sel{width:100%;padding:11px 10px;font-size:15px;border:1px solid var(--line);border-radius:10px;
@@ -344,7 +342,6 @@ td.cmt .cmt-preview{display:block;font-size:12px;color:#6b6459;max-width:110px;o
   .tbl td.no{width:28px;font-size:12.5px}
   .tbl td.iname{font-size:13px;padding:6px 8px}
   td.score{width:42px;font-size:16px}
-  td.cmt{width:66px}
   .bar-row .bv{width:70px}
 }
 </style>
@@ -613,6 +610,7 @@ async function phonePid(phone){
   }
 }
 function itemName(no){ return ITEMS[no] || DEFAULT_ITEMS[no] || ("장 "+no); }
+function maskName(n){ n=String(n||"익명").trim(); return (n[0]||"익")+"**"; }
 function hasInfo(no){ const i=ITEM_INFO[no]; return !!(i && ((i.desc&&i.desc.trim()) || i.img)); }
 function openInfo(no, opts){
   if(opts===true) opts={scores:true};
@@ -861,7 +859,7 @@ function renderSurveyPage(p){
     h+=`<div style="overflow-x:auto"><table class="tbl"><thead><tr>
       <th style="width:30px">번호</th><th>${esc(g.col)}</th>`;
     for(const [,label] of ATTRS) h+=`<th style="width:40px">${label}</th>`;
-    h+=`<th style="width:64px" class="th-cmt">한줄 코멘트</th></tr></thead><tbody>`;
+    h+=`</tr></thead><tbody>`;
     for(const no of g.items){
       const col=itemColor(no);
       h+=`<tr><td class="no" style="background:${col};color:#fff;font-weight:700">${no}</td><td class="iname" data-no="${no}" style="cursor:pointer;border:2.5px solid ${col}">${esc(itemName(no)).replace(/\[실내발효\]/,'<span class="tag">실내발효</span>')}<span class="info-ic" style="background:${col}">${hasInfo(no)?"ⓘ 정보·코멘트":"✎ 코멘트"}</span></td>`;
@@ -870,7 +868,7 @@ function renderSurveyPage(p){
         h+=`<td class="score ${v?'filled':''}" data-no="${no}" data-attr="${a}" style="${v?`background:${col}26;color:${col};`:''}">${v??"·"}</td>`;
       }
       const c=myResp.comments?.[no];
-      h+=`<td class="cmt ${c?'filled':''}" data-no="${no}">${c?`<span class="cmt-preview">${esc(c)}</span>`:`<span class="cmt-ic">✎ 입력</span>`}</td></tr>`;
+      h+=`</tr><tr class="cmt-row"><td colspan="7" class="cmtline" data-no="${no}" style="border-left:2.5px solid ${col}">${c?`<span class="cl-txt">💬 ${esc(c)}</span>`:`<span class="cl-ph">✎ 한줄 코멘트 남기기</span>`}</td></tr>`;
     }
     const myCnt=Object.keys(myResp.comments||{}).filter(no=>myResp.comments[no]).length;
     h+=`</tbody></table></div>
@@ -953,10 +951,13 @@ function openCmtHub(){
     if(!lines.length) continue;
     any=true;
     h+=`<div class="ha-group">${esc(g.name)}</div>`+
-      lines.map(no=>`<div class="ha-line"><b>${no}번</b> ${esc(itemName(no))}<br>→ ${esc(myResp.comments[no])}</div>`).join("");
+      lines.map(no=>`<div class="ha-line" data-no="${no}" style="cursor:pointer"><b>${no}번</b> ${esc(itemName(no))} <span style="color:#b9b2a4;font-size:11px">✎ 수정</span><br>→ ${esc(myResp.comments[no])}</div>`).join("");
   }
-  $("hubAll").innerHTML = any? h : `<div class="ha-empty">아직 작성한 코멘트가 없습니다<br>간장 이름을 누르면 코멘트를 쓸 수 있어요</div>`;
+  $("hubAll").innerHTML = any? h : `<div class="ha-empty">아직 작성한 코멘트가 없습니다<br>간장 이름이나 코멘트 줄을 누르면 쓸 수 있어요</div>`;
   $("hubAll").style.display="block";
+  $("hubAll").querySelectorAll(".ha-line[data-no]").forEach(l=>{
+    l.onclick=()=>{ $("cmtHub").classList.remove("on"); openInfo(+l.dataset.no, {comment:true}); };
+  });
   $("cmtHub").classList.add("on");
 }
 function refreshAfterInput(no){
@@ -1019,7 +1020,7 @@ function podiumHTML(g, a, mode, meResp){
   for(const {t,rk} of order){
     if(!t){ cols+=`<div class="pd-col empty"><div class="pd-block b${rk}"></div></div>`; continue; }
     cols+=`<div class="pd-col" data-no="${t.no}" title="눌러서 내 평가·간장 정보 보기">
-      <div class="pd-name">${esc(itemName(t.no).replace(/\s*\[.*\]\s*/,"").replace(/\s*-.*$/,""))}</div>
+      <div class="pd-name">${esc(itemName(t.no).replace(/\s*\(.*$/,"").replace(/\s*\[.*\]\s*/,"").replace(/\s*-.*$/,""))}</div>
       <div class="pd-meta"><span class="hof-no" style="background:${itemColor(t.no)}">${t.no}번</span><span class="pd-score">${mode==="avg"?t.v.toFixed(1):t.v}점</span></div>
       <div class="pd-block b${rk}">${rk===1?"🏆 ":""}${rk}위</div></div>`;
   }
@@ -1088,7 +1089,7 @@ function renderResults(){
       }
       if(cl.length){
         cl.sort((x,y)=>(y.mine?1:0)-(x.mine?1:0));
-        h+=`<div class="ri-cmts">`+cl.map(o=>`<div class="cline ${o.mine?'mine':''}"><b>${esc(o.name)}</b>${esc(o.c)}</div>`).join("")+`</div>`;
+        h+=`<div class="ri-cmts">`+cl.map(o=>`<div class="cline ${o.mine?'mine':''}"><b>${esc(o.mine?o.name:maskName(o.name))}</b>${esc(o.c)}</div>`).join("")+`</div>`;
       }
       h+=`</div>`;
     }
@@ -1341,7 +1342,7 @@ function bindEvents(){
     const hb=e.target.closest(".btn-cmt-open"); if(hb){ openCmtHub(+hb.dataset.page); return; }
     const inm=e.target.closest("td.iname"); if(inm){ openInfo(+inm.dataset.no, {comment:true}); return; }
     const sc=e.target.closest("td.score"); if(sc){ openPicker(+sc.dataset.no, sc.dataset.attr); return; }
-    const cm=e.target.closest("td.cmt"); if(cm){ openCmt(+cm.dataset.no); return; }
+    const cl=e.target.closest("td.cmtline"); if(cl){ openInfo(+cl.dataset.no, {comment:true}); return; }
   });
   $("pkClose").onclick=closePicker;   // 여백을 눌러도 닫히지 않음 (닫기 버튼·점수 선택으로만 닫힘)
   $("pkBtns").querySelectorAll("button").forEach(b=>b.onclick=()=>{ setScore(pk.no,pk.attr,+b.dataset.v); closePicker(); });
