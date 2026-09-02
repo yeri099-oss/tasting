@@ -749,8 +749,6 @@ function openInfo(no, opts){
       if(v) toast(no+"번 코멘트 저장됨");
     };
   } else { cbox.style.display="none"; $("infoCmtSave").style.display="none"; }
-  if(!i.img && !(i.desc&&i.desc.trim()))
-    $("infoDesc").textContent = opts.comment ? "아직 등록된 간장 정보가 없습니다. 아래에 코멘트를 남겨주세요." : "아직 등록된 간장 정보가 없습니다.";
   $("infoModal").classList.add("on");
   if(opts.comment) setTimeout(()=>$("infoCmtText").focus(),80);
 }
