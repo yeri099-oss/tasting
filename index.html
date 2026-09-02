@@ -913,7 +913,7 @@ const chartState = {}; // chartId -> {hidden:Set, mode:'all'|'each'}
 /* 차트 카드: 모아보기(전체 겹침) / 따로보기(항목별 작은 그래프) */
 function drawChartCard(el, chartId, title, series, opts={}){
   if(!el) return;
-  const st = chartState[chartId] ||= {hidden:new Set(), mode:"all"};
+  const st = chartState[chartId] ||= {hidden:new Set(), mode:"each"};  // 기본: 따로보기
   series.forEach(sr=>sr.hidden = st.hidden.has(sr.key));
   el.classList.toggle("wide", st.mode==="each");
   let h=`<div class="ct-row"><h4>${title}</h4>
@@ -950,11 +950,28 @@ function itemColor(no){
 }
 
 /* ═══════════════ 설문 페이지 렌더 ═══════════════ */
+function surveyTabsHTML(cur){
+  const items=[
+    {p:HUB, label:"⌂ 홈"},
+    ...GROUPS.map((g,i)=>({p:FIRST_SURVEY+i, label:g.name})),
+    {p:TOP3_PAGE, label:"🏆 최애"},
+    {p:MEET_PAGE, label:"📝 모임"}
+  ];
+  return `<div class="res-tabs svy-tabs">`+items.map(it=>
+    `<button data-p="${it.p}" class="${it.p===cur?'on':''}">${it.label}</button>`).join("")+`</div>`;
+}
+function bindSurveyTabs(host){
+  host.querySelectorAll(".svy-tabs button").forEach(b=>b.onclick=()=>{
+    if(curPage===MEET_PAGE) flushMeetText();
+    go(+b.dataset.p);
+  });
+}
 function renderSurveyPage(p){
   const sp=p-FIRST_SURVEY+1;              // 1~5 (설문 시트 번호)
   const host=$("sheet"+sp); const info=PAGE_TITLES[sp];
   const groups=GROUPS.filter(g=>g.page===sp);
-  let h=`<div class="sheet-head">
+  let h=surveyTabsHTML(p);
+  h+=`<div class="sheet-head">
     <div class="sheet-title">${esc(info.t)} <small>- ${esc(info.s)}</small></div>
     <div class="sheet-desc">${esc(info.d)} · 점수 칸을 누르면 점수를, 간장 이름을 누르면 정보·코멘트 창이 열려요</div>
   </div>`;
@@ -982,6 +999,7 @@ function renderSurveyPage(p){
   for(const g of groups) h+=`<div class="chart-card" id="chart-${g.key}"></div>`;
   h+=`</div>`;
   host.innerHTML=h;
+  bindSurveyTabs(host);
   for(const g of groups) renderGroupChart(g);
 }
 function groupSeries(g, valueFn){
@@ -1091,7 +1109,8 @@ const MEET_BEST=["장 시음 구성","장 설명과 이야기","곁들인 음식
 function renderTop3Page(){
   const host=$("sheet6");
   const t3=myResp.top3||[];
-  let h=`<div class="sheet-head">
+  let h=surveyTabsHTML(TOP3_PAGE);
+  h+=`<div class="sheet-head">
     <div class="sheet-title">최애 TOP3 <small>- 오늘의 인생 간장</small></div>
     <div class="sheet-desc">가장 마음에 들었던 장 3가지를 골라주세요. 나의 장BTI 판정에 사용됩니다</div>
   </div>
@@ -1105,6 +1124,7 @@ function renderTop3Page(){
     h+=`</div>`;
   }
   host.innerHTML=h;
+  bindSurveyTabs(host);
   host.querySelectorAll(".t3-chip").forEach(b=>b.onclick=()=>{
     const no=+b.dataset.no;
     myResp.top3 = myResp.top3||[];
@@ -1120,7 +1140,8 @@ function renderTop3Page(){
 function renderMeetPage(){
   const host=$("sheet7");
   const meet=myResp.meet||{};
-  let h=`<div class="sheet-head">
+  let h=surveyTabsHTML(MEET_PAGE);
+  h+=`<div class="sheet-head">
     <div class="sheet-title">모임 평가 <small>- 1분이면 충분해요</small></div>
     <div class="sheet-desc">오늘 모임에 대한 솔직한 의견을 들려주세요</div>
   </div>
@@ -1135,6 +1156,7 @@ function renderMeetPage(){
   <div class="fin-q">5. 아쉬웠던 점이나 다음에 바라는 점이 있다면? <span class="opt-note">선택</span></div>
   <textarea class="fin-ta" id="meetWant" maxlength="300" placeholder="편하게 적어주세요. 다음 모임에 꼭 반영할게요">${esc(meet.want||"")}</textarea>`;
   host.innerHTML=h;
+  bindSurveyTabs(host);
   $("meetStars").querySelectorAll("button").forEach(b=>b.onclick=()=>{
     (myResp.meet ||= {}).sat=+b.dataset.v; saveMeet({meet:{sat:+b.dataset.v}}); renderMeetPage();
   });
@@ -1472,10 +1494,12 @@ function renderResults(){
   doFilter();
   document.querySelectorAll("#infoList .il-row").forEach(r=>r.onclick=()=>openInfo(+r.dataset.no, {scores:true}));
   // 종류별 탭
-  $("resTabs").innerHTML=GROUPS.map(g=>`<button data-g="${g.key}">${esc(g.name)}</button>`).join("")
+  $("resTabs").innerHTML=(me?`<button data-g="home">⌂ 홈</button>`:"")
+    +GROUPS.map(g=>`<button data-g="${g.key}">${esc(g.name)}</button>`).join("")
     +`<button data-g="info">ⓘ 정보</button>`;
   $("resTabs").querySelectorAll("button").forEach(b=>{
     b.onclick=()=>{
+      if(b.dataset.g==="home"){ go(HUB); return; }
       $("resTabs").querySelectorAll("button").forEach(x=>x.classList.toggle("on",x===b));
       const t=$("resg-"+b.dataset.g);
       if(t) t.scrollIntoView({behavior:"smooth", block:"start"});
