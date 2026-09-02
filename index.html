@@ -1358,8 +1358,8 @@ function renderHub(){
   const meetDone=meetPct===100;
   const unlocked=finalComplete();
   const crit=[
-    {ok:pr.filled>=50, label:`채점 50% 이상 완료 (지금 ${pr.pct}%)`},
-    {ok:t3n===3, label:`최애 TOP3 3개 선택 (지금 ${t3n}/3)`},
+    {ok:pr.filled>=50, label:`맛평가 50% 이상 완료 (지금 ${pr.pct}%)`},
+    {ok:t3n===3, label:`최애 3개 모두 고르기 (지금 ${t3n}/3)`},
     {ok:meetPct===100, label:`모임평가 전체 작성 (지금 ${meetPct}%)`}
   ];
   $("hubWrap").innerHTML=`
@@ -1390,7 +1390,7 @@ function renderHub(){
         <span class="hb-ic">📊</span>
         <span class="hb-body"><b>결과 보기</b><small>나의 장BTI와 실시간 전체 집계</small></span>
         <span class="hb-arrow">›</span></button>
-      <div class="hub-crit"><div class="hl-row ok">✓ 채점 50% 이상 · 최애 3개 · 모임평가 100% 조건을 모두 채웠어요</div></div>`
+      <div class="hub-crit"><div class="hl-row ok">✓ 맛평가 50% 이상 · 최애 3개 · 모임평가 100% 조건을 모두 채웠어요</div></div>`
     : `<div class="hub-lock"><b>🔒 결과 보기가 열리는 기준</b>
         ${crit.map(c=>`<div class="hl-row ${c.ok?'ok':''}">${c.ok?"✓":"○"} ${c.label}</div>`).join("")}
       </div>`}
