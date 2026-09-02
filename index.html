@@ -147,6 +147,8 @@ td.score:active{background:#eae4d8}
   font-family:'Noto Sans KR',sans-serif;justify-content:center;padding:3px 7px;margin:4px auto 0;
   border-radius:9px;cursor:pointer;width:fit-content;max-width:100%}
 .mini-name i{width:12px;height:3px;border-radius:2px;display:inline-block;flex-shrink:0}
+.ov-hint{text-align:center;font-size:11.5px;color:#6b6459;font-family:'Noto Sans KR',sans-serif;padding:2px 0 8px}
+.ov-hint span{color:#b0402f;font-weight:700}
 /* 간장 정보 목록(결과지 정보탭) */
 .il-row{display:flex;align-items:center;gap:10px;background:#fff;border:1px solid var(--line);border-radius:12px;
   padding:10px 12px;margin-top:8px;cursor:pointer;font-family:'Noto Sans KR',sans-serif}
@@ -710,7 +712,18 @@ function openInfo(no, opts){
   if(withScores){
     const mePid=viewPid||me?.pid;
     const meResp=(mePid&&allResp[mePid]) || (me&&mePid===me.pid?myResp:null);
-    let h=`<div class="bars" style="margin-top:12px;border-top:1px dashed var(--line);padding-top:10px">`;
+    // 맛그래프: 전체 평균 위에 내 점수 겹침
+    const avgVals=ATTRS.map(([a])=>{const r=agg(no,a); return r?+r.avg.toFixed(2):null;});
+    const myVals=meResp?ATTRS.map(([a])=>scoreOf(meResp,no,a)):null;
+    const minis=[{color:itemColor(no), values:avgVals}];
+    const hasMine=myVals&&myVals.some(v=>v!=null);
+    if(hasMine) minis.push({color:"#b0402f", dash:true, values:myVals});
+    let h="";
+    if(avgVals.some(v=>v!=null)||hasMine){
+      h+=`<div style="max-width:225px;margin:10px auto 0;border-top:1px dashed var(--line);padding-top:6px">${radarSVG(minis,{size:200,small:true})}</div>`;
+      h+=`<div class="ov-hint">━ 전체 평균${hasMine?' <span>┅ 내 점수</span>':""}</div>`;
+    }
+    h+=`<div class="bars" style="margin-top:6px;border-top:1px dashed var(--line);padding-top:10px">`;
     for(const [a,label] of ATTRS){
       const r=agg(no,a); const mv=meResp?scoreOf(meResp,no,a):null;
       h+=`<div class="bar-row"><span class="bl">${label}</span><span class="bar-track">
@@ -893,8 +906,9 @@ function radarSVG(series, opts={}){
   for(let i=0;i<N;i++){ const [x,y]=pt(i,R); s+=`<line x1="${cx}" y1="${cy}" x2="${x}" y2="${y}" stroke="#e4dfd4" stroke-width="1"/>`; }
   if(!mini) for(let lv=0; lv<=5; lv++){ const [x,y]=pt(0,R*lv/5); s+=`<text x="${x-4}" y="${y-3}" font-size="${opts.big?10.5:9}" fill="#8a8378" text-anchor="end" font-family="Noto Sans KR">${lv}</text>`; }
   for(let i=0;i<N;i++){
-    const [x,y]=pt(i,R+(mini?13:20));
-    const anch = Math.abs(x-cx)<10 ? "middle" : (x>cx?"start":"end");
+    let [x,y]=pt(i,R+(mini?13:20));
+    let anch = Math.abs(x-cx)<10 ? "middle" : (x>cx?"start":"end");
+    if(mini){ anch="middle"; x=Math.max(20, Math.min(size-20, x)); }
     s+=`<text x="${x}" y="${y+4}" font-size="${mini?9.5:(opts.big?15:12)}" font-weight="700" fill="#1c1a17" text-anchor="${anch}" font-family="Nanum Myeongjo">${labels[i]}</text>`;
   }
   for(const sr of series){
@@ -930,9 +944,14 @@ function drawChartCard(el, chartId, title, series, opts={}){
   if(st.mode==="all"){
     h += radarSVG(series,{size:300, big:opts.big}) + legendHTML(series, chartId);
   }else{
-    h += `<div class="mini-grid">`+series.map(sr=>
-      `<div class="mini-cell" data-no="${sr.key}"><div class="mini-name" data-no="${sr.key}" style="border:2px solid ${sr.color}" title="눌러서 간장 정보 보기"><i style="background:${sr.color}"></i>${esc(sr.label)}</div><div class="mini-svg" data-no="${sr.key}" ${opts.pickOnGraph?'style="cursor:pointer" title="눌러서 점수 매기기"':''}>${radarSVG([{...sr,hidden:false}],{size:170,small:true})}</div></div>`
-    ).join("")+`</div>`;
+    const ov=opts.overlay||null;
+    h += `<div class="mini-grid">`+series.map(sr=>{
+      const minis=[{...sr,hidden:false}];
+      if(ov && ov[sr.key] && ov[sr.key].some(v=>v!=null))
+        minis.push({key:"me",label:"나",color:"#b0402f",dash:true,values:ov[sr.key]});
+      return `<div class="mini-cell" data-no="${sr.key}"><div class="mini-name" data-no="${sr.key}" style="border:2px solid ${sr.color}" title="눌러서 간장 정보 보기"><i style="background:${sr.color}"></i>${esc(sr.label)}</div><div class="mini-svg" data-no="${sr.key}" ${opts.pickOnGraph?'style="cursor:pointer" title="눌러서 점수 매기기"':''}>${radarSVG(minis,{size:170,small:true})}</div></div>`;
+    }).join("")+`</div>`;
+    if(ov) h+=`<div class="ov-hint">━ 전체 평균 <span>┅ 내 점수</span></div>`;
   }
   el.innerHTML=h;
   el.querySelectorAll(".ct-tg button").forEach(b=>b.onclick=()=>{ st.mode=b.dataset.m; drawChartCard(el, chartId, title, series, opts); });
@@ -1457,8 +1476,8 @@ function renderResults(){
     h+=`<div class="res-group" id="resg-${g.key}"><h3>${esc(g.name)}${g.hanja?" "+g.hanja:""} <small style="font-size:13px;font-weight:400">${g.sub?esc(g.sub)+" · ":""}${g.cnt}</small></h3><div class="rg-sub"></div>`;
     // 명예의 전당 (분야별 1위)
     h+=hofHTML(g, meResp);
-    // 그룹 레이더: 전체 평균 vs 내 점수 나란히
-    h+=`<div class="radar-pair"><div class="chart-card" id="reschart-${g.key}-avg"></div>${meResp?`<div class="chart-card" id="reschart-${g.key}-me"></div>`:""}</div>`;
+    // 그룹 레이더: 따로보기에서 전체 평균 위에 내 점수 겹침
+    h+=`<div class="radar-pair"><div class="chart-card" id="reschart-${g.key}-avg"></div></div>`;
     // 항목 카드
     for(const no of g.items){
       h+=`<div class="res-item" id="resitem-${no}"><div class="ri-name" data-no="${no}" ${hasInfo(no)?'style="cursor:pointer"':''}><span class="no" style="background:${itemColor(no)}">${no}</span>${esc(itemName(no))}${hasInfo(no)?'<span class="info-ic">ⓘ 정보</span>':''}</div><div class="bars">`;
@@ -1534,13 +1553,17 @@ function renderResults(){
   document.querySelectorAll(".ri-name[data-no]").forEach(nm=>{
     nm.onclick=()=>{ if(hasInfo(+nm.dataset.no)) openInfo(+nm.dataset.no); };
   });
-  // 그룹별 차트: 전체 평균 vs 내 점수 (나란히)
+  // 그룹별 차트: 따로보기(기본)에서 전체 평균 위에 내 점수 겹침
   for(const g of GROUPS){
-    drawChartCard($("reschart-"+g.key+"-avg"), "resA-"+g.key, `${esc(g.name)} · 전체 평균`,
-      groupSeries(g,(no,a)=>{const r=agg(no,a); return r?+r.avg.toFixed(2):null;}), {big:true, infoOpts:{scores:true}});
-    if(meResp)
-      drawChartCard($("reschart-"+g.key+"-me"), "resM-"+g.key, `${esc(g.name)} · ${esc(meName)}님`,
-        groupSeries(g,(no,a)=>scoreOf(meResp,no,a)), {big:true, infoOpts:{scores:true}});
+    let overlay=null;
+    if(meResp){
+      overlay={};
+      for(const no of g.items) overlay[no]=ATTRS.map(([a])=>scoreOf(meResp,no,a));
+    }
+    drawChartCard($("reschart-"+g.key+"-avg"), "resA-"+g.key,
+      `${esc(g.name)} · 전체 평균${meResp?" vs 나":""}`,
+      groupSeries(g,(no,a)=>{const r=agg(no,a); return r?+r.avg.toFixed(2):null;}),
+      {big:true, infoOpts:{scores:true}, overlay});
   }
   $("resNote").textContent=`${n}명의 평가를 실시간으로 집계한 결과입니다`;
 }
