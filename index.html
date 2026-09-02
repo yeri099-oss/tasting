@@ -753,8 +753,9 @@ let db=null, auth=null;
 const store = {
   async init(){
     if(DEMO){ demoSeed(); return; }
-    firebase.initializeApp(FIREBASE_CONFIG);
-    auth = firebase.auth(); db = firebase.firestore();
+    // 전용 앱 이름으로 초기화 → 업무일지·매출·발주 앱과 로그인 저장소를 완전히 분리
+    const fbApp = firebase.initializeApp(FIREBASE_CONFIG, "jangTasting");
+    auth = fbApp.auth(); db = fbApp.firestore();
     // 저장된 로그인(관리자 등)이 있으면 유지 - 새 탭이 익명으로 덮어쓰지 않게
     await new Promise(r=>{ const un=auth.onAuthStateChanged(()=>{ un(); r(); }); });
     try{ if(!auth.currentUser) await auth.signInAnonymously(); }
