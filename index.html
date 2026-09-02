@@ -319,6 +319,74 @@ td.score:active{background:#eae4d8}
 .ie-file{padding:7px 12px;border:1px solid var(--ink);border-radius:8px;font-size:12.5px;font-weight:700;cursor:pointer;background:#fff}
 .ie-delimg{padding:7px 10px;border:1px solid #e0b7ae;border-radius:8px;font-size:12px;color:var(--red);background:#fff}
 
+/* ── 홈(허브) ── */
+.hub-head{text-align:center;padding:44px 0 26px}
+.hub-hi{font-size:25px;font-weight:800;letter-spacing:.03em}
+.hub-sub{font-size:13.5px;color:#6b6459;margin-top:8px;font-family:'Noto Sans KR',sans-serif;word-break:keep-all}
+.hub-btn{position:relative;display:flex;align-items:center;gap:14px;width:100%;max-width:480px;margin:0 auto 14px;
+  padding:20px 18px;background:#fff;border:1.5px solid var(--line);border-radius:16px;text-align:left;
+  box-shadow:0 3px 12px rgba(30,25,18,.06)}
+.hub-btn:active{background:var(--paper2)}
+.hub-btn .hb-ic{font-size:38px;flex-shrink:0}
+.hub-btn .hb-body{flex:1;min-width:0}
+.hub-btn .hb-body b{display:block;font-size:18px;font-weight:800;letter-spacing:.02em}
+.hub-btn .hb-body small{display:block;font-size:12px;color:#8a8378;margin-top:3px;font-family:'Noto Sans KR',sans-serif}
+.hub-btn .hb-bar{display:block;height:8px;background:var(--paper2);border-radius:4px;margin-top:10px;overflow:hidden}
+.hub-btn .hb-bar i{display:block;height:100%;background:var(--accent);border-radius:4px;transition:width .4s}
+.hub-btn .hb-pct{display:block;font-size:11.5px;color:#6b6459;margin-top:5px;font-family:'Noto Sans KR',sans-serif}
+.hub-btn .hb-arrow{font-size:24px;color:#c5bdae;flex-shrink:0}
+.hub-btn .hb-check{position:absolute;top:-9px;right:14px;background:var(--green);color:#fff;font-size:11.5px;
+  font-weight:700;border-radius:12px;padding:3px 11px;font-family:'Noto Sans KR',sans-serif;box-shadow:0 2px 6px rgba(0,0,0,.15)}
+.hub-btn.hub-result{border:2px solid var(--ink);background:var(--ink)}
+.hub-btn.hub-result .hb-body b{color:#fff}
+.hub-btn.hub-result .hb-body small{color:#cfc8ba}
+.hub-btn.hub-result .hb-arrow{color:#8a8378}
+.hub-lock{max-width:480px;margin:4px auto 0;text-align:center;font-size:12.5px;color:#8a8378;
+  background:var(--paper2);border:1px dashed var(--line);border-radius:12px;padding:14px;line-height:1.7;
+  font-family:'Noto Sans KR',sans-serif}
+/* ── 마지막 단계(TOP3+모임평가) ── */
+.t3-cnt{font-family:'Noto Sans KR',sans-serif;font-size:12.5px;color:var(--accent);font-weight:700;margin-left:8px}
+.fin-hint{font-size:13px;color:#6b6459;margin:2px 0 6px;font-family:'Noto Sans KR',sans-serif}
+.t3-glabel{font-size:13px;font-weight:800;margin:12px 0 6px;color:#4a453d}
+.t3-grid{display:flex;flex-wrap:wrap;gap:7px}
+.t3-chip{padding:9px 13px;border-radius:20px;border:2px solid var(--line);background:#fff;
+  font-size:13px;font-weight:700;font-family:'Noto Sans KR',sans-serif}
+.fin-q{font-size:15px;font-weight:700;margin:22px 0 9px}
+.fin-q .req{font-family:'Noto Sans KR',sans-serif;font-size:10.5px;color:#fff;background:var(--red);border-radius:8px;padding:1px 7px;vertical-align:2px;font-weight:700}
+.fin-q .opt-note{font-family:'Noto Sans KR',sans-serif;font-size:11.5px;color:#a39a8b;font-weight:400}
+.stars{display:flex;gap:6px}
+.stars button{font-size:37px;background:none;border:none;color:#ddd6c8;padding:0 3px;line-height:1}
+.stars button.on{color:#e0a63c}
+.opt-col{display:flex;flex-direction:column;gap:7px;font-family:'Noto Sans KR',sans-serif}
+.opt-col button{padding:12px;border-radius:10px;border:1.5px solid var(--line);background:#fff;font-size:14px;text-align:left;padding-left:16px}
+.opt-col button.on{background:var(--ink);color:#fff;border-color:var(--ink);font-weight:700}
+.opt-wrap{display:flex;flex-wrap:wrap;gap:7px;font-family:'Noto Sans KR',sans-serif}
+.opt-wrap button{padding:9px 14px;border-radius:20px;border:1.5px solid var(--line);background:#fff;font-size:13.5px}
+.opt-wrap button.on{background:var(--accent);color:#fff;border-color:var(--accent);font-weight:700}
+.fin-ta{width:100%;height:76px;border:1px solid var(--line);border-radius:10px;padding:11px;font-size:14.5px;resize:vertical;outline:none;background:#fff}
+.fin-ta:focus{border-color:var(--accent)}
+/* ── 장BTI 카드 ── */
+.jbti{position:relative;background:#fff;border-radius:20px;padding:26px 22px 20px;margin:18px 0 6px;
+  text-align:center;box-shadow:0 4px 18px rgba(30,25,18,.08);overflow:hidden}
+.jbti::before{content:"";position:absolute;inset:8px;border:1.5px solid var(--ac);border-radius:14px;pointer-events:none;opacity:.55}
+.jb-badge{display:inline-block;font-family:'Noto Sans KR',sans-serif;font-size:11px;font-weight:700;letter-spacing:.16em;
+  color:var(--ac);border:1px solid var(--ac);border-radius:18px;padding:3px 12px}
+.jb-emoji{font-size:74px;line-height:1;margin:16px 0 4px;filter:drop-shadow(0 4px 8px rgba(0,0,0,.12))}
+.jb-name{font-size:26px;font-weight:800;letter-spacing:.05em;margin-top:8px}
+.jb-tag{font-family:'Noto Sans KR',sans-serif;font-size:12.5px;color:var(--ac);margin-top:4px}
+.jb-why{font-family:'Noto Sans KR',sans-serif;font-size:12.5px;color:#4a453d;background:var(--tint);
+  border-radius:11px;padding:9px 13px;margin-top:13px;word-break:keep-all}
+.jb-why b{color:var(--ac)}
+.jb-gauge{display:flex;align-items:center;gap:8px;margin-top:11px;font-family:'Noto Sans KR',sans-serif;font-size:11.5px;font-weight:700;color:#4a453d}
+.jb-gauge b{color:var(--ac)}
+.jb-track{flex:1;height:9px;background:#eee8dc;border-radius:5px;overflow:hidden}
+.jb-fill{display:block;height:100%;background:var(--ac);border-radius:5px}
+.jb-top3{margin-top:13px;text-align:left;background:var(--paper);border:1px solid var(--line);border-radius:11px;padding:9px 13px;font-family:'Noto Sans KR',sans-serif}
+.jb-top3 .tl{font-size:10px;font-weight:700;color:var(--ac);letter-spacing:.14em;margin-bottom:3px}
+.jb-top3 .ti{font-size:12px;color:#2c2820;line-height:1.65}
+.jb-share{margin-top:13px;width:100%;padding:12px;border-radius:10px;border:1.5px solid var(--ac);
+  background:#fff;color:var(--ac);font-size:14px;font-weight:700;font-family:'Noto Sans KR',sans-serif}
+.jb-share:active{background:var(--tint)}
 /* ── 관리자 ── */
 .adm-head{padding:26px 0 10px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px}
 .adm-head h2{font-size:22px;font-weight:800}
@@ -396,12 +464,17 @@ td.score:active{background:#eae4d8}
   <div class="cover-foot">꽃, 밥에피다 북촌 그로서란트</div>
 </div>
 
+<!-- ═══════════ 홈(허브) ═══════════ -->
+<div class="page" id="page-hub"><div class="wrap" id="hubWrap"></div></div>
+
 <!-- ═══════════ 설문 1~5 페이지 (JS 렌더) ═══════════ -->
 <div class="page" id="page-s1"><div class="wrap" id="sheet1"></div></div>
 <div class="page" id="page-s2"><div class="wrap" id="sheet2"></div></div>
 <div class="page" id="page-s3"><div class="wrap" id="sheet3"></div></div>
 <div class="page" id="page-s4"><div class="wrap" id="sheet4"></div></div>
 <div class="page" id="page-s5"><div class="wrap" id="sheet5"></div></div>
+<div class="page" id="page-s6"><div class="wrap" id="sheet6"></div></div>
+<div class="page" id="page-s7"><div class="wrap" id="sheet7"></div></div>
 
 <!-- ═══════════ 결과 페이지 ═══════════ -->
 <div class="page" id="page-result">
@@ -440,7 +513,8 @@ td.score:active{background:#eae4d8}
       <h2>관리자</h2>
       <div class="adm-actions">
         <button id="btnAdmResult">전체 결과 보기</button>
-        <button id="btnAdmCsv">CSV 다운로드</button>
+        <button id="btnAdmCsv">채점표 CSV</button>
+        <button id="btnAdmCsv2">요약 CSV (TOP3·장BTI·모임평가)</button>
         <button id="btnAdmItems">항목명 수정</button>
         <button id="btnAdmLogout">로그아웃</button>
       </div>
@@ -450,6 +524,7 @@ td.score:active{background:#eae4d8}
       <thead><tr><th>이름</th><th>전화번호</th><th>진행</th><th>결과 링크</th><th>관리</th></tr></thead>
       <tbody id="admRows"></tbody>
     </table></div>
+    <div id="admMeet" style="margin-top:26px"></div>
     <div id="admItemEdit" style="display:none;margin-top:22px">
       <h3 style="font-size:16px;font-weight:800;margin-bottom:6px">장 정보 관리 (이름·설명·사진)</h3>
       <div class="adm-note">이름을 고치거나 설명·사진을 넣고 저장하면 모든 참석자 화면에 반영됩니다. 설명이나 사진이 있는 장은 설문지 이름 옆에 ⓘ 버튼이 생겨요. (사진은 자동으로 용량이 줄어 저장됩니다)</div>
@@ -533,7 +608,7 @@ td.score:active{background:#eae4d8}
 <div class="toast" id="toast"></div>
 <script>
 /* ═══════════════ 기본 데이터 ═══════════════ */
-const ATTRS = [["c","색"],["s","짠맛"],["b","바디감"],["u","감칠맛"],["w","단맛"]];
+const ATTRS = [["c","색"],["s","짠맛"],["b","바디감"],["u","감칠맛"],["w","만족도"]];
 const DEFAULT_ITEMS = {
   1:"1년 숙성 양장 청장 (백태, 천일염)",
   2:"1년 숙성 양장 청장 (백태, 죽염)",
@@ -557,17 +632,17 @@ const DEFAULT_ITEMS = {
   20:"어육장 - 간장에 생선·육류를 넣어 감칠맛 강화"
 };
 const GROUPS = [
-  {key:"cheong", name:"청장", sub:"숙성 0~3년, 맑고 가벼운 맛", cnt:"6종", items:[1,2,3,4,5,6], page:1, col:"청장 종류"},
+  {key:"cheong", name:"청장", hanja:"淸醬", sub:"맑을 청 - 숙성 0~3년, 맑고 가벼운 맛", cnt:"6종", items:[1,2,3,4,5,6], page:1, col:"청장 종류"},
   {key:"jung",   name:"중장", sub:"숙성 3~5년",                cnt:"4종", items:[7,8,9,10], page:2, col:"중장 종류"},
-  {key:"jin",    name:"진장", sub:"숙성 10년 이상",            cnt:"4종", items:[11,12,13,14], page:3, col:"진장 종류"},
+  {key:"jin",    name:"진장", hanja:"津醬", sub:"진할 진(농도가 짙다) - 숙성 10년 이상", cnt:"4종", items:[11,12,13,14], page:3, col:"진장 종류"},
   {key:"tongil", name:"통일간장", sub:"된장을 블렌딩한 간장",   cnt:"2종", items:[15,16], page:4, col:"통일간장 종류"},
   {key:"jangryu",name:"장류", sub:"된장·막장·어육장 계열",      cnt:"4종", items:[17,18,19,20], page:5, col:"장류 종류"}
 ];
 const PAGE_TITLES = [
   null,
-  {t:"청장", s:"숙성 0~3년, 맑고 가벼운 맛 [6종]", d:"아래 6종을 시음하시고, 1~5점으로 맛을 평가해 주세요"},
+  {t:"청장 淸醬", s:"맑을 청 - 숙성 0~3년, 맑고 가벼운 맛 [6종]", d:"아래 6종을 시음하시고, 1~5점으로 맛을 평가해 주세요"},
   {t:"중장", s:"숙성 3~5년 [4종]", d:"아래 4종을 시음하시고, 1~5점으로 맛을 평가해 주세요"},
-  {t:"진장", s:"숙성 10년 이상 [4종]", d:"아래 4종을 시음하시고, 1~5점으로 맛을 평가해 주세요"},
+  {t:"진장 津醬", s:"진할 진(농도가 짙다) - 숙성 10년 이상 [4종]", d:"아래 4종을 시음하시고, 1~5점으로 맛을 평가해 주세요"},
   {t:"통일간장", s:"된장을 블렌딩한 간장 [2종]", d:"아래 2종을 시음하시고, 1~5점으로 맛을 평가해 주세요"},
   {t:"장류", s:"된장·막장·어육장 계열 [4종]", d:"아래 4종을 시음하시고, 1~5점으로 맛을 평가해 주세요"}
 ];
@@ -675,7 +750,9 @@ const store = {
     if(DEMO){ demoSeed(); return; }
     firebase.initializeApp(FIREBASE_CONFIG);
     auth = firebase.auth(); db = firebase.firestore();
-    try{ await auth.signInAnonymously(); }
+    // 저장된 로그인(관리자 등)이 있으면 유지 - 새 탭이 익명으로 덮어쓰지 않게
+    await new Promise(r=>{ const un=auth.onAuthStateChanged(()=>{ un(); r(); }); });
+    try{ if(!auth.currentUser) await auth.signInAnonymously(); }
     catch(e){
       const b=$("netBanner");
       b.innerHTML = "접속 준비 중 문제가 발생했습니다.<br>관리자에게 알려주세요. ("+esc(e.code||e.message)+")";
@@ -785,7 +862,10 @@ function demoSeed(){
       scores[no]={}; for(const [a] of ATTRS) scores[no][a]=1+Math.floor(Math.random()*5);
     }
     comments[1+i*3]="구수하고 깊은 맛이에요"; comments[11]="확실히 진하고 묵직합니다";
-    demoDB.resp[pid]={name:nm, scores, comments};
+    const top3=[[11,14,20],[2,4,9],[1,10,20]][i];
+    const meet={sat:4+(i%2), expect:[5,4,3][i], best:[["장 시음 구성","장 설명과 이야기"],["곁들인 음식"],["함께한 사람들","공간과 분위기"]][i],
+      good:["씨간장 비교가 인상적이었어요","설명 덕분에 차이가 느껴졌어요",""][i], want:["","다음엔 페어링 음식이 더 많았으면","조명이 조금 어두웠어요"][i]};
+    demoDB.resp[pid]={name:nm, scores, comments, top3, meet};
     demoDB.phone[pid]={name:nm, phone:"010-1234-000"+i};
   });
   ITEM_INFO[1]={desc:"백태와 천일염으로 담가 1년 숙성한 기본 청장입니다. 맑고 깔끔한 첫맛이 특징이에요.", img:document.querySelector('link[rel="icon"]')?.href||""};
@@ -871,8 +951,9 @@ function itemColor(no){
 
 /* ═══════════════ 설문 페이지 렌더 ═══════════════ */
 function renderSurveyPage(p){
-  const host=$("sheet"+p); const info=PAGE_TITLES[p];
-  const groups=GROUPS.filter(g=>g.page===p);
+  const sp=p-FIRST_SURVEY+1;              // 1~5 (설문 시트 번호)
+  const host=$("sheet"+sp); const info=PAGE_TITLES[sp];
+  const groups=GROUPS.filter(g=>g.page===sp);
   let h=`<div class="sheet-head">
     <div class="sheet-title">${esc(info.t)} <small>- ${esc(info.s)}</small></div>
     <div class="sheet-desc">${esc(info.d)} · 점수 칸을 누르면 점수를, 간장 이름을 누르면 정보·코멘트 창이 열려요</div>
@@ -891,7 +972,7 @@ function renderSurveyPage(p){
         h+=`<td class="score ${v?'filled':''}" data-no="${no}" data-attr="${a}" style="${v?`background:${col}26;color:${col};`:''}">${v??"·"}</td>`;
       }
       const c=myResp.comments?.[no];
-      h+=`</tr><tr class="cmt-row"><td colspan="7" class="cmtline" data-no="${no}" style="border:2.5px solid ${col}"><span class="info-ic" style="background:${col};margin-left:0;margin-right:7px">✎ 코멘트</span>${c?`<span class="cl-txt">${esc(c)}</span>`:`<span class="cl-ph">한줄 코멘트를 남겨보세요</span>`}</td></tr>`;
+      h+=`</tr><tr class="cmt-row"><td colspan="7" class="cmtline" data-no="${no}" style="border:2.5px solid ${col}"><span class="info-ic" style="background:${col};margin-left:0;margin-right:7px">✎ 코멘트</span>${c?`<span class="cl-txt">${esc(c)}</span>`:`<span class="cl-ph">풍미와 전체느낌을 남겨보세요</span>`}</td></tr>`;
     }
     const myCnt=Object.keys(myResp.comments||{}).filter(no=>myResp.comments[no]).length;
     h+=`</tbody></table></div>
@@ -993,7 +1074,7 @@ function openCmtHub(){
   $("cmtHub").classList.add("on");
 }
 function refreshAfterInput(no){
-  const p=GROUPS.find(g=>g.items.includes(+no)).page;
+  const p=GROUPS.find(g=>g.items.includes(+no)).page + FIRST_SURVEY - 1;
   renderSurveyPage(p);
   updateProgressLine();
 }
@@ -1004,26 +1085,262 @@ function saveIndicator(st){
   if(st==="saved"){ clearTimeout(el._tm); el._tm=setTimeout(()=>el.textContent="",1600); }
 }
 
+/* ═══════════════ 마지막 단계: 최애 TOP3 + 모임평가 ═══════════════ */
+const MEET_EXPECT=[[5,"기대 훨씬 이상이었어요"],[4,"기대보다 좋았어요"],[3,"기대한 만큼이었어요"],[2,"기대에 조금 못 미쳤어요"],[1,"많이 아쉬웠어요"]];
+const MEET_BEST=["장 시음 구성","장 설명과 이야기","곁들인 음식","공간과 분위기","함께한 사람들","진행 방식"];
+function renderTop3Page(){
+  const host=$("sheet6");
+  const t3=myResp.top3||[];
+  let h=`<div class="sheet-head">
+    <div class="sheet-title">최애 TOP3 <small>- 오늘의 인생 간장</small></div>
+    <div class="sheet-desc">가장 마음에 들었던 장 3가지를 골라주세요. 나의 장BTI 판정에 사용됩니다</div>
+  </div>
+  <div class="group-sub">🏆 오늘의 최애 장 <span class="t3-cnt" id="t3cnt">${t3.length}/3 선택</span></div>`;
+  for(const g of GROUPS){
+    h+=`<div class="t3-glabel">${esc(g.name)}</div><div class="t3-grid">`;
+    for(const no of g.items){
+      const on=t3.includes(no), col=itemColor(no);
+      h+=`<button class="t3-chip ${on?'on':''}" data-no="${no}" style="${on?`background:${col};border-color:${col};color:#fff`:`border-color:${col};color:#3a352c`}">${no}번 ${esc(itemName(no).replace(/\s*\(.*$/,"").replace(/\s*\[.*\]\s*/,"").replace(/\s*-.*$/,""))}</button>`;
+    }
+    h+=`</div>`;
+  }
+  host.innerHTML=h;
+  host.querySelectorAll(".t3-chip").forEach(b=>b.onclick=()=>{
+    const no=+b.dataset.no;
+    myResp.top3 = myResp.top3||[];
+    if(myResp.top3.includes(no)) myResp.top3=myResp.top3.filter(x=>x!==no);
+    else{
+      if(myResp.top3.length>=3){ toast("3가지까지만 고를 수 있어요. 다른 선택을 해제해 주세요"); return; }
+      myResp.top3.push(no);
+    }
+    saveMeet({top3:myResp.top3});
+    renderTop3Page();
+  });
+}
+function renderMeetPage(){
+  const host=$("sheet7");
+  const meet=myResp.meet||{};
+  let h=`<div class="sheet-head">
+    <div class="sheet-title">모임 평가 <small>- 1분이면 충분해요</small></div>
+    <div class="sheet-desc">오늘 모임에 대한 솔직한 의견을 들려주세요</div>
+  </div>
+  <div class="fin-q">1. 오늘 모임은 전반적으로 어떠셨나요? <b class="req">필수</b></div>
+  <div class="stars" id="meetStars">${[1,2,3,4,5].map(v=>`<button data-v="${v}" class="${meet.sat>=v?'on':''}">★</button>`).join("")}</div>
+  <div class="fin-q">2. 기대했던 것과 비교하면 어땠나요? <b class="req">필수</b></div>
+  <div class="opt-col" id="meetExpect">${MEET_EXPECT.map(([v,l])=>`<button data-v="${v}" class="${meet.expect===v?'on':''}">${l}</button>`).join("")}</div>
+  <div class="fin-q">3. 오늘 가장 좋았던 것은? <span class="opt-note">복수 선택 가능</span></div>
+  <div class="opt-wrap" id="meetBest">${MEET_BEST.map(l=>`<button data-l="${esc(l)}" class="${(meet.best||[]).includes(l)?'on':''}">${l}</button>`).join("")}</div>
+  <div class="fin-q">4. 좋았던 점을 자유롭게 적어주세요 <span class="opt-note">선택</span></div>
+  <textarea class="fin-ta" id="meetGood" maxlength="300" placeholder="오늘 가장 기억에 남는 순간이나 맛이 있다면?">${esc(meet.good||"")}</textarea>
+  <div class="fin-q">5. 아쉬웠던 점이나 다음에 바라는 점이 있다면? <span class="opt-note">선택</span></div>
+  <textarea class="fin-ta" id="meetWant" maxlength="300" placeholder="편하게 적어주세요. 다음 모임에 꼭 반영할게요">${esc(meet.want||"")}</textarea>`;
+  host.innerHTML=h;
+  $("meetStars").querySelectorAll("button").forEach(b=>b.onclick=()=>{
+    (myResp.meet ||= {}).sat=+b.dataset.v; saveMeet({meet:{sat:+b.dataset.v}}); renderMeetPage();
+  });
+  $("meetExpect").querySelectorAll("button").forEach(b=>b.onclick=()=>{
+    (myResp.meet ||= {}).expect=+b.dataset.v; saveMeet({meet:{expect:+b.dataset.v}}); renderMeetPage();
+  });
+  $("meetBest").querySelectorAll("button").forEach(b=>b.onclick=()=>{
+    const l=b.dataset.l; myResp.meet ||= {};
+    const cur=myResp.meet.best||[];
+    myResp.meet.best = cur.includes(l)? cur.filter(x=>x!==l) : [...cur,l];
+    saveMeet({meet:{best:myResp.meet.best}}); renderMeetPage();
+  });
+  $("meetGood").onchange=flushMeetText;
+  $("meetWant").onchange=flushMeetText;
+}
+function flushMeetText(){
+  const g=$("meetGood"), w=$("meetWant");
+  if(!g||!w) return;
+  myResp.meet ||= {};
+  const good=g.value.trim(), want=w.value.trim();
+  if(good!==(myResp.meet.good||"") || want!==(myResp.meet.want||"")){
+    myResp.meet.good=good; myResp.meet.want=want;
+    saveMeet({meet:{good,want}});
+  }
+}
+async function saveMeet(partial){
+  saveIndicator("saving");
+  try{ await store.saveResponse(me.pid, partial); saveIndicator("saved"); }
+  catch(e){ saveIndicator("err"); toast("저장 실패 - 네트워크를 확인해 주세요"); }
+}
+
+/* ═══════════════ 장BTI 판정 ═══════════════ */
+const JBTI_TYPES={
+  jin:{emoji:"🏺",name:"깊은장 수호자",tag:'"오래 묵을수록 진리"',ac:"#7a4a2b",tint:"#f1e6da",gl:"깊은장 성향"},
+  cheong:{emoji:"🌿",name:"맑은장 선비",tag:'"가벼운 것이 가장 어렵다"',ac:"#4d6b4d",tint:"#e7ede4",gl:"맑은장 성향"},
+  mid:{emoji:"⚖️",name:"중용의 장인",tag:'"과하지도 모자라지도 않게"',ac:"#8a6a2f",tint:"#f0e9d6",gl:"중용 성향"},
+  ryu:{emoji:"🥘",name:"구수한 밥상꾼",tag:'"밥 한 그릇이면 충분해"',ac:"#a2542e",tint:"#f3e5da",gl:"구수 성향"},
+  exp:{emoji:"🧭",name:"장맛 탐험가",tag:'"모든 장에는 저마다의 답이 있다"',ac:"#3e5a78",tint:"#e5eaef",gl:"탐험 성향"}
+};
+function jangCatOf(no){ return no<=6?"cheong" : (no<=10||no===15||no===16)?"mid" : no<=14?"jin" : "ryu"; }
+function jangTypeOf(resp){
+  const t=resp?.top3||[]; if(t.length<3) return null;
+  const c={cheong:0,mid:0,jin:0,ryu:0};
+  t.forEach(no=>c[jangCatOf(no)]++);
+  let key=null, cnt=0;
+  for(const k of ["jin","cheong","mid","ryu"]) if(c[k]>=2 && c[k]>cnt){ key=k; cnt=c[k]; }
+  const CATNAME={jin:"10년 이상 숙성장",cheong:"맑고 가벼운 청장",mid:"3~5년 중장·통일간장",ryu:"된장·막장·어육장 계열"};
+  if(key) return {...JBTI_TYPES[key], key, gp:Math.round(cnt/3*100),
+    why:`최애 3개 중 <b>${cnt}개</b>를 ${CATNAME[key]}에서 골랐어요`};
+  return {...JBTI_TYPES.exp, key:"exp", gp:100, why:`최애 3개를 <b>세 가지 계열</b>에서 하나씩 골랐어요`};
+}
+function jbtiCardHTML(resp, name){
+  const t=jangTypeOf(resp);
+  if(!t) return "";
+  const top3=(resp.top3||[]).map(no=>`<div class="ti"><b style="color:${itemColor(no)}">${no}번</b> ${esc(itemName(no))}</div>`).join("");
+  return `<div class="jbti" style="--ac:${t.ac};--tint:${t.tint}">
+    <div class="jb-badge">장BTI · ${esc(name||"나")}님의 간장취향</div>
+    <div class="jb-emoji">${t.emoji}</div>
+    <div class="jb-name">${t.name}</div>
+    <div class="jb-tag">${t.tag}</div>
+    <div class="jb-why">${t.why}</div>
+    <div class="jb-gauge"><span>${t.gl}</span><span class="jb-track"><span class="jb-fill" style="width:${t.gp}%"></span></span><b>${t.gp}%</b></div>
+    <div class="jb-top3"><div class="tl">나의 최애 TOP3</div>${top3}</div>
+    <button class="jb-share" id="jbShare">🖼 카드 이미지 저장 · 공유</button>
+  </div>`;
+}
+
+/* 장BTI 카드를 캔버스 이미지로 그려 저장·공유 */
+async function jbtiImageBlob(resp, name){
+  const t=jangTypeOf(resp); if(!t) return null;
+  try{ await document.fonts.ready; }catch(e){}
+  const W=720, H=1280;
+  const cv=document.createElement("canvas"); cv.width=W; cv.height=H;
+  const x=cv.getContext("2d");
+  const MJ="'Nanum Myeongjo',serif", NS="'Noto Sans KR',sans-serif";
+  const rr=(px,py,w,h,r)=>{ x.beginPath(); x.roundRect(px,py,w,h,r); };
+  // 배경 + 테두리
+  x.fillStyle="#faf8f4"; x.fillRect(0,0,W,H);
+  x.strokeStyle=t.ac; x.globalAlpha=.55; x.lineWidth=3; rr(22,22,W-44,H-44,28); x.stroke(); x.globalAlpha=1;
+  x.textAlign="center";
+  // 배지
+  x.font="700 24px "+NS;
+  const bt="장 B T I  ·  나 의  간 장 취 향";
+  const bw=x.measureText(bt).width+56;
+  x.strokeStyle=t.ac; x.lineWidth=2; rr(W/2-bw/2,72,bw,52,26); x.stroke();
+  x.fillStyle=t.ac; x.fillText(bt, W/2, 107);
+  // 그림 + 유형명 (정중앙)
+  x.font="200px "+NS; x.fillText(t.emoji, W/2, 470);
+  x.fillStyle="#1c1a17"; x.font="800 62px "+MJ; x.fillText(t.name, W/2, 590);
+  x.fillStyle=t.ac; x.font="26px "+NS; x.fillText(t.tag, W/2, 640);
+  // 근거문
+  const why=t.why.replace(/<[^>]+>/g,"");
+  x.fillStyle=t.tint; rr(60,720,W-120,84,20); x.fill();
+  x.fillStyle="#4a453d"; x.font="26px "+NS; x.fillText(why, W/2, 772);
+  // 게이지
+  x.textAlign="left"; x.fillStyle="#4a453d"; x.font="700 24px "+NS; x.fillText(t.gl, 60, 862);
+  x.textAlign="right"; x.fillStyle=t.ac; x.fillText(t.gp+"%", W-60, 862);
+  x.fillStyle="#eee8dc"; rr(60,880,W-120,18,9); x.fill();
+  x.fillStyle=t.ac; rr(60,880,(W-120)*t.gp/100,18,9); x.fill();
+  // TOP3
+  x.fillStyle="#fff"; x.strokeStyle="#e4ddcf"; x.lineWidth=2;
+  rr(60,940,W-120,190,20); x.fill(); rr(60,940,W-120,190,20); x.stroke();
+  x.textAlign="left"; x.fillStyle=t.ac; x.font="700 20px "+NS; x.fillText("나 의  최 애  T O P 3", 88, 984);
+  x.font="24px "+NS;
+  (resp.top3||[]).slice(0,3).forEach((no,i)=>{
+    let line=no+"번  "+itemName(no);
+    while(x.measureText(line).width > W-190 && line.length>4) line=line.slice(0,-2)+"…";
+    x.fillStyle="#2c2820"; x.fillText(line, 88, 1026+i*38);
+  });
+  // 이름 + 푸터
+  x.textAlign="center"; x.fillStyle="#a39a8b"; x.font="22px "+NS;
+  x.fillText((name?name+"님 · ":"")+"옹기뜸골 전통장 20가지 테이스팅", W/2, 1206);
+  return new Promise(res=>cv.toBlob(res,"image/png"));
+}
+async function shareJbtiImage(){
+  const mePid=viewPid||me?.pid;
+  const resp=(mePid&&allResp[mePid]) || (me?myResp:null);
+  const name=resp?.name||me?.name||"";
+  const blob=await jbtiImageBlob(resp, name);
+  if(!blob){ toast("최애 TOP3를 고르면 카드가 만들어져요"); return; }
+  const file=new File([blob], "나의장BTI.png", {type:"image/png"});
+  if(navigator.canShare && navigator.canShare({files:[file]})){
+    try{ await navigator.share({files:[file], title:"나의 장BTI", text:"옹기뜸골 전통장 테이스팅 - 나의 간장취향"}); return; }
+    catch(e){ if(e.name==="AbortError") return; }
+  }
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(blob); a.download="나의장BTI.png"; a.click();
+  toast("카드 이미지가 저장되었습니다");
+}
+
 /* ═══════════════ 페이지 이동 ═══════════════ */
-const PAGE_IDS=["page-cover","page-s1","page-s2","page-s3","page-s4","page-s5","page-result"];
-const LAST_SURVEY=5, RESULT_PAGE=6;
+const PAGE_IDS=["page-cover","page-hub","page-s1","page-s2","page-s3","page-s4","page-s5","page-s6","page-s7","page-result"];
+const HUB=1, FIRST_SURVEY=2, LAST_SURVEY=6, TOP3_PAGE=7, MEET_PAGE=8, RESULT_PAGE=9;
 function go(p){
   curPage=p;
   PAGE_IDS.forEach((id,i)=>$(id).classList.toggle("on", i===p));
   $("page-admin").classList.remove("on");
-  $("navbar").style.display = (p>=1 && me) ? "block" : "none";
-  if(p>=1&&p<=LAST_SURVEY) renderSurveyPage(p);
+  $("navbar").style.display = (p>=FIRST_SURVEY && me) ? "block" : "none";
+  if(p===HUB) renderHub();
+  if(p>=FIRST_SURVEY&&p<=LAST_SURVEY) renderSurveyPage(p);
+  if(p===TOP3_PAGE) renderTop3Page();
+  if(p===MEET_PAGE) renderMeetPage();
   if(p===RESULT_PAGE) renderResults();
   updateNav(); updateProgressLine();
   window.scrollTo(0,0);
   if(p===RESULT_PAGE) startListen(); else if(!isAdmin) stopListen();
 }
+function finalComplete(){
+  return (myResp.top3?.length===3) && !!myResp.meet?.sat && !!myResp.meet?.expect;
+}
 function updateNav(){
   const prev=$("btnPrev"), next=$("btnNext");
-  prev.style.display = curPage<=1 ? "none":"block";
-  if(curPage===RESULT_PAGE){ prev.style.display="block"; prev.textContent="설문 수정"; next.style.display="none"; }
-  else{ prev.textContent="이전"; next.style.display="block"; next.textContent = curPage===LAST_SURVEY ? "결과 보기" : "다음"; }
-  $("pageDots").innerHTML=[1,2,3,4,5,6].map(i=>`<i class="${i===curPage?'on':''}"></i>`).join("");
+  prev.style.display="block"; next.style.display="block";
+  if(curPage===RESULT_PAGE){ prev.textContent="홈으로"; next.style.display="none"; }
+  else if(curPage===MEET_PAGE){ prev.textContent="홈으로"; next.textContent="완료"; }
+  else if(curPage===TOP3_PAGE){ prev.textContent="이전"; next.textContent="저장하고 홈으로"; }
+  else if(curPage===FIRST_SURVEY){ prev.textContent="홈으로"; next.textContent="다음"; }
+  else{ prev.textContent="이전"; next.textContent = curPage===LAST_SURVEY ? "최애 TOP3 고르기" : "다음"; }
+  const dots=[FIRST_SURVEY,3,4,5,6,TOP3_PAGE];
+  $("pageDots").innerHTML = (curPage>=FIRST_SURVEY&&curPage<=TOP3_PAGE)
+    ? dots.map(i=>`<i class="${i===curPage?'on':''}"></i>`).join("") : "";
+}
+
+/* ═══════════════ 홈(허브) ═══════════════ */
+function renderHub(){
+  const pr=myProgress(myResp);
+  const t3n=myResp.top3?.length||0;
+  const tastePct=Math.round((pr.filled+t3n)/103*100);
+  const tasteDone=pr.filled===100&&t3n===3;
+  const m=myResp.meet||{};
+  const meetPct=Math.min(100,(m.sat?40:0)+(m.expect?40:0)+((m.best||[]).length?10:0)+(m.good?5:0)+(m.want?5:0));
+  const meetDone=!!(m.sat&&m.expect);
+  const unlocked=finalComplete();
+  $("hubWrap").innerHTML=`
+  <div class="hub-head">
+    <div class="hub-hi">${esc(me?.name||"")}님, 반갑습니다</div>
+    <div class="hub-sub">원하는 평가를 눌러 진행해 주세요. 중간에 나갔다 들어와도 이어서 할 수 있어요.</div>
+  </div>
+  <button class="hub-btn" id="hubTaste">
+    ${tasteDone?'<span class="hb-check">✓ 완료</span>':""}
+    <span class="hb-ic">🍶</span>
+    <span class="hb-body">
+      <b>맛 평가</b><small>장 20종 채점 · 최애 TOP3 고르기</small>
+      <span class="hb-bar"><i style="width:${tastePct}%"></i></span>
+      <span class="hb-pct">${tastePct}% 진행 ${tasteDone?"":`(채점 ${pr.filled}/100 · 최애 ${t3n}/3)`}</span>
+    </span><span class="hb-arrow">›</span>
+  </button>
+  <button class="hub-btn" id="hubMeet">
+    ${meetDone?'<span class="hb-check">✓ 완료</span>':""}
+    <span class="hb-ic">📝</span>
+    <span class="hb-body">
+      <b>모임 평가</b><small>오늘 모임에 대한 별점과 소감 (1분)</small>
+      <span class="hb-bar"><i style="width:${meetPct}%"></i></span>
+      <span class="hb-pct">${meetPct}% 진행</span>
+    </span><span class="hb-arrow">›</span>
+  </button>
+  ${unlocked
+    ? `<button class="hub-btn hub-result" id="hubResult">
+        <span class="hb-ic">📊</span>
+        <span class="hb-body"><b>결과 보기</b><small>나의 장BTI와 실시간 전체 집계</small></span>
+        <span class="hb-arrow">›</span></button>`
+    : `<div class="hub-lock">🔒 최애 TOP3와 모임평가(별점·기대충족)를 마치면<br>결과 보기 버튼이 열려요</div>`}
+  <div class="cover-foot" style="margin-top:30px">꽃, 밥에피다 북촌 그로서란트</div>`;
+  $("hubTaste").onclick=()=>go(FIRST_SURVEY);
+  $("hubMeet").onclick=()=>go(MEET_PAGE);
+  const hr=$("hubResult"); if(hr) hr.onclick=()=>go(RESULT_PAGE);
 }
 function updateProgressLine(){
   if(!me){ $("progLine").textContent=""; return; }
@@ -1095,8 +1412,9 @@ function renderResults(){
   }
 
   let h="";
+  if(meResp) h+=jbtiCardHTML(meResp, meName);
   for(const g of GROUPS){
-    h+=`<div class="res-group" id="resg-${g.key}"><h3>${esc(g.name)} <small style="font-size:13px;font-weight:400">${g.sub?esc(g.sub)+" · ":""}${g.cnt}</small></h3><div class="rg-sub"></div>`;
+    h+=`<div class="res-group" id="resg-${g.key}"><h3>${esc(g.name)}${g.hanja?" "+g.hanja:""} <small style="font-size:13px;font-weight:400">${g.sub?esc(g.sub)+" · ":""}${g.cnt}</small></h3><div class="rg-sub"></div>`;
     // 명예의 전당 (분야별 1위)
     h+=hofHTML(g, meResp);
     // 그룹 레이더: 전체 평균 vs 내 점수 나란히
@@ -1163,6 +1481,7 @@ function renderResults(){
       if(t) t.scrollIntoView({behavior:"smooth", block:"start"});
     };
   });
+  const jb=$("jbShare"); if(jb) jb.onclick=shareJbtiImage;
   // 명예의 전당: 분야 드롭다운 + 시상대 클릭 → 내 평가·간장 정보 창
   document.querySelectorAll(".hof-sel").forEach(s=>{
     s.onchange=()=>{ hofAttr[s.dataset.g]=s.value; renderResults(); };
@@ -1235,6 +1554,29 @@ function renderAdmin(){
     if(!confirm(`'${nm}' 참석자의 설문을 삭제할까요? 되돌릴 수 없습니다.`)) return;
     try{ await store.deleteParticipant(b.dataset.del); toast("삭제되었습니다"); }catch(e){ toast("삭제 실패: "+(e.code||"")); }
   });
+  renderAdmMeet();
+}
+function renderAdmMeet(){
+  const box=$("admMeet"); if(!box) return;
+  const ms=Object.values(allResp).filter(r=>r.meet&&(r.meet.sat||r.meet.expect));
+  if(!ms.length){ box.innerHTML=`<div class="adm-note">아직 제출된 모임평가가 없습니다</div>`; return; }
+  const avg=(arr)=>arr.length? (arr.reduce((a,b)=>a+b,0)/arr.length) : 0;
+  const sats=ms.map(r=>r.meet.sat).filter(Boolean);
+  const exps=ms.map(r=>r.meet.expect).filter(Boolean);
+  const bestCnt={};
+  ms.forEach(r=>(r.meet.best||[]).forEach(l=>bestCnt[l]=(bestCnt[l]||0)+1));
+  const bests=Object.entries(bestCnt).sort((a,b)=>b[1]-a[1]);
+  const expLabel={5:"기대 훨씬 이상",4:"기대보다 좋음",3:"기대만큼",2:"기대에 못 미침",1:"많이 아쉬움"};
+  let h=`<h3 style="font-size:16px;font-weight:800;margin-bottom:8px">모임평가 집계 (${ms.length}명 제출)</h3>
+  <div class="adm-note">전반 만족도 평균 <b>★ ${avg(sats).toFixed(1)}</b> · 기대충족 평균 <b>${avg(exps).toFixed(1)}/5</b></div>
+  <div class="adm-note">좋았던 점: ${bests.map(([l,c])=>`${l} ${c}명`).join(", ")||"-"}</div>`;
+  const lines=[];
+  ms.forEach(r=>{
+    if(r.meet.good) lines.push(`<div class="ha-line"><b>${esc(r.name||"-")}</b> (좋았던 점) ${esc(r.meet.good)}</div>`);
+    if(r.meet.want) lines.push(`<div class="ha-line"><b>${esc(r.name||"-")}</b> (바라는 점) ${esc(r.meet.want)}</div>`);
+  });
+  if(lines.length) h+=`<div style="background:#fff;border:1px solid var(--line);border-radius:10px;padding:10px 14px;margin-top:8px">${lines.join("")}</div>`;
+  box.innerHTML=h;
 }
 function addAdminBack(){
   if($("admBackBtn")) return;
@@ -1291,31 +1633,40 @@ function renderItemEdit(){
   });
 }
 async function saveItemsEdit(){
+  const btn=$("btnItemsSave");
+  // 관리자 인증이 살아있는지 먼저 확인 (다른 탭 로그인으로 풀릴 수 있음)
+  if(!DEMO && auth.currentUser?.email!==ADMIN_EMAIL){
+    alert("관리자 인증이 풀려 있어 저장할 수 없습니다.\n(다른 탭에서 이 사이트의 다른 앱에 로그인하면 인증이 바뀝니다)\n\n확인을 누르면 첫 화면으로 이동합니다. '관리자 로그인'으로 다시 들어와 저장해 주세요. 작성한 내용은 화면에 남아 있어요.");
+    return;
+  }
   const items={};
-  const btn=$("btnItemsSave"); btn.disabled=true; btn.textContent="저장 중…";
-  try{
-    const jobs=[];
-    $("itemEditRows").querySelectorAll(".iedit").forEach(row=>{
-      const no=row.dataset.no;
-      items[no]=row.querySelector(".ie-name").value.trim()||DEFAULT_ITEMS[no];
-      const desc=row.querySelector(".ie-desc").value.trim();
-      const thumb=row.querySelector(".ie-thumb");
-      const img=(thumb.style.display==="none")?"":(thumb.getAttribute("src")||"");
-      const old=ITEM_INFO[no]||{};
-      if(desc!==(old.desc||"") || row.dataset.imgdirty){
-        ITEM_INFO[no]={desc, img};
-        jobs.push(store.saveItemInfo(+no, {desc, img}));
-      }
-    });
-    await store.saveItems(items); ITEMS={...DEFAULT_ITEMS,...items};
-    await Promise.all(jobs);
-    toast("장 정보가 저장되었습니다"); renderAdmin();
-  }catch(e){ toast("저장 실패: "+(e.code||e.message||"")); }
+  btn.disabled=true; btn.textContent="저장 중…";
+  const changed=[];
+  $("itemEditRows").querySelectorAll(".iedit").forEach(row=>{
+    const no=row.dataset.no;
+    items[no]=row.querySelector(".ie-name").value.trim()||DEFAULT_ITEMS[no];
+    const desc=row.querySelector(".ie-desc").value.trim();
+    const thumb=row.querySelector(".ie-thumb");
+    const img=(thumb.style.display==="none")?"":(thumb.getAttribute("src")||"");
+    const old=ITEM_INFO[no]||{};
+    if(desc!==(old.desc||"") || row.dataset.imgdirty) changed.push({no:+no, desc, img});
+  });
+  const failed=[];
+  try{ await store.saveItems(items); ITEMS={...DEFAULT_ITEMS,...items}; }
+  catch(e){ failed.push("항목명("+(e.code||e.message||"오류")+")"); }
+  for(const c of changed){
+    try{ await store.saveItemInfo(c.no, {desc:c.desc, img:c.img}); ITEM_INFO[c.no]={desc:c.desc, img:c.img}; }
+    catch(e){ failed.push(c.no+"번("+(e.code||e.message||"오류")+")"); }
+  }
+  if(failed.length){
+    alert("일부 저장에 실패했습니다: "+failed.join(", ")+"\n\npermission-denied라면 관리자 로그아웃 후 다시 로그인해서 저장해 주세요.");
+  } else { toast("장 정보가 저장되었습니다"); }
+  renderAdmin();
   btn.disabled=false; btn.textContent="장 정보 전체 저장";
 }
 function admCsv(){
   const BOM="﻿";
-  let rows=[["이름","전화번호","번호","장 이름","색","짠맛","바디감","감칠맛","단맛","한줄 코멘트"]];
+  let rows=[["이름","전화번호","번호","장 이름","색","짠맛","바디감","감칠맛","만족도","한줄 코멘트"]];
   for(const pid of Object.keys(allResp)){
     const r=allResp[pid], ph=admPhones[pid]?.phone||"";
     for(const g of GROUPS) for(const no of g.items){
@@ -1326,7 +1677,28 @@ function admCsv(){
   const csv=BOM+rows.map(row=>row.map(c=>`"${String(c).replace(/"/g,'""')}"`).join(",")).join("\r\n");
   const a=document.createElement("a");
   a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv;charset=utf-8"}));
-  a.download="전통장테이스팅_결과.csv"; a.click();
+  a.download="전통장테이스팅_채점표.csv"; a.click();
+}
+function admCsvSummary(){
+  const BOM="﻿";
+  const expLabel={5:"기대 훨씬 이상",4:"기대보다 좋음",3:"기대만큼",2:"기대에 못 미침",1:"많이 아쉬움"};
+  let rows=[["이름","전화번호","채점 진행률","장BTI","최애1","최애2","최애3","모임 만족도(5점)","기대충족","좋았던 점(선택)","좋았던 점(서술)","아쉬운·바라는 점"]];
+  const pids=Object.keys(allResp).sort((a,b)=>(allResp[a].name||"").localeCompare(allResp[b].name||"","ko"));
+  for(const pid of pids){
+    const r=allResp[pid], m=r.meet||{}, t3=r.top3||[];
+    const type=jangTypeOf(r);
+    rows.push([
+      r.name||"", admPhones[pid]?.phone||"", myProgress(r).pct+"%",
+      type?type.name:"",
+      ...[0,1,2].map(i=>t3[i]? t3[i]+"번 "+itemName(t3[i]) : ""),
+      m.sat||"", m.expect? `${m.expect} (${expLabel[m.expect]})`:"",
+      (m.best||[]).join(" / "), m.good||"", m.want||""
+    ]);
+  }
+  const csv=BOM+rows.map(row=>row.map(c=>`"${String(c).replace(/"/g,'""')}"`).join(",")).join("\r\n");
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv;charset=utf-8"}));
+  a.download="전통장테이스팅_요약.csv"; a.click();
 }
 
 /* ═══════════════ 로그인 / 부팅 ═══════════════ */
@@ -1341,15 +1713,15 @@ async function doStart(){
     const pid=await phonePid(phone);
     me={pid, name, phone:fmtPhone(phone)};
     const prev=await store.loadResponse(pid);
-    if(prev){ myResp={scores:prev.scores||{}, comments:prev.comments||{}}; if(prev.name && prev.name!==name){} }
-    else myResp={scores:{},comments:{}};
+    if(prev){ myResp={scores:prev.scores||{}, comments:prev.comments||{}, top3:prev.top3||[], meet:prev.meet||{}}; }
+    else myResp={scores:{},comments:{},top3:[],meet:{}};
     // 이름·전화번호 저장은 기다리지 않고 백그라운드로 (모바일 로그인 속도 개선)
     store.saveResponse(pid,{name, createdAt: DEMO?Date.now():firebase.firestore.FieldValue.serverTimestamp()})
       .catch(()=>toast("이름 저장이 지연되고 있어요 - 네트워크를 확인해 주세요"));
     store.savePhone(pid,name,fmtPhone(phone)).catch(()=>{});
     try{ localStorage.setItem("jangMe", JSON.stringify(me)); }catch(e){}
     if(prev && Object.keys(prev.scores||{}).length) toast(name+"님, 작성하던 설문을 이어서 합니다");
-    go(1);
+    go(HUB);
   }catch(e){
     err.textContent="시작할 수 없습니다: "+(e.code||e.message); err.classList.add("on");
   }
@@ -1370,8 +1742,24 @@ function bindEvents(){
   $("inPhone").addEventListener("input",e=>{ e.target.value=fmtPhone(e.target.value); });
   $("btnAdminLink").onclick=()=>$("adminBox").classList.toggle("on");
   $("btnAdmLogin").onclick=doAdminLogin;
-  $("btnPrev").onclick=()=>go(curPage-1);
-  $("btnNext").onclick=()=>go(curPage+1);
+  $("btnPrev").onclick=()=>{
+    if(curPage===FIRST_SURVEY || curPage===MEET_PAGE || curPage===RESULT_PAGE) go(HUB);
+    else go(curPage-1);
+  };
+  $("btnNext").onclick=()=>{
+    if(curPage===MEET_PAGE){
+      flushMeetText();
+      go(HUB);
+      toast(finalComplete() ? "모임평가 완료! 이제 결과를 볼 수 있어요" : "저장되었습니다");
+      return;
+    }
+    if(curPage===TOP3_PAGE){
+      go(HUB);
+      if((myResp.top3?.length||0)<3) toast("최애 3가지를 다 고르면 장BTI가 만들어져요");
+      return;
+    }
+    go(curPage+1);
+  };
   document.body.addEventListener("click",e=>{
     const hb=e.target.closest(".btn-cmt-open"); if(hb){ openCmtHub(+hb.dataset.page); return; }
     const inm=e.target.closest("td.iname"); if(inm){ openInfo(+inm.dataset.no, {comment:true}); return; }
@@ -1395,6 +1783,7 @@ function bindEvents(){
   $("btnCopy").onclick=copyLink;
   $("btnAdmResult").onclick=()=>{ viewPid=null; PAGE_IDS.forEach(id=>$(id).classList.remove("on")); $("page-admin").classList.remove("on"); $("page-result").classList.add("on"); curPage=RESULT_PAGE; renderResults(); addAdminBack(); };
   $("btnAdmCsv").onclick=admCsv;
+  $("btnAdmCsv2").onclick=admCsvSummary;
   $("btnAdmItems").onclick=renderItemEdit;
   $("btnItemsSave").onclick=saveItemsEdit;
   $("btnAdmLogout").onclick=async()=>{ isAdmin=false; await store.adminLogout(); location.href=location.pathname; };
