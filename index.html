@@ -341,9 +341,14 @@ td.score:active{background:#eae4d8}
 .hub-btn.hub-result .hb-body b{color:#fff}
 .hub-btn.hub-result .hb-body small{color:#cfc8ba}
 .hub-btn.hub-result .hb-arrow{color:#8a8378}
-.hub-lock{max-width:480px;margin:4px auto 0;text-align:center;font-size:12.5px;color:#8a8378;
-  background:var(--paper2);border:1px dashed var(--line);border-radius:12px;padding:14px;line-height:1.7;
+.hub-lock{max-width:480px;margin:4px auto 0;font-size:12.5px;color:#8a8378;
+  background:var(--paper2);border:1px dashed var(--line);border-radius:12px;padding:14px 18px;line-height:1.8;
   font-family:'Noto Sans KR',sans-serif}
+.hub-lock b{display:block;text-align:center;color:#4a453d;margin-bottom:6px;font-size:13px}
+.hl-row{text-align:left;font-size:12.5px}
+.hl-row.ok{color:var(--green);font-weight:700}
+.hub-crit{max-width:480px;margin:2px auto 0;text-align:center;font-family:'Noto Sans KR',sans-serif}
+.hub-crit .hl-row{text-align:center;font-size:11.5px}
 /* ── 마지막 단계(TOP3+모임평가) ── */
 .t3-cnt{font-family:'Noto Sans KR',sans-serif;font-size:12.5px;color:var(--accent);font-weight:700;margin-left:8px}
 .fin-hint{font-size:13px;color:#6b6459;margin:2px 0 6px;font-family:'Noto Sans KR',sans-serif}
@@ -1149,11 +1154,11 @@ function renderMeetPage(){
   <div class="stars" id="meetStars">${[1,2,3,4,5].map(v=>`<button data-v="${v}" class="${meet.sat>=v?'on':''}">★</button>`).join("")}</div>
   <div class="fin-q">2. 기대했던 것과 비교하면 어땠나요? <b class="req">필수</b></div>
   <div class="opt-col" id="meetExpect">${MEET_EXPECT.map(([v,l])=>`<button data-v="${v}" class="${meet.expect===v?'on':''}">${l}</button>`).join("")}</div>
-  <div class="fin-q">3. 오늘 가장 좋았던 것은? <span class="opt-note">복수 선택 가능</span></div>
+  <div class="fin-q">3. 오늘 가장 좋았던 것은? <b class="req">필수</b> <span class="opt-note">복수 선택 가능</span></div>
   <div class="opt-wrap" id="meetBest">${MEET_BEST.map(l=>`<button data-l="${esc(l)}" class="${(meet.best||[]).includes(l)?'on':''}">${l}</button>`).join("")}</div>
-  <div class="fin-q">4. 좋았던 점을 자유롭게 적어주세요 <span class="opt-note">선택</span></div>
+  <div class="fin-q">4. 좋았던 점을 자유롭게 적어주세요 <b class="req">필수</b></div>
   <textarea class="fin-ta" id="meetGood" maxlength="300" placeholder="오늘 가장 기억에 남는 순간이나 맛이 있다면?">${esc(meet.good||"")}</textarea>
-  <div class="fin-q">5. 아쉬웠던 점이나 다음에 바라는 점이 있다면? <span class="opt-note">선택</span></div>
+  <div class="fin-q">5. 아쉬웠던 점이나 다음에 바라는 점이 있다면? <b class="req">필수</b></div>
   <textarea class="fin-ta" id="meetWant" maxlength="300" placeholder="편하게 적어주세요. 다음 모임에 꼭 반영할게요">${esc(meet.want||"")}</textarea>`;
   host.innerHTML=h;
   bindSurveyTabs(host);
@@ -1304,8 +1309,12 @@ function go(p){
   window.scrollTo(0,0);
   if(p===RESULT_PAGE) startListen(); else if(!isAdmin) stopListen();
 }
+function meetPctOf(m){
+  m=m||{};
+  return Math.min(100,(m.sat?40:0)+(m.expect?40:0)+((m.best||[]).length?10:0)+((m.good||"").trim()?5:0)+((m.want||"").trim()?5:0));
+}
 function finalComplete(){
-  return (myResp.top3?.length===3) && !!myResp.meet?.sat && !!myResp.meet?.expect;
+  return myProgress(myResp).filled>=50 && (myResp.top3?.length===3) && meetPctOf(myResp.meet)===100;
 }
 function updateNav(){
   const prev=$("btnPrev"), next=$("btnNext");
@@ -1327,9 +1336,14 @@ function renderHub(){
   const tastePct=Math.round((pr.filled+t3n)/103*100);
   const tasteDone=pr.filled===100&&t3n===3;
   const m=myResp.meet||{};
-  const meetPct=Math.min(100,(m.sat?40:0)+(m.expect?40:0)+((m.best||[]).length?10:0)+(m.good?5:0)+(m.want?5:0));
-  const meetDone=!!(m.sat&&m.expect);
+  const meetPct=meetPctOf(m);
+  const meetDone=meetPct===100;
   const unlocked=finalComplete();
+  const crit=[
+    {ok:pr.filled>=50, label:`채점 50% 이상 완료 (지금 ${pr.pct}%)`},
+    {ok:t3n===3, label:`최애 TOP3 3개 선택 (지금 ${t3n}/3)`},
+    {ok:meetPct===100, label:`모임평가 전체 작성 (지금 ${meetPct}%)`}
+  ];
   $("hubWrap").innerHTML=`
   <div class="hub-head">
     <div class="hub-hi">${esc(me?.name||"")}님, 반갑습니다</div>
@@ -1357,8 +1371,11 @@ function renderHub(){
     ? `<button class="hub-btn hub-result" id="hubResult">
         <span class="hb-ic">📊</span>
         <span class="hb-body"><b>결과 보기</b><small>나의 장BTI와 실시간 전체 집계</small></span>
-        <span class="hb-arrow">›</span></button>`
-    : `<div class="hub-lock">🔒 최애 TOP3와 모임평가(별점·기대충족)를 마치면<br>결과 보기 버튼이 열려요</div>`}
+        <span class="hb-arrow">›</span></button>
+      <div class="hub-crit"><div class="hl-row ok">✓ 채점 50% 이상 · 최애 3개 · 모임평가 100% 조건을 모두 채웠어요</div></div>`
+    : `<div class="hub-lock"><b>🔒 결과 보기가 열리는 기준</b>
+        ${crit.map(c=>`<div class="hl-row ${c.ok?'ok':''}">${c.ok?"✓":"○"} ${c.label}</div>`).join("")}
+      </div>`}
   <div class="cover-foot" style="margin-top:30px">꽃, 밥에피다 북촌 그로서란트</div>`;
   $("hubTaste").onclick=()=>go(FIRST_SURVEY);
   $("hubMeet").onclick=()=>go(MEET_PAGE);
