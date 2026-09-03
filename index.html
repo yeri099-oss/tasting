@@ -881,9 +881,9 @@ function demoSeed(){
     comments[1+i*3]="구수하고 깊은 맛이에요"; comments[11]="확실히 진하고 묵직합니다";
     const top3=[[11,14,20],[2,4,9],[1,10,20]][i];
     const meet=[
-      {sat:5, reasons:["테이스팅 구성 (장 종류, 순서, 설명 자료)","진행 방식 (설명 전달력, 진행 흐름)"], reasonEtc:"", neutral:"", cnt:3, price:3, again:5, idea:"된장 담그기 클래스도 열어주세요"},
-      {sat:4, reasons:["식사 구성 (메뉴, 양, 맛)","기타"], reasonEtc:"직원분들이 친절했어요", neutral:"", cnt:4, price:2, again:4, idea:""},
-      {sat:3, reasons:[], reasonEtc:"", neutral:"설명은 좋았는데 시간이 짧게 느껴졌어요", cnt:3, price:3, again:3, idea:"계절 장아찌 클래스"}
+      {sat:5, why:"씨간장 비교가 정말 인상적이었어요", cnt:3, price:3, priceEtc:"", again:5, idea:"된장 담그기 클래스도 열어주세요"},
+      {sat:4, why:"식사 구성이 알찼고 직원분들이 친절했어요", cnt:4, price:2, priceEtc:"", again:4, idea:""},
+      {sat:3, why:"설명은 좋았는데 시간이 짧게 느껴졌어요", cnt:3, price:0, priceEtc:"65,000원", again:3, idea:"계절 장아찌 클래스"}
     ][i];
     demoDB.resp[pid]={name:nm, scores, comments, top3, meet};
     demoDB.phone[pid]={name:nm, phone:"010-1234-000"+i};
@@ -1131,11 +1131,9 @@ function saveIndicator(st){
 
 /* ═══════════════ 마지막 단계: 최애 TOP3 + 모임평가 ═══════════════ */
 const SAT_L={1:"매우불만족",2:"불만족",3:"보통",4:"만족",5:"매우만족"};
-const MEET_REASONS=["가격","식사 구성 (메뉴, 양, 맛)","테이스팅 구성 (장 종류, 순서, 설명 자료)","진행 방식 (설명 전달력, 진행 흐름)","수업시간 (2시간)","수업요일 (일요일)","장소/공간 (좌석, 동선, 분위기)","기념품","기타"];
 const CNT_L={1:"너무 적었다",2:"약간 적었다",3:"적당했다",4:"약간 많았다",5:"너무 많았다"};
 const PRICE_L={1:"4만원대 이하",2:"5만원대 (5~6만원 미만)",3:"6~7만원대",4:"8~9만원대",5:"10만원 이상"};
 const AGAIN_L={1:"매우없다",2:"없다",3:"보통",4:"있다",5:"매우있다"};
-function satBranch(sat){ return !sat?null : sat>=4?"good" : sat<=2?"bad" : "mid"; }
 function renderTop3Page(){
   const host=$("sheet6");
   const t3=myResp.top3||[];
@@ -1170,52 +1168,28 @@ function renderTop3Page(){
 function renderMeetPage(){
   const host=$("sheet7");
   const meet=myResp.meet||{};
-  const br=satBranch(meet.sat);
-  const reasonChips=(id)=>`<div class="opt-wrap" id="${id}">`+MEET_REASONS.map(l=>
-    `<button data-l="${esc(l)}" class="${(meet.reasons||[]).includes(l)?'on':''}">${l}</button>`).join("")+`</div>`
-    +((meet.reasons||[]).includes("기타")?`<textarea class="fin-ta" id="meetEtc" style="height:52px;margin-top:8px" maxlength="200" placeholder="기타 이유를 직접 적어주세요">${esc(meet.reasonEtc||"")}</textarea>`:"");
   let h=surveyTabsHTML(MEET_PAGE);
   h+=`<div class="sheet-head">
     <div class="sheet-title">모임 평가 <small>- 1분이면 충분해요</small></div>
     <div class="sheet-desc">오늘 행사에 대한 솔직한 의견을 들려주세요</div>
   </div>
   <div class="fin-q">1. 행사에 대한 전반적인 만족도 <b class="req">필수</b></div>
-  <div class="opt-wrap" id="meetSat">${[1,2,3,4,5].map(v=>`<button data-v="${v}" class="${meet.sat===v?'on':''}">${SAT_L[v]}</button>`).join("")}</div>`;
-  if(br==="good") h+=`<div class="fin-q">1-1. 만족하신 이유는 무엇인가요? <b class="req">필수</b> <span class="opt-note">복수응답 가능</span></div>`+reasonChips("meetReasons");
-  if(br==="bad")  h+=`<div class="fin-q">1-2. 불만족하신 이유는 무엇인가요? <b class="req">필수</b> <span class="opt-note">복수응답 가능</span></div>`+reasonChips("meetReasons");
-  if(br==="mid")  h+=`<div class="fin-q">1-3. '보통'이라고 느끼신 이유를 자유롭게 적어주세요 <b class="req">필수</b></div>
-    <textarea class="fin-ta" id="meetNeutral" maxlength="300" placeholder="편하게 적어주세요">${esc(meet.neutral||"")}</textarea>`;
-  h+=`<div class="fin-q">2. 테이스팅한 장의 개수(20가지)는 어떠셨나요? <b class="req">필수</b></div>
+  <div class="opt-wrap" id="meetSat">${[1,2,3,4,5].map(v=>`<button data-v="${v}" class="${meet.sat===v?'on':''}">${SAT_L[v]}</button>`).join("")}</div>
+  <div class="fin-q">1-1. 그렇게 느끼신 이유나, 좋았던 점/아쉬웠던 점이 있다면 자유롭게 적어주세요 <span class="opt-note">다음 이벤트에 반영하겠습니다</span></div>
+  <textarea class="fin-ta" id="meetWhy" maxlength="500" placeholder="편하게 적어주세요">${esc(meet.why||"")}</textarea>
+  <div class="fin-q">2. 테이스팅한 전통장의 개수(20가지)는 어떠셨나요? <b class="req">필수</b></div>
   <div class="opt-wrap" id="meetCnt">${[1,2,3,4,5].map(v=>`<button data-v="${v}" class="${meet.cnt===v?'on':''}">${CNT_L[v]}</button>`).join("")}</div>
   <div class="fin-q">3. 이 프로그램의 적정 가격대는 어느 정도라고 생각하시나요? <b class="req">필수</b></div>
   <div class="opt-col" id="meetPrice">${[1,2,3,4,5].map(v=>`<button data-v="${v}" class="${meet.price===v?'on':''}">${PRICE_L[v]}</button>`).join("")}</div>
+  <div class="fin-q">3-1. 위 항목에 해당하지 않는다면, 생각하시는 가격을 직접 적어주세요 <span class="opt-note">선택</span></div>
+  <input class="fin-ta" id="meetPriceEtc" style="height:auto;padding:11px" maxlength="50" placeholder="예: 65,000원" value="${esc(meet.priceEtc||"")}">
   <div class="fin-q">4. 다음에도 비슷한 프로그램에 참여할 의사가 있으신가요? <b class="req">필수</b></div>
   <div class="opt-wrap" id="meetAgain">${[1,2,3,4,5].map(v=>`<button data-v="${v}" class="${meet.again===v?'on':''}">${AGAIN_L[v]}</button>`).join("")}</div>
   <div class="fin-q">5. 앞으로 이런 프로그램이 있었으면 좋겠다 하는 아이디어가 있다면 자유롭게 적어주세요 <span class="opt-note">선택</span></div>
   <textarea class="fin-ta" id="meetIdea" maxlength="500" placeholder="예: 된장 담그기 클래스, 계절 장아찌 클래스...">${esc(meet.idea||"")}</textarea>`;
   host.innerHTML=h;
   bindSurveyTabs(host);
-  $("meetSat").querySelectorAll("button").forEach(b=>b.onclick=()=>{
-    flushMeetText();
-    const v=+b.dataset.v;
-    myResp.meet ||= {};
-    const prevBr=satBranch(myResp.meet.sat);
-    myResp.meet.sat=v;
-    if(satBranch(v)!==prevBr){ myResp.meet.reasons=[]; myResp.meet.reasonEtc=""; myResp.meet.neutral=""; }
-    saveMeet({meet:{sat:v, reasons:myResp.meet.reasons||[], reasonEtc:myResp.meet.reasonEtc||"", neutral:myResp.meet.neutral||""}});
-    renderMeetPage();
-  });
-  const rc=$("meetReasons");
-  if(rc) rc.querySelectorAll("button").forEach(b=>b.onclick=()=>{
-    flushMeetText();
-    const l=b.dataset.l; myResp.meet ||= {};
-    const cur=myResp.meet.reasons||[];
-    myResp.meet.reasons = cur.includes(l)? cur.filter(x=>x!==l) : [...cur,l];
-    saveMeet({meet:{reasons:myResp.meet.reasons}});
-    renderMeetPage();
-  });
-  ["meetCnt","meetPrice","meetAgain"].forEach(id=>{
-    const key=id.replace("meet","").toLowerCase(); // cnt, price, again
+  [["meetSat","sat"],["meetCnt","cnt"],["meetPrice","price"],["meetAgain","again"]].forEach(([id,key])=>{
     $(id).querySelectorAll("button").forEach(b=>b.onclick=()=>{
       flushMeetText();
       (myResp.meet ||= {})[key]=+b.dataset.v;
@@ -1223,12 +1197,12 @@ function renderMeetPage(){
       renderMeetPage();
     });
   });
-  ["meetEtc","meetNeutral","meetIdea"].forEach(id=>{ const el=$(id); if(el) el.onchange=flushMeetText; });
+  ["meetWhy","meetPriceEtc","meetIdea"].forEach(id=>{ const el=$(id); if(el) el.onchange=flushMeetText; });
 }
 function flushMeetText(){
   const m=(myResp.meet ||= {});
   const partial={};
-  const map={meetEtc:"reasonEtc", meetNeutral:"neutral", meetIdea:"idea"};
+  const map={meetWhy:"why", meetPriceEtc:"priceEtc", meetIdea:"idea"};
   for(const id in map){
     const el=$(id); if(!el) continue;
     const v=el.value.trim();
@@ -1360,16 +1334,12 @@ function go(p){
 }
 function meetPctOf(m){
   m=m||{};
-  const br=satBranch(m.sat);
   let done=0;
   if(m.sat) done++;
-  if(br==="mid" ? (m.neutral||"").trim()
-    : br ? ((m.reasons||[]).length && (!(m.reasons||[]).includes("기타") || (m.reasonEtc||"").trim()))
-    : false) done++;
   if(m.cnt) done++;
-  if(m.price) done++;
+  if(m.price || (m.priceEtc||"").trim()) done++;
   if(m.again) done++;
-  return Math.round(done/5*100);
+  return Math.round(done/4*100);
 }
 function finalComplete(){
   return myProgress(myResp).filled>=50 && (myResp.top3?.length===3) && meetPctOf(myResp.meet)===100;
@@ -1666,26 +1636,15 @@ function renderAdmMeet(){
   const avg=a=>a.length?(a.reduce((x,y)=>x+y,0)/a.length):0;
   const distStr=(key,L)=>{const c={};ms.forEach(r=>{const v=r.meet[key];if(v)c[v]=(c[v]||0)+1;});
     return [5,4,3,2,1].filter(v=>c[v]).map(v=>`${L[v]} ${c[v]}명`).join(", ")||"-";};
-  const goodCnt={}, badCnt={};
-  ms.forEach(r=>{
-    const br=satBranch(r.meet.sat);
-    (r.meet.reasons||[]).forEach(l=>{
-      const t=(l==="기타"&&(r.meet.reasonEtc||"").trim())?("기타: "+r.meet.reasonEtc):l;
-      if(br==="good") goodCnt[t]=(goodCnt[t]||0)+1;
-      if(br==="bad") badCnt[t]=(badCnt[t]||0)+1;
-    });
-  });
-  const cntStr=o=>Object.entries(o).sort((a,b)=>b[1]-a[1]).map(([l,c])=>`${l} ${c}명`).join(", ")||"-";
+  const etcPrices=ms.map(r=>(r.meet.priceEtc||"").trim()).filter(Boolean);
   let h=`<h3 style="font-size:16px;font-weight:800;margin-bottom:8px">모임평가 집계 (${ms.length}명 제출)</h3>
   <div class="adm-note">1. 전반 만족도 평균 <b>${avg(ms.map(r=>r.meet.sat)).toFixed(1)}/5</b> · ${distStr("sat",SAT_L)}</div>
-  <div class="adm-note">1-1. 만족 이유: ${cntStr(goodCnt)}</div>
-  <div class="adm-note">1-2. 불만족 이유: ${cntStr(badCnt)}</div>
   <div class="adm-note">2. 장 개수(20가지): ${distStr("cnt",CNT_L)}</div>
-  <div class="adm-note">3. 적정 가격대: ${distStr("price",PRICE_L)}</div>
+  <div class="adm-note">3. 적정 가격대: ${distStr("price",PRICE_L)}${etcPrices.length?` · 직접 기입: ${etcPrices.map(esc).join(", ")}`:""}</div>
   <div class="adm-note">4. 재참여 의사 평균 <b>${avg(ms.map(r=>r.meet.again).filter(Boolean)).toFixed(1)}/5</b> · ${distStr("again",AGAIN_L)}</div>`;
   const lines=[];
   ms.forEach(r=>{
-    if((r.meet.neutral||"").trim()) lines.push(`<div class="ha-line"><b>${esc(r.name||"-")}</b> (보통 이유) ${esc(r.meet.neutral)}</div>`);
+    if((r.meet.why||"").trim()) lines.push(`<div class="ha-line"><b>${esc(r.name||"-")}</b> (1-1 이유·소감) ${esc(r.meet.why)}</div>`);
     if((r.meet.idea||"").trim()) lines.push(`<div class="ha-line"><b>${esc(r.name||"-")}</b> (아이디어) ${esc(r.meet.idea)}</div>`);
   });
   if(lines.length) h+=`<div style="background:#fff;border:1px solid var(--line);border-radius:10px;padding:10px 14px;margin-top:8px">${lines.join("")}</div>`;
@@ -1794,7 +1753,7 @@ function admCsv(){
 }
 function admCsvSummary(){
   const BOM="﻿";
-  let rows=[["이름","전화번호","채점 진행률","장BTI","최애1","최애2","최애3","만족도","만족/불만족 이유","보통 이유","장 개수 의견","적정 가격대","재참여 의사","아이디어"]];
+  let rows=[["이름","전화번호","채점 진행률","장BTI","최애1","최애2","최애3","만족도","이유·소감(1-1)","장 개수 의견","적정 가격대","가격 직접기입","재참여 의사","아이디어"]];
   const pids=Object.keys(allResp).sort((a,b)=>(allResp[a].name||"").localeCompare(allResp[b].name||"","ko"));
   for(const pid of pids){
     const r=allResp[pid], m=r.meet||{}, t3=r.top3||[];
@@ -1804,8 +1763,7 @@ function admCsvSummary(){
       type?type.name:"",
       ...[0,1,2].map(i=>t3[i]? t3[i]+"번 "+itemName(t3[i]) : ""),
       m.sat? SAT_L[m.sat]:"",
-      (m.reasons||[]).map(l=>l==="기타"&&(m.reasonEtc||"").trim()?("기타: "+m.reasonEtc):l).join(" / "),
-      m.neutral||"", m.cnt? CNT_L[m.cnt]:"", m.price? PRICE_L[m.price]:"", m.again? AGAIN_L[m.again]:"", m.idea||""
+      m.why||"", m.cnt? CNT_L[m.cnt]:"", m.price? PRICE_L[m.price]:"", m.priceEtc||"", m.again? AGAIN_L[m.again]:"", m.idea||""
     ]);
   }
   const csv=BOM+rows.map(row=>row.map(c=>`"${String(c).replace(/"/g,'""')}"`).join(",")).join("\r\n");
