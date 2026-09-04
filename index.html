@@ -372,6 +372,15 @@ td.score:active{background:#eae4d8}
 .opt-wrap button.on{background:var(--accent);color:#fff;border-color:var(--accent);font-weight:700}
 .fin-ta{width:100%;height:76px;border:1px solid var(--line);border-radius:10px;padding:11px;font-size:14.5px;resize:vertical;outline:none;background:#fff}
 .fin-ta:focus{border-color:var(--accent)}
+.agree-box{background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px 14px;font-family:'Noto Sans KR',sans-serif}
+.agree-box .ag-line{font-size:12.5px;color:#6b6459;line-height:1.7}
+.agree-box .chk{display:block;width:100%;text-align:left;margin-top:10px;padding:11px 13px;border-radius:10px;
+  border:1.5px solid var(--line);background:#fff;font-size:13.5px;font-weight:700;color:#4a453d;font-family:'Noto Sans KR',sans-serif}
+.agree-box .chk.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+.agree-box .chk.sub{font-weight:400;font-size:12.5px;padding:9px 13px}
+.agree-box .chk.sub.on{background:var(--accent);border-color:var(--accent)}
+.agree-box .chk .opt-note{font-size:11px}
+.agree-box .chk.on .opt-note{color:#e8e0d0}
 /* ── 장BTI 카드 ── */
 .jbti{position:relative;background:#fff;border-radius:20px;padding:26px 22px 20px;margin:18px 0 6px;
   text-align:center;box-shadow:0 4px 18px rgba(30,25,18,.08);overflow:hidden}
@@ -881,9 +890,9 @@ function demoSeed(){
     comments[1+i*3]="구수하고 깊은 맛이에요"; comments[11]="확실히 진하고 묵직합니다";
     const top3=[[11,14,20],[2,4,9],[1,10,20]][i];
     const meet=[
-      {sat:5, why:"씨간장 비교가 정말 인상적이었어요", cnt:3, price:3, priceEtc:"", again:5, idea:"된장 담그기 클래스도 열어주세요"},
-      {sat:4, why:"식사 구성이 알찼고 직원분들이 친절했어요", cnt:4, price:2, priceEtc:"", again:4, idea:""},
-      {sat:3, why:"설명은 좋았는데 시간이 짧게 느껴졌어요", cnt:3, price:0, priceEtc:"65,000원", again:3, idea:"계절 장아찌 클래스"}
+      {sat:5, why:"씨간장 비교가 정말 인상적이었어요", cnt:3, price:3, priceEtc:"", again:5, idea:"된장 담그기 클래스도 열어주세요", agreePriv:true, discard:false, agreePhoto:true, photoMail:"soo@naver.com", channel:"인스타그램/SNS", channelEtc:""},
+      {sat:4, why:"식사 구성이 알찼고 직원분들이 친절했어요", cnt:4, price:2, priceEtc:"", again:4, idea:"", agreePriv:true, discard:true, agreePhoto:true, photoMail:"", channel:"지인 추천", channelEtc:""},
+      {sat:3, why:"설명은 좋았는데 시간이 짧게 느껴졌어요", cnt:3, price:0, priceEtc:"65,000원", again:3, idea:"계절 장아찌 클래스", agreePriv:true, discard:false, agreePhoto:true, photoMail:"", channel:"기타", channelEtc:"매장에서 안내문을 봤어요"}
     ][i];
     demoDB.resp[pid]={name:nm, scores, comments, top3, meet};
     demoDB.phone[pid]={name:nm, phone:"010-1234-000"+i};
@@ -1134,6 +1143,7 @@ const SAT_L={1:"매우불만족",2:"불만족",3:"보통",4:"만족",5:"매우�
 const CNT_L={1:"너무 적었다",2:"약간 적었다",3:"적당했다",4:"약간 많았다",5:"너무 많았다"};
 const PRICE_L={1:"4만원대 이하",2:"5만원대 (5~6만원 미만)",3:"6~7만원대",4:"8~9만원대",5:"10만원 이상"};
 const AGAIN_L={1:"매우없다",2:"없다",3:"보통",4:"있다",5:"매우있다"};
+const CHANNELS=["인스타그램/SNS","카카오톡","페이스북","블로그","지인 추천","기타"];
 function renderTop3Page(){
   const host=$("sheet6");
   const t3=myResp.top3||[];
@@ -1186,9 +1196,43 @@ function renderMeetPage(){
   <div class="fin-q">4. 다음에도 비슷한 프로그램에 참여할 의사가 있으신가요? <b class="req">필수</b></div>
   <div class="opt-wrap" id="meetAgain">${[1,2,3,4,5].map(v=>`<button data-v="${v}" class="${meet.again===v?'on':''}">${AGAIN_L[v]}</button>`).join("")}</div>
   <div class="fin-q">5. 앞으로 이런 프로그램이 있었으면 좋겠다 하는 아이디어가 있다면 자유롭게 적어주세요 <span class="opt-note">선택</span></div>
-  <textarea class="fin-ta" id="meetIdea" maxlength="500" placeholder="예: 된장 담그기 클래스, 계절 장아찌 클래스...">${esc(meet.idea||"")}</textarea>`;
+  <textarea class="fin-ta" id="meetIdea" maxlength="500" placeholder="예: 된장 담그기 클래스, 계절 장아찌 클래스...">${esc(meet.idea||"")}</textarea>
+
+  <div class="group-sub" style="margin-top:34px">✍️ 동의 및 안내</div>
+  <div class="fin-q">6. 개인정보 수집·이용 동의 <b class="req">필수</b></div>
+  <div class="agree-box">
+    <div class="ag-line">수집 항목: 이름, 연락처 등 신청서 기재 내용</div>
+    <div class="ag-line">이용 목적: 프로그램 운영 및 안내, 향후 이벤트 소식 전달</div>
+    <div class="ag-line">보유 기간: 행사 종료 후 다음 이벤트 안내 시까지</div>
+    <button class="chk ${meet.agreePriv?'on':''}" id="agPriv">${meet.agreePriv?"☑":"☐"} 개인정보 수집·이용에 동의합니다</button>
+    <button class="chk sub ${meet.discard?'on':''}" id="agDiscard">${meet.discard?"☑":"☐"} 행사 종료 후 내 개인정보 폐기를 원합니다 <span class="opt-note">선택</span></button>
+  </div>
+  <div class="fin-q">7. 초상권(사진·영상) 활용 동의 <b class="req">필수</b></div>
+  <div class="agree-box">
+    <div class="ag-line">본 프로그램은 전문 사진작가를 통해 사진·영상이 촬영되며, 일부는 꽃밥에피다 홍보 채널(SNS 등)에 활용될 수 있습니다.</div>
+    <button class="chk ${meet.agreePhoto?'on':''}" id="agPhoto">${meet.agreePhoto?"☑":"☐"} 사진·영상 촬영 및 홍보 활용에 동의합니다</button>
+    <div class="ag-line" style="margin-top:8px">행사에 참여하신 모습을 메일로 받아보고 싶으시면 메일 주소를 남겨주세요 <span class="opt-note">선택</span></div>
+    <input class="fin-ta" id="meetPhotoMail" style="height:auto;padding:11px" maxlength="100" placeholder="예: hello@naver.com" value="${esc(meet.photoMail||"")}">
+  </div>
+  <div class="fin-q">8. 저희 프로그램은 어떻게 알게 되셨나요? <b class="req">필수</b></div>
+  <div class="opt-wrap" id="meetChannel">${CHANNELS.map(l=>`<button data-l="${esc(l)}" class="${meet.channel===l?'on':''}">${l}</button>`).join("")}</div>
+  ${meet.channel==="기타"?`<input class="fin-ta" id="meetChannelEtc" style="height:auto;padding:11px;margin-top:8px" maxlength="100" placeholder="어떻게 알게 되셨는지 적어주세요" value="${esc(meet.channelEtc||"")}">`:""}`;
   host.innerHTML=h;
   bindSurveyTabs(host);
+  [["agPriv","agreePriv"],["agDiscard","discard"],["agPhoto","agreePhoto"]].forEach(([id,key])=>{
+    $(id).onclick=()=>{
+      flushMeetText();
+      (myResp.meet ||= {})[key]=!myResp.meet[key];
+      saveMeet({meet:{[key]:myResp.meet[key]}});
+      renderMeetPage();
+    };
+  });
+  $("meetChannel").querySelectorAll("button").forEach(b=>b.onclick=()=>{
+    flushMeetText();
+    (myResp.meet ||= {}).channel=b.dataset.l;
+    saveMeet({meet:{channel:b.dataset.l}});
+    renderMeetPage();
+  });
   [["meetSat","sat"],["meetCnt","cnt"],["meetPrice","price"],["meetAgain","again"]].forEach(([id,key])=>{
     $(id).querySelectorAll("button").forEach(b=>b.onclick=()=>{
       flushMeetText();
@@ -1197,12 +1241,12 @@ function renderMeetPage(){
       renderMeetPage();
     });
   });
-  ["meetWhy","meetPriceEtc","meetIdea"].forEach(id=>{ const el=$(id); if(el) el.onchange=flushMeetText; });
+  ["meetWhy","meetPriceEtc","meetIdea","meetPhotoMail","meetChannelEtc"].forEach(id=>{ const el=$(id); if(el) el.onchange=flushMeetText; });
 }
 function flushMeetText(){
   const m=(myResp.meet ||= {});
   const partial={};
-  const map={meetWhy:"why", meetPriceEtc:"priceEtc", meetIdea:"idea"};
+  const map={meetWhy:"why", meetPriceEtc:"priceEtc", meetIdea:"idea", meetPhotoMail:"photoMail", meetChannelEtc:"channelEtc"};
   for(const id in map){
     const el=$(id); if(!el) continue;
     const v=el.value.trim();
@@ -1339,7 +1383,10 @@ function meetPctOf(m){
   if(m.cnt) done++;
   if(m.price || (m.priceEtc||"").trim()) done++;
   if(m.again) done++;
-  return Math.round(done/4*100);
+  if(m.agreePriv) done++;
+  if(m.agreePhoto) done++;
+  if(m.channel) done++;
+  return Math.round(done/7*100);
 }
 function finalComplete(){
   return myProgress(myResp).filled>=50 && (myResp.top3?.length===3) && meetPctOf(myResp.meet)===100;
@@ -1642,6 +1689,14 @@ function renderAdmMeet(){
   <div class="adm-note">2. 장 개수(20가지): ${distStr("cnt",CNT_L)}</div>
   <div class="adm-note">3. 적정 가격대: ${distStr("price",PRICE_L)}${etcPrices.length?` · 직접 기입: ${etcPrices.map(esc).join(", ")}`:""}</div>
   <div class="adm-note">4. 재참여 의사 평균 <b>${avg(ms.map(r=>r.meet.again).filter(Boolean)).toFixed(1)}/5</b> · ${distStr("again",AGAIN_L)}</div>`;
+  const ch={};
+  ms.forEach(r=>{ const c=r.meet.channel; if(c) ch[c==="기타"&&(r.meet.channelEtc||"").trim()?("기타: "+r.meet.channelEtc):c]=(ch[c==="기타"&&(r.meet.channelEtc||"").trim()?("기타: "+r.meet.channelEtc):c]||0)+1; });
+  const chStr=Object.entries(ch).sort((a,b)=>b[1]-a[1]).map(([l,c])=>`${esc(l)} ${c}명`).join(", ")||"-";
+  const discards=ms.filter(r=>r.meet.discard).map(r=>r.name||"-");
+  const mails=ms.filter(r=>(r.meet.photoMail||"").trim()).map(r=>`${esc(r.name||"-")} (${esc(r.meet.photoMail)})`);
+  h+=`<div class="adm-note">8. 알게 된 경로: ${chStr}</div>
+  <div class="adm-note">개인정보 폐기 요청: ${discards.length?discards.map(esc).join(", ")+" - 행사 후 폐기 필요":"없음"}</div>
+  <div class="adm-note">사진 메일 발송 요청: ${mails.length?mails.join(", "):"없음"}</div>`;
   const lines=[];
   ms.forEach(r=>{
     if((r.meet.why||"").trim()) lines.push(`<div class="ha-line"><b>${esc(r.name||"-")}</b> (1-1 이유·소감) ${esc(r.meet.why)}</div>`);
@@ -1753,7 +1808,7 @@ function admCsv(){
 }
 function admCsvSummary(){
   const BOM="﻿";
-  let rows=[["이름","전화번호","채점 진행률","장BTI","최애1","최애2","최애3","만족도","이유·소감(1-1)","장 개수 의견","적정 가격대","가격 직접기입","재참여 의사","아이디어"]];
+  let rows=[["이름","전화번호","채점 진행률","장BTI","최애1","최애2","최애3","만족도","이유·소감(1-1)","장 개수 의견","적정 가격대","가격 직접기입","재참여 의사","아이디어","개인정보 동의","폐기 요청","초상권 동의","사진 수신 메일","알게 된 경로"]];
   const pids=Object.keys(allResp).sort((a,b)=>(allResp[a].name||"").localeCompare(allResp[b].name||"","ko"));
   for(const pid of pids){
     const r=allResp[pid], m=r.meet||{}, t3=r.top3||[];
@@ -1763,7 +1818,9 @@ function admCsvSummary(){
       type?type.name:"",
       ...[0,1,2].map(i=>t3[i]? t3[i]+"번 "+itemName(t3[i]) : ""),
       m.sat? SAT_L[m.sat]:"",
-      m.why||"", m.cnt? CNT_L[m.cnt]:"", m.price? PRICE_L[m.price]:"", m.priceEtc||"", m.again? AGAIN_L[m.again]:"", m.idea||""
+      m.why||"", m.cnt? CNT_L[m.cnt]:"", m.price? PRICE_L[m.price]:"", m.priceEtc||"", m.again? AGAIN_L[m.again]:"", m.idea||"",
+      m.agreePriv?"동의":"", m.discard?"폐기 요청":"", m.agreePhoto?"동의":"", m.photoMail||"",
+      m.channel? (m.channel==="기타"&&(m.channelEtc||"").trim()?("기타: "+m.channelEtc):m.channel):""
     ]);
   }
   const csv=BOM+rows.map(row=>row.map(c=>`"${String(c).replace(/"/g,'""')}"`).join(",")).join("\r\n");
