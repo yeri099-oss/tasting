@@ -372,6 +372,7 @@ td.score:active{background:#eae4d8}
 .opt-wrap button.on{background:var(--accent);color:#fff;border-color:var(--accent);font-weight:700}
 .fin-ta{width:100%;height:76px;border:1px solid var(--line);border-radius:10px;padding:11px;font-size:14.5px;resize:vertical;outline:none;background:#fff}
 .fin-ta:focus{border-color:var(--accent)}
+.region-row{display:flex;gap:8px;align-items:stretch;font-family:'Noto Sans KR',sans-serif}
 .agree-box{background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px 14px;font-family:'Noto Sans KR',sans-serif}
 .agree-box .ag-line{font-size:12.5px;color:#6b6459;line-height:1.7}
 .agree-box .chk{display:block;width:100%;text-align:left;margin-top:10px;padding:11px 13px;border-radius:10px;
@@ -531,7 +532,8 @@ td.score:active{background:#eae4d8}
         <button id="btnAdmResult">전체 결과 보기</button>
         <button id="btnAdmCsv">채점표 CSV</button>
         <button id="btnAdmCsv2">요약 CSV (TOP3·장BTI·모임평가)</button>
-        <button id="btnAdmItems">항목명 수정</button>
+        <button id="btnAdmItems">장 정보 관리</button>
+        <button id="btnAdmMeetQ">모임평가 문항 관리</button>
         <button id="btnAdmLogout">로그아웃</button>
       </div>
     </div>
@@ -540,6 +542,26 @@ td.score:active{background:#eae4d8}
       <thead><tr><th>이름</th><th>전화번호</th><th>진행</th><th>결과 링크</th><th>관리</th></tr></thead>
       <tbody id="admRows"></tbody>
     </table></div>
+    <div id="admMeetQ" style="display:none;margin-top:22px">
+      <h3 style="font-size:16px;font-weight:800;margin-bottom:6px">모임평가 문항 관리</h3>
+      <div class="adm-note">기본 문항은 숨기기/보이기를 바꿀 수 있고, 새 문항을 추가하거나 삭제할 수 있습니다. 변경 즉시 저장되며, 참석자는 화면을 새로 열 때 반영됩니다.</div>
+      <div id="mqBuiltins"></div>
+      <h4 style="font-size:14px;font-weight:800;margin:18px 0 6px">추가한 문항</h4>
+      <div id="mqCustomList"></div>
+      <div class="iedit" style="margin-top:10px">
+        <div class="adm-note" style="margin:0 0 6px"><b>새 문항 추가</b></div>
+        <input class="fin-ta" id="mqTitle" style="height:auto;padding:10px" maxlength="120" placeholder="문항 내용 (예: 오늘 식사는 어떠셨나요?)">
+        <div style="display:flex;gap:8px;margin-top:8px;align-items:center;font-family:'Noto Sans KR',sans-serif;flex-wrap:wrap">
+          <select id="mqType" class="hub-sel" style="margin:0;width:auto">
+            <option value="choice">선택형</option>
+            <option value="text">서술형</option>
+          </select>
+          <button class="chk" id="mqReq" style="width:auto;margin:0;padding:9px 13px">☐ 필수</button>
+        </div>
+        <input class="fin-ta" id="mqOpts" style="height:auto;padding:10px;margin-top:8px" maxlength="300" placeholder="선택지 (쉼표로 구분, 예: 좋았다, 보통, 아쉬웠다)">
+        <button class="btn-main" id="mqAdd" style="max-width:240px;margin-top:10px;padding:12px">문항 추가</button>
+      </div>
+    </div>
     <div id="admMeet" style="margin-top:26px"></div>
     <div id="admItemEdit" style="display:none;margin-top:22px">
       <h3 style="font-size:16px;font-weight:800;margin-bottom:6px">장 정보 관리 (이름·설명·사진)</h3>
@@ -679,6 +701,7 @@ const COL = { resp:"jangApp_responses", phone:"jangApp_phones", meta:"jangApp_me
 const DEMO = location.protocol === "file:" || /[?&]demo/.test(location.search);
 let ITEMS = {...DEFAULT_ITEMS};
 let ITEM_INFO = {};            // no -> {desc, img}
+let MEET_CFG = {hidden:[], custom:[]};  // 모임평가 문항 설정(관리자 편집)
 let me = null;                 // {pid, name, phone}
 let myResp = {scores:{}, comments:{}};
 let allResp = {};              // pid -> {name, scores, comments}
@@ -791,7 +814,10 @@ const store = {
     try{
       const qs = await db.collection(COL.meta).get();
       qs.forEach(d=>{
-        if(d.id==="config" && d.data().items) ITEMS = {...DEFAULT_ITEMS, ...d.data().items};
+        if(d.id==="config"){
+          if(d.data().items) ITEMS = {...DEFAULT_ITEMS, ...d.data().items};
+          MEET_CFG = {hidden:d.data().meetHidden||[], custom:d.data().meetCustom||[]};
+        }
         if(d.id.startsWith("item_")) ITEM_INFO[+d.id.slice(5)] = d.data();
       });
     }catch(e){}
@@ -869,6 +895,11 @@ const store = {
     clears.forEach(a=>obj[a]=firebase.firestore.FieldValue.delete());
     await db.collection(COL.resp).doc(pid).set(
       {scores:{[no]:obj}, updatedAt:firebase.firestore.FieldValue.serverTimestamp()}, {merge:true});
+  },
+  async saveMeetCfg(){
+    if(DEMO) return;
+    await db.collection(COL.meta).doc("config").set(
+      {meetHidden:MEET_CFG.hidden||[], meetCustom:MEET_CFG.custom||[]}, {merge:true});
   },
   async saveItemInfo(no, info){
     if(DEMO){ ITEM_INFO[no]=info; return; }
@@ -1178,70 +1209,114 @@ function renderTop3Page(){
 function renderMeetPage(){
   const host=$("sheet7");
   const meet=myResp.meet||{};
+  const hid=MEET_CFG.hidden||[];
+  const vis=k=>!hid.includes(k);
+  let n=0;
   let h=surveyTabsHTML(MEET_PAGE);
   h+=`<div class="sheet-head">
     <div class="sheet-title">모임 평가 <small>- 1분이면 충분해요</small></div>
     <div class="sheet-desc">오늘 행사에 대한 솔직한 의견을 들려주세요</div>
-  </div>
-  <div class="fin-q">1. 행사에 대한 전반적인 만족도 <b class="req">필수</b></div>
-  <div class="opt-wrap" id="meetSat">${[1,2,3,4,5].map(v=>`<button data-v="${v}" class="${meet.sat===v?'on':''}">${SAT_L[v]}</button>`).join("")}</div>
-  <div class="fin-q">1-1. 그렇게 느끼신 이유나, 좋았던 점/아쉬웠던 점이 있다면 자유롭게 적어주세요 <span class="opt-note">다음 이벤트에 반영하겠습니다</span></div>
-  <textarea class="fin-ta" id="meetWhy" maxlength="500" placeholder="편하게 적어주세요">${esc(meet.why||"")}</textarea>
-  <div class="fin-q">2. 테이스팅한 전통장의 개수(20가지)는 어떠셨나요? <b class="req">필수</b></div>
-  <div class="opt-wrap" id="meetCnt">${[1,2,3,4,5].map(v=>`<button data-v="${v}" class="${meet.cnt===v?'on':''}">${CNT_L[v]}</button>`).join("")}</div>
-  <div class="fin-q">3. 이 프로그램의 적정 가격대는 어느 정도라고 생각하시나요? <b class="req">필수</b></div>
-  <div class="opt-col" id="meetPrice">${[1,2,3,4,5].map(v=>`<button data-v="${v}" class="${meet.price===v?'on':''}">${PRICE_L[v]}</button>`).join("")}</div>
-  <div class="fin-q">3-1. 위 항목에 해당하지 않는다면, 생각하시는 가격을 직접 적어주세요 <span class="opt-note">선택</span></div>
-  <input class="fin-ta" id="meetPriceEtc" style="height:auto;padding:11px" maxlength="50" placeholder="예: 65,000원" value="${esc(meet.priceEtc||"")}">
-  <div class="fin-q">4. 다음에도 비슷한 프로그램에 참여할 의사가 있으신가요? <b class="req">필수</b></div>
-  <div class="opt-wrap" id="meetAgain">${[1,2,3,4,5].map(v=>`<button data-v="${v}" class="${meet.again===v?'on':''}">${AGAIN_L[v]}</button>`).join("")}</div>
-  <div class="fin-q">5. 앞으로 이런 프로그램이 있었으면 좋겠다 하는 아이디어가 있다면 자유롭게 적어주세요 <span class="opt-note">선택</span></div>
-  <textarea class="fin-ta" id="meetIdea" maxlength="500" placeholder="예: 된장 담그기 클래스, 계절 장아찌 클래스...">${esc(meet.idea||"")}</textarea>
-
-  <div class="group-sub" style="margin-top:34px">✍️ 동의 및 안내</div>
-  <div class="fin-q">6. 개인정보 수집·이용 동의 <b class="req">필수</b></div>
-  <div class="agree-box">
-    <div class="ag-line">수집 항목: 이름, 연락처 등 신청서 기재 내용</div>
-    <div class="ag-line">이용 목적: 프로그램 운영 및 안내, 향후 이벤트 소식 전달</div>
-    <div class="ag-line">보유 기간: 행사 종료 후 다음 이벤트 안내 시까지</div>
-    <button class="chk ${meet.agreePriv?'on':''}" id="agPriv">${meet.agreePriv?"☑":"☐"} 개인정보 수집·이용에 동의합니다</button>
-    <button class="chk sub ${meet.discard?'on':''}" id="agDiscard">${meet.discard?"☑":"☐"} 행사 종료 후 내 개인정보 폐기를 원합니다 <span class="opt-note">선택</span></button>
-  </div>
-  <div class="fin-q">7. 초상권(사진·영상) 활용 동의 <b class="req">필수</b></div>
-  <div class="agree-box">
-    <div class="ag-line">본 프로그램은 전문 사진작가를 통해 사진·영상이 촬영되며, 일부는 꽃밥에피다 홍보 채널(SNS 등)에 활용될 수 있습니다.</div>
-    <button class="chk ${meet.agreePhoto?'on':''}" id="agPhoto">${meet.agreePhoto?"☑":"☐"} 사진·영상 촬영 및 홍보 활용에 동의합니다</button>
-    <div class="ag-line" style="margin-top:8px">행사에 참여하신 모습을 메일로 받아보고 싶으시면 메일 주소를 남겨주세요 <span class="opt-note">선택</span></div>
-    <input class="fin-ta" id="meetPhotoMail" style="height:auto;padding:11px" maxlength="100" placeholder="예: hello@naver.com" value="${esc(meet.photoMail||"")}">
-  </div>
-  <div class="fin-q">8. 저희 프로그램은 어떻게 알게 되셨나요? <b class="req">필수</b></div>
-  <div class="opt-wrap" id="meetChannel">${CHANNELS.map(l=>`<button data-l="${esc(l)}" class="${meet.channel===l?'on':''}">${l}</button>`).join("")}</div>
-  ${meet.channel==="기타"?`<input class="fin-ta" id="meetChannelEtc" style="height:auto;padding:11px;margin-top:8px" maxlength="100" placeholder="어떻게 알게 되셨는지 적어주세요" value="${esc(meet.channelEtc||"")}">`:""}`;
+  </div>`;
+  if(vis("sat")){ n++;
+    h+=`<div class="fin-q">${n}. 행사에 대한 전반적인 만족도 <b class="req">필수</b></div>
+    <div class="opt-wrap" id="meetSat">${[1,2,3,4,5].map(v=>`<button data-v="${v}" class="${meet.sat===v?'on':''}">${SAT_L[v]}</button>`).join("")}</div>
+    <div class="fin-q">${n}-1. 그렇게 느끼신 이유나, 좋았던 점/아쉬웠던 점이 있다면 자유롭게 적어주세요 <span class="opt-note">다음 이벤트에 반영하겠습니다</span></div>
+    <textarea class="fin-ta" id="meetWhy" maxlength="500" placeholder="편하게 적어주세요">${esc(meet.why||"")}</textarea>`;
+  }
+  if(vis("cnt")){ n++;
+    h+=`<div class="fin-q">${n}. 테이스팅한 전통장의 개수(20가지)는 어떠셨나요? <b class="req">필수</b></div>
+    <div class="opt-wrap" id="meetCnt">${[1,2,3,4,5].map(v=>`<button data-v="${v}" class="${meet.cnt===v?'on':''}">${CNT_L[v]}</button>`).join("")}</div>`;
+  }
+  if(vis("price")){ n++;
+    h+=`<div class="fin-q">${n}. 이 프로그램의 적정 가격대는 어느 정도라고 생각하시나요? <b class="req">필수</b></div>
+    <div class="opt-col" id="meetPrice">${[1,2,3,4,5].map(v=>`<button data-v="${v}" class="${meet.price===v?'on':''}">${PRICE_L[v]}</button>`).join("")}</div>
+    <div class="fin-q">${n}-1. 위 항목에 해당하지 않는다면, 생각하시는 가격을 직접 적어주세요 <span class="opt-note">선택</span></div>
+    <input class="fin-ta" id="meetPriceEtc" style="height:auto;padding:11px" maxlength="50" placeholder="예: 65,000원" value="${esc(meet.priceEtc||"")}">`;
+  }
+  if(vis("again")){ n++;
+    h+=`<div class="fin-q">${n}. 다음에도 비슷한 프로그램에 참여할 의사가 있으신가요? <b class="req">필수</b></div>
+    <div class="opt-wrap" id="meetAgain">${[1,2,3,4,5].map(v=>`<button data-v="${v}" class="${meet.again===v?'on':''}">${AGAIN_L[v]}</button>`).join("")}</div>`;
+  }
+  if(vis("idea")){ n++;
+    h+=`<div class="fin-q">${n}. 앞으로 이런 프로그램이 있었으면 좋겠다 하는 아이디어가 있다면 자유롭게 적어주세요 <span class="opt-note">선택</span></div>
+    <textarea class="fin-ta" id="meetIdea" maxlength="500" placeholder="예: 된장 담그기 클래스, 계절 장아찌 클래스...">${esc(meet.idea||"")}</textarea>`;
+  }
+  // 관리자 추가 문항
+  for(const cq of (MEET_CFG.custom||[])){ n++;
+    h+=`<div class="fin-q">${n}. ${esc(cq.title)} ${cq.req?'<b class="req">필수</b>':'<span class="opt-note">선택</span>'}</div>`;
+    const cur=(meet.custom||{})[cq.id]||"";
+    if(cq.type==="choice"){
+      h+=`<div class="opt-wrap cq-choice" data-qid="${esc(cq.id)}">${(cq.opts||[]).map(o=>`<button data-opt="${esc(o)}" class="${cur===o?'on':''}">${esc(o)}</button>`).join("")}</div>`;
+    }else{
+      h+=`<textarea class="fin-ta cq-text" data-qid="${esc(cq.id)}" maxlength="500" placeholder="자유롭게 적어주세요">${esc(cur)}</textarea>`;
+    }
+  }
+  // 동의 및 안내
+  if(vis("agreePriv")||vis("agreePhoto")||vis("channel"))
+    h+=`<div class="group-sub" style="margin-top:34px">✍️ 동의 및 안내</div>`;
+  if(vis("agreePriv")){ n++;
+    h+=`<div class="fin-q">${n}. 개인정보 수집·이용 동의 <b class="req">필수</b></div>
+    <div class="agree-box">
+      <div class="ag-line">수집 항목: 이름, 연락처 등 신청서 기재 내용</div>
+      <div class="ag-line">이용 목적: 프로그램 운영 및 안내, 향후 이벤트 소식 전달</div>
+      <div class="ag-line">보유 기간: 행사 종료 후 다음 이벤트 안내 시까지</div>
+      <button class="chk ${meet.agreePriv?'on':''}" id="agPriv">${meet.agreePriv?"☑":"☐"} 개인정보 수집·이용에 동의합니다</button>
+      <button class="chk sub ${meet.discard?'on':''}" id="agDiscard">${meet.discard?"☑":"☐"} 행사 종료 후 내 개인정보 폐기를 원합니다 <span class="opt-note">선택</span></button>
+    </div>`;
+  }
+  if(vis("agreePhoto")){ n++;
+    h+=`<div class="fin-q">${n}. 초상권(사진·영상) 활용 동의 <b class="req">필수</b></div>
+    <div class="agree-box">
+      <div class="ag-line">본 프로그램은 전문 사진작가를 통해 사진·영상이 촬영되며, 일부는 꽃밥에피다 홍보 채널(SNS 등)에 활용될 수 있습니다.</div>
+      <button class="chk ${meet.agreePhoto?'on':''}" id="agPhoto">${meet.agreePhoto?"☑":"☐"} 사진·영상 촬영 및 홍보 활용에 동의합니다</button>
+      <div class="ag-line" style="margin-top:8px">행사에 참여하신 모습을 메일로 받아보고 싶으시면 메일 주소를 남겨주세요 <span class="opt-note">선택</span></div>
+      <input class="fin-ta" id="meetPhotoMail" style="height:auto;padding:11px" maxlength="100" placeholder="예: hello@naver.com" value="${esc(meet.photoMail||"")}">
+    </div>`;
+  }
+  if(vis("channel")){ n++;
+    h+=`<div class="fin-q">${n}. 저희 프로그램은 어떻게 알게 되셨나요? <b class="req">필수</b></div>
+    <div class="opt-wrap" id="meetChannel">${CHANNELS.map(l=>`<button data-l="${esc(l)}" class="${meet.channel===l?'on':''}">${l}</button>`).join("")}</div>
+    ${meet.channel==="기타"?`<input class="fin-ta" id="meetChannelEtc" style="height:auto;padding:11px;margin-top:8px" maxlength="100" placeholder="어떻게 알게 되셨는지 적어주세요" value="${esc(meet.channelEtc||"")}">`:""}`;
+  }
   host.innerHTML=h;
   bindSurveyTabs(host);
-  [["agPriv","agreePriv"],["agDiscard","discard"],["agPhoto","agreePhoto"]].forEach(([id,key])=>{
-    $(id).onclick=()=>{
-      flushMeetText();
-      (myResp.meet ||= {})[key]=!myResp.meet[key];
-      saveMeet({meet:{[key]:myResp.meet[key]}});
-      renderMeetPage();
-    };
-  });
-  $("meetChannel").querySelectorAll("button").forEach(b=>b.onclick=()=>{
-    flushMeetText();
-    (myResp.meet ||= {}).channel=b.dataset.l;
-    saveMeet({meet:{channel:b.dataset.l}});
-    renderMeetPage();
-  });
   [["meetSat","sat"],["meetCnt","cnt"],["meetPrice","price"],["meetAgain","again"]].forEach(([id,key])=>{
-    $(id).querySelectorAll("button").forEach(b=>b.onclick=()=>{
+    const el=$(id); if(!el) return;
+    el.querySelectorAll("button").forEach(b=>b.onclick=()=>{
       flushMeetText();
       (myResp.meet ||= {})[key]=+b.dataset.v;
       saveMeet({meet:{[key]:+b.dataset.v}});
       renderMeetPage();
     });
   });
+  [["agPriv","agreePriv"],["agDiscard","discard"],["agPhoto","agreePhoto"]].forEach(([id,key])=>{
+    const el=$(id); if(!el) return;
+    el.onclick=()=>{
+      flushMeetText();
+      (myResp.meet ||= {})[key]=!myResp.meet[key];
+      saveMeet({meet:{[key]:myResp.meet[key]}});
+      renderMeetPage();
+    };
+  });
+  const ch=$("meetChannel");
+  if(ch) ch.querySelectorAll("button").forEach(b=>b.onclick=()=>{
+    flushMeetText();
+    (myResp.meet ||= {}).channel=b.dataset.l;
+    saveMeet({meet:{channel:b.dataset.l}});
+    renderMeetPage();
+  });
+  host.querySelectorAll(".cq-choice").forEach(box=>{
+    box.querySelectorAll("button").forEach(b=>b.onclick=()=>{
+      flushMeetText();
+      const qid=box.dataset.qid;
+      myResp.meet ||= {}; myResp.meet.custom ||= {};
+      myResp.meet.custom[qid]=b.dataset.opt;
+      saveMeet({meet:{custom:{[qid]:b.dataset.opt}}});
+      renderMeetPage();
+    });
+  });
   ["meetWhy","meetPriceEtc","meetIdea","meetPhotoMail","meetChannelEtc"].forEach(id=>{ const el=$(id); if(el) el.onchange=flushMeetText; });
+  host.querySelectorAll(".cq-text").forEach(el=>el.onchange=flushMeetText);
 }
 function flushMeetText(){
   const m=(myResp.meet ||= {});
@@ -1252,6 +1327,11 @@ function flushMeetText(){
     const v=el.value.trim();
     if(v!==(m[map[id]]||"")){ m[map[id]]=v; partial[map[id]]=v; }
   }
+  document.querySelectorAll(".cq-text").forEach(el=>{
+    const qid=el.dataset.qid, v=el.value.trim();
+    m.custom ||= {};
+    if(v!==(m.custom[qid]||"")){ m.custom[qid]=v; (partial.custom ||= {})[qid]=v; }
+  });
   if(Object.keys(partial).length) saveMeet({meet:partial});
 }
 async function saveMeet(partial){
@@ -1378,15 +1458,23 @@ function go(p){
 }
 function meetPctOf(m){
   m=m||{};
-  let done=0;
-  if(m.sat) done++;
-  if(m.cnt) done++;
-  if(m.price || (m.priceEtc||"").trim()) done++;
-  if(m.again) done++;
-  if(m.agreePriv) done++;
-  if(m.agreePhoto) done++;
-  if(m.channel) done++;
-  return Math.round(done/7*100);
+  const hid=MEET_CFG.hidden||[];
+  const req=[
+    ["sat", !!m.sat],
+    ["cnt", !!m.cnt],
+    ["price", !!(m.price || (m.priceEtc||"").trim())],
+    ["again", !!m.again],
+    ["agreePriv", !!m.agreePriv],
+    ["agreePhoto", !!m.agreePhoto],
+    ["channel", !!m.channel]
+  ].filter(([k])=>!hid.includes(k));
+  let total=req.length, done=req.filter(([,ok])=>ok).length;
+  for(const cq of (MEET_CFG.custom||[])){
+    if(!cq.req) continue;
+    total++;
+    if((((m.custom||{})[cq.id])||"").toString().trim()) done++;
+  }
+  return total ? Math.round(done/total*100) : 100;
 }
 function finalComplete(){
   return myProgress(myResp).filled>=50 && (myResp.top3?.length===3) && meetPctOf(myResp.meet)===100;
@@ -1694,7 +1782,20 @@ function renderAdmMeet(){
   const chStr=Object.entries(ch).sort((a,b)=>b[1]-a[1]).map(([l,c])=>`${esc(l)} ${c}명`).join(", ")||"-";
   const discards=ms.filter(r=>r.meet.discard).map(r=>r.name||"-");
   const mails=ms.filter(r=>(r.meet.photoMail||"").trim()).map(r=>`${esc(r.name||"-")} (${esc(r.meet.photoMail)})`);
-  h+=`<div class="adm-note">8. 알게 된 경로: ${chStr}</div>
+  h+=`<div class="adm-note">알게 된 경로: ${chStr}</div>`;
+  for(const cq of (MEET_CFG.custom||[])){
+    if(cq.type==="choice"){
+      const c={};
+      ms.forEach(r=>{ const v=(r.meet.custom||{})[cq.id]; if(v) c[v]=(c[v]||0)+1; });
+      const str=Object.entries(c).sort((a,b)=>b[1]-a[1]).map(([l,n2])=>`${esc(l)} ${n2}명`).join(", ")||"-";
+      h+=`<div class="adm-note">${esc(cq.title)}: ${str}</div>`;
+    }else{
+      const ls=ms.filter(r=>(((r.meet.custom||{})[cq.id])||"").trim())
+        .map(r=>`<div class="ha-line"><b>${esc(r.name||"-")}</b> ${esc((r.meet.custom||{})[cq.id])}</div>`);
+      if(ls.length) h+=`<div class="adm-note">${esc(cq.title)}:</div><div style="background:#fff;border:1px solid var(--line);border-radius:10px;padding:8px 14px">${ls.join("")}</div>`;
+    }
+  }
+  h+=`
   <div class="adm-note">개인정보 폐기 요청: ${discards.length?discards.map(esc).join(", ")+" - 행사 후 폐기 필요":"없음"}</div>
   <div class="adm-note">사진 메일 발송 요청: ${mails.length?mails.join(", "):"없음"}</div>`;
   const lines=[];
@@ -1729,6 +1830,58 @@ function resizeImage(file, maxW=700, q=0.82){
     };
     rd.onerror=rej; rd.readAsDataURL(file);
   });
+}
+const MQ_BUILTINS=[
+  ["sat","전반 만족도 (이유 자유기입 포함)"],
+  ["cnt","테이스팅한 전통장의 개수"],
+  ["price","적정 가격대 (직접 기입 포함)"],
+  ["again","재참여 의사"],
+  ["idea","프로그램 아이디어 (선택)"],
+  ["agreePriv","개인정보 수집·이용 동의"],
+  ["agreePhoto","초상권 활용 동의 (사진 메일 포함)"],
+  ["channel","알게 된 경로"]
+];
+let mqReqFlag=false;
+function renderMeetQEdit(){
+  const box=$("admMeetQ");
+  $("mqBuiltins").innerHTML=MQ_BUILTINS.map(([k,label])=>{
+    const hidden=(MEET_CFG.hidden||[]).includes(k);
+    return `<div class="itemedit-row"><span style="flex:1;font-size:13.5px;${hidden?'color:#b9b2a4;text-decoration:line-through':''}">${label}</span>
+      <button data-k="${k}" class="mq-tg" style="padding:7px 13px;border-radius:8px;border:1.5px solid ${hidden?'var(--line)':'var(--green)'};background:#fff;font-size:12.5px;font-weight:700;color:${hidden?'#8a8378':'var(--green)'}">${hidden?"숨김":"표시 중"}</button></div>`;
+  }).join("");
+  $("mqBuiltins").querySelectorAll(".mq-tg").forEach(b=>b.onclick=async()=>{
+    const k=b.dataset.k;
+    MEET_CFG.hidden ||= [];
+    MEET_CFG.hidden = MEET_CFG.hidden.includes(k) ? MEET_CFG.hidden.filter(x=>x!==k) : [...MEET_CFG.hidden,k];
+    try{ await store.saveMeetCfg(); toast("저장되었습니다"); }catch(e){ toast("저장 실패: "+(e.code||"")); }
+    renderMeetQEdit();
+  });
+  const cl=$("mqCustomList");
+  const custom=MEET_CFG.custom||[];
+  cl.innerHTML = custom.length ? custom.map(cq=>
+    `<div class="itemedit-row"><span style="flex:1;font-size:13.5px">${esc(cq.title)} <span class="opt-note">(${cq.type==="choice"?"선택형":"서술형"}${cq.req?", 필수":""})</span></span>
+     <button data-id="${esc(cq.id)}" class="mq-del danger" style="padding:7px 13px;border-radius:8px;border:1px solid #e0b7ae;background:#fff;font-size:12.5px;color:var(--red)">삭제</button></div>`
+  ).join("") : `<div class="adm-note">추가한 문항이 없습니다</div>`;
+  cl.querySelectorAll(".mq-del").forEach(b=>b.onclick=async()=>{
+    if(!confirm("이 문항을 삭제할까요? 이미 받은 답변은 CSV에 남지 않게 됩니다.")) return;
+    MEET_CFG.custom=(MEET_CFG.custom||[]).filter(c=>c.id!==b.dataset.id);
+    try{ await store.saveMeetCfg(); toast("삭제되었습니다"); }catch(e){ toast("저장 실패: "+(e.code||"")); }
+    renderMeetQEdit();
+  });
+  $("mqType").onchange=()=>{ $("mqOpts").style.display = $("mqType").value==="choice" ? "block":"none"; };
+  $("mqReq").onclick=()=>{ mqReqFlag=!mqReqFlag; $("mqReq").textContent=(mqReqFlag?"☑":"☐")+" 필수"; $("mqReq").classList.toggle("on",mqReqFlag); };
+  $("mqAdd").onclick=async()=>{
+    const title=$("mqTitle").value.trim();
+    const type=$("mqType").value;
+    const opts=$("mqOpts").value.split(",").map(x=>x.trim()).filter(Boolean);
+    if(!title){ toast("문항 내용을 입력해 주세요"); return; }
+    if(type==="choice" && opts.length<2){ toast("선택형은 선택지를 2개 이상 쉼표로 넣어주세요"); return; }
+    MEET_CFG.custom=[...(MEET_CFG.custom||[]), {id:"q"+Date.now().toString(36), title, type, opts, req:mqReqFlag}];
+    try{ await store.saveMeetCfg(); toast("문항이 추가되었습니다"); }catch(e){ toast("저장 실패: "+(e.code||"")); }
+    $("mqTitle").value=""; $("mqOpts").value=""; mqReqFlag=false;
+    $("mqReq").textContent="☐ 필수"; $("mqReq").classList.remove("on");
+    renderMeetQEdit();
+  };
 }
 function renderItemEdit(){
   const box=$("admItemEdit"), rows=$("itemEditRows");
@@ -1808,7 +1961,7 @@ function admCsv(){
 }
 function admCsvSummary(){
   const BOM="﻿";
-  let rows=[["이름","전화번호","채점 진행률","장BTI","최애1","최애2","최애3","만족도","이유·소감(1-1)","장 개수 의견","적정 가격대","가격 직접기입","재참여 의사","아이디어","개인정보 동의","폐기 요청","초상권 동의","사진 수신 메일","알게 된 경로"]];
+  let rows=[["이름","전화번호","채점 진행률","장BTI","최애1","최애2","최애3","만족도","이유·소감(1-1)","장 개수 의견","적정 가격대","가격 직접기입","재참여 의사","아이디어","개인정보 동의","폐기 요청","초상권 동의","사진 수신 메일","알게 된 경로",...(MEET_CFG.custom||[]).map(c=>c.title)]];
   const pids=Object.keys(allResp).sort((a,b)=>(allResp[a].name||"").localeCompare(allResp[b].name||"","ko"));
   for(const pid of pids){
     const r=allResp[pid], m=r.meet||{}, t3=r.top3||[];
@@ -1820,7 +1973,8 @@ function admCsvSummary(){
       m.sat? SAT_L[m.sat]:"",
       m.why||"", m.cnt? CNT_L[m.cnt]:"", m.price? PRICE_L[m.price]:"", m.priceEtc||"", m.again? AGAIN_L[m.again]:"", m.idea||"",
       m.agreePriv?"동의":"", m.discard?"폐기 요청":"", m.agreePhoto?"동의":"", m.photoMail||"",
-      m.channel? (m.channel==="기타"&&(m.channelEtc||"").trim()?("기타: "+m.channelEtc):m.channel):""
+      m.channel? (m.channel==="기타"&&(m.channelEtc||"").trim()?("기타: "+m.channelEtc):m.channel):"",
+      ...(MEET_CFG.custom||[]).map(c=>((m.custom||{})[c.id])||"")
     ]);
   }
   const csv=BOM+rows.map(row=>row.map(c=>`"${String(c).replace(/"/g,'""')}"`).join(",")).join("\r\n");
@@ -1913,6 +2067,11 @@ function bindEvents(){
   $("btnAdmCsv").onclick=admCsv;
   $("btnAdmCsv2").onclick=admCsvSummary;
   $("btnAdmItems").onclick=renderItemEdit;
+  $("btnAdmMeetQ").onclick=()=>{
+    const box=$("admMeetQ");
+    box.style.display = box.style.display==="none" ? "block":"none";
+    if(box.style.display!=="none") renderMeetQEdit();
+  };
   $("btnItemsSave").onclick=saveItemsEdit;
   $("btnAdmLogout").onclick=async()=>{ isAdmin=false; await store.adminLogout(); location.href=location.pathname; };
 }
