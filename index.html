@@ -74,6 +74,14 @@ input,textarea{font-family:'Noto Sans KR',sans-serif}
 .btn-main:disabled{opacity:.45}
 .cover-foot{padding:18px;text-align:center;font-size:12px;color:#8a8378;letter-spacing:.08em}
 .admin-link{background:none;border:none;color:#a39a8b;font-size:12px;margin-top:22px;text-decoration:underline}
+.login-box.closed label[for="inName"],.login-box.closed #inName,
+.login-box.closed label[for="inPhone"],.login-box.closed #inPhone,
+.login-box.closed .hint,.login-box.closed #loginErr,.login-box.closed #btnStart{display:none}
+.closed-note{
+  background:#f1ece2;border:1.5px solid #d8cfbe;border-radius:14px;
+  padding:18px 16px;text-align:center;font-size:14.5px;line-height:1.7;color:#4a453d;
+  word-break:keep-all}
+.closed-note b{color:var(--accent)}
 .adminbox{display:none;width:100%;max-width:340px;margin-top:10px;text-align:left}
 .adminbox.on{display:block}
 .errmsg{color:var(--red);font-size:13px;margin-top:10px;display:none;font-family:'Noto Sans KR',sans-serif}
@@ -699,6 +707,10 @@ const COL = { resp:"jangApp_responses", phone:"jangApp_phones", meta:"jangApp_me
 
 /* ═══════════════ 전역 상태 ═══════════════ */
 const DEMO = location.protocol === "file:" || /[?&]demo/.test(location.search);
+/* 행사 종료: true면 새 참석자 로그인이 막히고 관리자 로그인만 가능 (결과 링크 ?r= 열람은 유지)
+   다시 열려면 false로 바꿔 재배포 */
+const EVENT_CLOSED = true;
+const isClosed = () => EVENT_CLOSED && !window.JANG_OPEN;
 let ITEMS = {...DEFAULT_ITEMS};
 let ITEM_INFO = {};            // no -> {desc, img}
 let MEET_CFG = {hidden:[], custom:[]};  // 모임평가 문항 설정(관리자 편집)
@@ -1985,6 +1997,7 @@ function admCsvSummary(){
 
 /* ═══════════════ 로그인 / 부팅 ═══════════════ */
 async function doStart(){
+  if(isClosed()){ toast("행사가 종료되어 새로 참여할 수 없습니다"); return; }
   const name=$("inName").value.trim();
   const phone=normPhone($("inPhone").value);
   const err=$("loginErr"); err.classList.remove("on");
@@ -2087,7 +2100,16 @@ async function boot(){
     PAGE_IDS.forEach(id=>$(id).classList.remove("on"));
     $("page-result").classList.add("on"); curPage=RESULT_PAGE;
     startListen(); renderResults();
-    if(me && me.pid===viewPid){ $("navbar").style.display="block"; updateNav(); updateProgressLine(); }
+    if(me && me.pid===viewPid && !isClosed()){ $("navbar").style.display="block"; updateNav(); updateProgressLine(); }
+    return;
+  }
+  // 행사 종료 모드: 참석자 로그인 숨김, 관리자 로그인만 노출
+  if(isClosed()){
+    $("loginBox").classList.add("closed");
+    const n=document.createElement("div");
+    n.className="closed-note";
+    n.innerHTML="이번 테이스팅 행사가 <b>종료</b>되어<br>새로운 참여 접수는 마감되었습니다.<br>결과는 안내받으신 <b>개인 결과 링크</b>로<br>계속 보실 수 있어요.";
+    $("loginBox").prepend(n);
     return;
   }
   // 이어하기
