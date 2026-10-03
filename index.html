@@ -15,10 +15,10 @@
 <meta name="twitter:card" content="summary_large_image">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700;800&family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
-<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700;800&family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+<script defer src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script defer src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script defer src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
 <style>
 :root{
   --ink:#1c1a17;
@@ -39,7 +39,7 @@ body{
   font-size:15px;line-height:1.55;
   -webkit-font-smoothing:antialiased;
 }
-button{font-family:inherit;cursor:pointer}
+button{font-family:inherit;cursor:pointer;color:var(--ink)}
 input,textarea{font-family:'Noto Sans KR',sans-serif}
 .sans{font-family:'Noto Sans KR',sans-serif}
 
@@ -368,9 +368,9 @@ td.score:active{background:#eae4d8}
 .t3-grid{display:flex;flex-wrap:wrap;gap:7px}
 .t3-chip{padding:9px 13px;border-radius:20px;border:2px solid var(--line);background:#fff;
   font-size:13px;font-weight:700;font-family:'Noto Sans KR',sans-serif}
-.fin-q{font-size:15px;font-weight:700;margin:22px 0 9px}
-.fin-q .req{font-family:'Noto Sans KR',sans-serif;font-size:10.5px;color:#fff;background:var(--red);border-radius:8px;padding:1px 7px;vertical-align:2px;font-weight:700}
-.fin-q .opt-note{font-family:'Noto Sans KR',sans-serif;font-size:11.5px;color:#a39a8b;font-weight:400}
+.fin-q{font-size:15px;font-weight:700;margin:22px 0 9px;word-break:keep-all}
+.fin-q .req{display:inline-block;white-space:nowrap;font-family:'Noto Sans KR',sans-serif;font-size:10.5px;line-height:1.5;color:#fff;background:var(--red);border-radius:8px;padding:1px 7px;vertical-align:2px;font-weight:700}
+.fin-q .opt-note{display:inline-block;font-family:'Noto Sans KR',sans-serif;font-size:11.5px;color:#a39a8b;font-weight:400}
 .stars{display:flex;gap:6px}
 .stars button{font-size:37px;background:none;border:none;color:#ddd6c8;padding:0 3px;line-height:1}
 .stars button.on{color:#e0a63c}
@@ -826,6 +826,10 @@ function renderCover(){
   $("coverDate").style.display=EVC.date?"":"none";
   document.title=evFull();
 }
+function cacheCover(){
+  if(EV.fixed) return;
+  try{ localStorage.setItem("jangCover_"+EV.id, JSON.stringify({title:EVC.title, sub:EVC.sub, date:EVC.date})); }catch(e){}
+}
 function applyEvent(id, cfg){
   EV=EVENTS[id]; RAW_CFG=cfg||{}; cfg=RAW_CFG;
   if(EV.fixed){
@@ -984,6 +988,7 @@ const store = {
       }
     }
     applyEvent(evId, cfg);
+    if(!metaErr) cacheCover();
     ITEM_INFO=info;
   },
   /* 행사 설정 저장. fields를 주면 그 필드는 통째로 교체, 아니면 병합 */
@@ -994,6 +999,7 @@ const store = {
       if(fields) await ref.set(partial,{mergeFields:fields}); else await ref.set(partial,{merge:true});
     }
     applyEvent(EV.id, {...RAW_CFG, ...partial});
+    cacheCover();
   },
   async loadLegacyMeetCfg(){
     let d={};
@@ -2482,12 +2488,36 @@ function bindEvents(){
   $("btnAdmLogout").onclick=async()=>{ isAdmin=false; await store.adminLogout(); location.href=location.pathname; };
 }
 
+/* 접속(Firebase)을 기다리지 않고 먼저 그리는 부분: 표지 사진·제목, 결과 링크면 결과 화면 틀 */
+function earlyPaint(){
+  const rid=new URLSearchParams(location.search).get("r");
+  if(rid){
+    viewPid=rid;
+    PAGE_IDS.forEach(id=>$(id).classList.remove("on"));
+    $("page-result").classList.add("on");
+    $("liveCnt").textContent="결과를 불러오는 중";
+    $("resBody").innerHTML=`<div style="text-align:center;padding:60px 0;color:#8a8378">결과를 불러오는 중입니다…<br><br>잠시만 기다려 주세요</div>`;
+    return;
+  }
+  let c={};
+  try{ c=JSON.parse(localStorage.getItem("jangCover_"+EV.id)||"{}")||{}; }catch(e){}
+  if(c.title) EVC.title=c.title;
+  if(c.sub!=null) EVC.sub=c.sub;
+  if(c.date!=null) EVC.date=c.date;
+  renderCover();
+  const b=$("btnStart"); b.disabled=true; b.textContent="접속 준비 중…";   // 접속이 끝나면 boot에서 다시 켬
+}
 async function boot(){
   bindEvents();
   const q=new URLSearchParams(location.search);
   const rid=q.get("r");
   // 결과 링크면 그 링크가 속한 행사를, 아니면 지금 진행하는 행사를 연다
-  try{ await store.init(rid ? eventOfDoc(rid) : ACTIVE_EVENT); }catch(e){ return; }
+  try{ await store.init(rid ? eventOfDoc(rid) : ACTIVE_EVENT); }
+  catch(e){
+    const nb=$("netBanner");
+    if(!nb.classList.contains("on")){ nb.innerHTML="접속 준비 중 문제가 발생했습니다.<br>잠시 후 <b>새로고침</b> 해주세요."; nb.classList.add("on"); }
+    return;
+  }
   if(rid){
     viewPid=rid;
     // 결과 보기 전용 모드. 접수 중인 행사의 본인 링크일 때만 설문으로 돌아갈 수 있음
@@ -2504,6 +2534,7 @@ async function boot(){
     }
     return;
   }
+  $("btnStart").disabled=false; $("btnStart").textContent="테이스팅 시작하기";
   if(DEMO){ const b=$("netBanner"); b.innerHTML="지금은 <b>미리보기(데모) 모드</b>입니다. 가상 참석자 데이터가 들어 있고, 입력해도 서버에 저장되지 않습니다."; b.classList.add("on"); }
   // 참석자 로그인을 막는 경우: 접수 마감 / 장 목록 미등록 / 설정을 못 불러옴
   const block = metaErr ? "접속이 원활하지 않아 설문 정보를 불러오지 못했습니다.<br>잠시 후 <b>새로고침</b> 해주세요."
@@ -2524,7 +2555,8 @@ async function boot(){
     if(saved&&saved.pid&&saved.name){ $("inName").value=saved.name; $("inPhone").value=saved.phone||""; }
   }catch(e){}
 }
-boot();
+earlyPaint();
+if(document.readyState==="loading") document.addEventListener("DOMContentLoaded", boot); else boot();
 </script>
 </body>
 </html>
