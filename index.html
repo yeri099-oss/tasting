@@ -13,7 +13,7 @@
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="theme-color" content="#fcf3e6">
+<meta name="theme-color" content="#faf5ef">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700;800&family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
@@ -22,19 +22,19 @@
 <script defer src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
 <style>
 :root{
-  --ink:#45302a;      /* 글자: 진한 커피색 */
-  --brand:#7b5246;    /* 버튼과 강조 면: 갈색 */
-  --brand-d:#64413a;  /* 눌렀을 때 */
-  --caramel:#d9a273;  /* 장식: 캐러멜 */
-  --paper:#fcf3e6;    /* 바탕: 크림 */
-  --paper2:#f6e6d0;   /* 옅은 면 */
-  --line:#ecdcc6;
-  --accent:#9c6636;   /* 글자 강조·막대 */
-  --accent2:#d9a273;
+  --ink:#1f1d1a;      /* 글자, 기본 버튼: 먹색 */
+  --brand:#1f1d1a;
+  --brand-d:#8b5e3c;  /* 눌렀을 때: 갈색 */
+  --accent:#8b5e3c;   /* 강조: 갈색 */
+  --accent2:#c8a885;  /* 막대: 황토 */
+  --tan:#d8bfa3;
+  --paper:#faf5ef;    /* 바탕: 따뜻한 미색 */
+  --paper2:#efe5db;   /* 옅은 면: 베이지 */
+  --line:#e6d9cb;
   --sel:#3d3428;
   --red:#b0402f;
-  --green:#5a7a4e;
-  --shadow:0 6px 18px rgba(123,82,70,.11);
+  --green:#15803d;
+  --shadow:0 1px 3px rgba(31,29,26,.06);
 }
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{height:100%}
@@ -62,7 +62,7 @@ input,textarea{font-family:'Noto Sans KR',sans-serif}
 #page-cover.on{display:flex;flex-direction:column}
 .cover-inner{flex:1;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:24px 20px 40px}
 .cover-photo{display:block;width:100%;max-width:340px;aspect-ratio:16/10;object-fit:cover;border-radius:16px;
-  margin:0 auto 26px;box-shadow:0 6px 20px rgba(123,82,70,.14)}
+  margin:0 auto 26px;box-shadow:0 6px 20px rgba(31,29,26,.14)}
 .cover-title{font-size:44px;font-weight:800;letter-spacing:.18em;margin-bottom:14px}
 .cover-sub{font-size:22px;font-weight:700;letter-spacing:.1em;margin-bottom:10px}
 .cover-date{font-size:15px;color:#5b443b;margin-bottom:38px;letter-spacing:.05em}
@@ -107,8 +107,8 @@ input,textarea{font-family:'Noto Sans KR',sans-serif}
 /* 표 */
 .tbl{width:100%;border-collapse:collapse;background:#fff;font-size:15px}
 .tbl th{
-  background:#7b5246;color:#fdf3e4;font-weight:700;padding:11px 5px;font-size:14px;
-  letter-spacing:.03em;border:1px solid #7b5246;white-space:nowrap;
+  background:#1f1d1a;color:#fdf3e4;font-weight:700;padding:11px 5px;font-size:14px;
+  letter-spacing:.03em;border:1px solid #1f1d1a;white-space:nowrap;
 }
 .tbl td{border:1px solid var(--line);text-align:center;vertical-align:middle;height:54px}
 .tbl td.no{width:36px;color:#7d665c;font-size:14px}
@@ -177,7 +177,7 @@ td.score:active{background:#f1e0c8}
 
 /* ── 결과 종류별 탭 ── */
 .res-tabs{display:flex;gap:6px;overflow-x:auto;position:sticky;top:0;z-index:45;
-  background:rgba(252,243,230,.96);backdrop-filter:blur(6px);padding:10px 16px;margin:0 -16px;
+  background:rgba(250,245,239,.96);backdrop-filter:blur(6px);padding:10px 16px;margin:0 -16px;
   font-family:'Noto Sans KR',sans-serif;-webkit-overflow-scrolling:touch}
 .res-tabs button{padding:8px 15px;border-radius:20px;border:1px solid var(--line);background:#fff;
   font-size:13px;font-weight:700;white-space:nowrap;color:#5b443b}
@@ -191,7 +191,7 @@ td.score:active{background:#f1e0c8}
 /* ── 하단 내비 ── */
 .navbar{
   position:fixed;left:0;right:0;bottom:0;z-index:50;
-  background:rgba(252,243,230,.96);backdrop-filter:blur(6px);
+  background:rgba(250,245,239,.96);backdrop-filter:blur(6px);
   border-top:1px solid var(--line);
 }
 .navbar .nv{max-width:760px;margin:0 auto;display:flex;align-items:center;gap:10px;padding:10px 16px calc(10px + env(safe-area-inset-bottom))}
@@ -199,14 +199,14 @@ td.score:active{background:#f1e0c8}
 .nv .prev{flex:1;color:var(--ink)}
 .nv .next{flex:2;background:var(--brand);color:#fff}
 .nv .save-state{position:absolute;top:-24px;right:14px;font-size:11px;color:#9a8479;font-family:'Noto Sans KR',sans-serif;
-  background:rgba(252,243,230,.9);padding:2px 8px;border-radius:6px}
+  background:rgba(250,245,239,.9);padding:2px 8px;border-radius:6px}
 .pagedots{display:flex;gap:6px;justify-content:center;padding-top:8px}
 .pagedots i{width:7px;height:7px;border-radius:50%;background:#e3cfb8}
 .pagedots i.on{background:var(--brand)}
 .progress-line{font-size:12px;color:#7d665c;text-align:center;font-family:'Noto Sans KR',sans-serif;margin-top:4px}
 
 /* ── 점수 선택 창 (중앙) ── */
-.dim{position:fixed;inset:0;background:rgba(69,48,42,.45);z-index:90;display:none}
+.dim{position:fixed;inset:0;background:rgba(31,29,26,.45);z-index:90;display:none}
 .dim.on{display:block}
 .picker{
   position:fixed;left:50%;top:50%;transform:translate(-50%,-50%) scale(.94);z-index:100;
@@ -233,7 +233,7 @@ td.score:active{background:#f1e0c8}
 .picker .mrow .ok{background:var(--brand);color:#fff;border-color:var(--brand)}
 
 /* ── 코멘트 모달 ── */
-.modal{position:fixed;inset:0;z-index:110;display:none;align-items:center;justify-content:center;padding:20px;background:rgba(69,48,42,.5)}
+.modal{position:fixed;inset:0;z-index:110;display:none;align-items:center;justify-content:center;padding:20px;background:rgba(31,29,26,.5)}
 .modal.on{display:flex}
 .modal .mbox{background:#fff;border-radius:14px;width:100%;max-width:420px;padding:20px;
   max-height:calc(100dvh - 40px);overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
@@ -351,7 +351,7 @@ td.score:active{background:#f1e0c8}
 .hub-sub{font-size:13.5px;color:#7d665c;margin-top:8px;font-family:'Noto Sans KR',sans-serif;word-break:keep-all}
 .hub-btn{position:relative;display:flex;align-items:center;gap:14px;width:100%;max-width:480px;margin:0 auto 14px;
   padding:20px 18px;background:#fff;border:1.5px solid var(--line);border-radius:16px;text-align:left;
-  box-shadow:0 3px 12px rgba(123,82,70,.06)}
+  box-shadow:0 3px 12px rgba(31,29,26,.06)}
 .hub-btn:active{background:var(--paper2)}
 .hub-btn .hb-ic{font-size:38px;flex-shrink:0}
 .hub-btn .hb-body{flex:1;min-width:0}
@@ -408,7 +408,7 @@ td.score:active{background:#f1e0c8}
 .agree-box .chk.on .opt-note{color:#e8e0d0}
 /* ── 장BTI 카드 ── */
 .jbti{position:relative;background:#fff;border-radius:20px;padding:26px 22px 20px;margin:18px 0 6px;
-  text-align:center;box-shadow:0 4px 18px rgba(123,82,70,.08);overflow:hidden}
+  text-align:center;box-shadow:0 4px 18px rgba(31,29,26,.08);overflow:hidden}
 .jbti::before{content:"";position:absolute;inset:8px;border:1.5px solid var(--ac);border-radius:14px;pointer-events:none;opacity:.55}
 .jb-badge{display:inline-block;font-family:'Noto Sans KR',sans-serif;font-size:11px;font-weight:700;letter-spacing:.16em;
   color:var(--ac);border:1px solid var(--ac);border-radius:18px;padding:3px 12px}
@@ -434,7 +434,7 @@ td.score:active{background:#f1e0c8}
 .adm-actions{display:flex;gap:8px;flex-wrap:wrap;font-family:'Noto Sans KR',sans-serif}
 .adm-actions button{padding:9px 14px;border-radius:8px;font-size:13px;font-weight:700;border:1px solid var(--brand);background:#fff}
 .adm-tbl{width:100%;border-collapse:collapse;background:#fff;font-size:13px;font-family:'Noto Sans KR',sans-serif}
-.adm-tbl th{background:#7b5246;color:#fdf3e4;padding:8px 6px;font-size:12px;border:1px solid #7b5246}
+.adm-tbl th{background:#1f1d1a;color:#fdf3e4;padding:8px 6px;font-size:12px;border:1px solid #1f1d1a}
 .adm-tbl td{border:1px solid var(--line);padding:8px 6px;text-align:center}
 .adm-tbl td.l{text-align:left}
 .adm-tbl button{padding:5px 9px;border-radius:6px;border:1px solid var(--line);background:#fff;font-size:12px}
@@ -486,68 +486,69 @@ td.score:active{background:#f1e0c8}
   font-family:'Noto Sans KR',sans-serif;white-space:nowrap}
 .toast.on{opacity:1}
 
-/* ═══════════ 테마: 둥근 알약 버튼, 테두리 없는 둥근 카드, 갈색 썸네일 ═══════════ */
+/* ═══════════ 테마: 먹색·갈색·베이지, 얇은 선 카드, 각진 버튼, 갈색 번호 배지 ═══════════ */
 .btn-main,.nv button,.share-row button,.btn-cmt-open,.mbox .mrow button,.picker .mrow button,
-.adm-actions button,.adm-tbl button,.jb-share,.st-add,.st-btn,.ie-file,.ie-delimg{border-radius:999px}
-.btn-main{box-shadow:0 8px 18px rgba(123,82,70,.26)}
-.btn-main:active,.nv .next:active,.mbox .mrow .ok:active,.picker .mrow .ok:active{background:var(--brand-d)}
-.nv button{border-width:1.5px}
-.nv .prev,.share-row button:not(.kakao),.btn-cmt-open,.adm-actions button{color:var(--brand)}
-.mbox .mrow button,.picker .mrow button{border-color:var(--line)}
+.adm-actions button,.adm-tbl button,.jb-share,.st-add,.st-btn,.ie-file,.ie-delimg{border-radius:6px}
+.btn-main{box-shadow:none}
+.btn-main:active,.nv .next:active,.mbox .mrow .ok:active,.picker .mrow .ok:active{background:var(--brand-d);border-color:var(--brand-d)}
+.nv button,.share-row button:not(.kakao),.btn-cmt-open,.adm-actions button{border:1px solid var(--ink)}
+.mbox .mrow button,.picker .mrow button{border-color:#d9cbbb}
+.mbox .mrow .ok,.picker .mrow .ok{border-color:var(--brand)}
 /* 입력칸 */
-.login-box input{border:1.5px solid var(--line);border-radius:999px;padding:13px 18px}
-.login-box label{padding-left:6px;font-weight:700}
-.login-box .hint{padding:0 6px}
-.fin-ta,.mbox textarea,.iedit textarea{border-radius:16px;border-width:1.5px}
-input.fin-ta,.ev-in,.hub-sel,.itemedit-row input,.st-gsub,.st-gname{border-radius:999px;padding-left:16px;padding-right:16px;border-width:1.5px}
-.st-catrow select,.hof-sel{border-radius:999px}
-/* 카드 */
-.chart-card,.res-item,.hof,.vote,.il-row,.iedit,.agree-box,.hub-btn,.jbti{border:none;border-radius:22px;box-shadow:var(--shadow)}
-.il-row{border-radius:20px}
-.il-thumb,.ie-thumb{border:none;border-radius:14px;background:var(--brand)}
-.closed-note,.hub-lock,.ev-state,.podium{border-radius:20px}
-.closed-note{border:none;background:#fff;box-shadow:var(--shadow)}
-.notice-banner{border-radius:16px}
-.modal .mbox,.picker{border-radius:26px}
-#infoImg{border-radius:18px}
+.login-box input,.fin-ta,.mbox textarea,.iedit textarea,.ev-in,.hub-sel,.itemedit-row input,.st-gsub,.st-gname{border:1px solid #d9cbbb;border-radius:6px}
+.login-box input:focus,.fin-ta:focus,.mbox textarea:focus,.ev-in:focus{border-color:var(--accent)}
+.login-box label{font-family:'Noto Sans KR',sans-serif;font-size:12.5px;font-weight:700;letter-spacing:.08em}
+/* 카드: 흰 바탕에 얇은 선 */
+.chart-card,.res-item,.hof,.vote,.il-row,.iedit,.agree-box,.hub-btn,.jbti{border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow)}
+.il-thumb,.ie-thumb{border-radius:8px}
+.modal .mbox{border-radius:14px}
+.picker{border-radius:14px}
+/* 메모지 느낌의 안내 */
+.closed-note,.hub-lock{background:#f3e8dc;border:none;border-radius:4px;box-shadow:2px 5px 12px rgba(31,29,26,.10)}
+.ev-state{background:#f3e8dc;border:none;border-radius:8px}
+.notice-banner{border-radius:8px}
+/* 상단 라벨: 작은 글씨 + 갈색 가는 선 */
+.brandbar{justify-content:flex-start;margin:0 18px;padding:14px 0 10px;border-bottom:1px solid var(--accent)}
+.brandbar .bname{font-family:'Noto Sans KR',sans-serif;font-size:11.5px;font-weight:700;letter-spacing:.24em;color:var(--ink)}
+.brandbar .bname::after{content:" ✦";color:var(--accent);letter-spacing:0}
+#page-result .brandbar{max-width:728px;margin:0 auto;padding-left:0;padding-right:0;width:calc(100% - 36px)}
 /* 표지 */
-.cover-photo{border-radius:28px;box-shadow:0 12px 28px rgba(123,82,70,.22)}
-.cover-sub{color:var(--brand)}
-.brandbar .bname{color:var(--brand);font-weight:700}
+.cover-photo{border-radius:14px;box-shadow:0 10px 24px rgba(31,29,26,.12)}
+.cover-sub{color:var(--accent)}
+/* 갈색 번호 배지 */
+.num-badge{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:50%;flex-shrink:0;
+  background:var(--accent);color:#fff;font-family:'Noto Sans KR',sans-serif;font-size:12px;font-weight:700;letter-spacing:.02em;vertical-align:3px;margin-right:9px}
 /* 홈 */
 .hub-btn{padding:18px}
-.hub-btn .hb-ic{width:62px;height:62px;border-radius:18px;background:var(--brand);display:flex;align-items:center;justify-content:center;font-size:30px}
-.hub-btn .hb-bar{height:9px;border-radius:5px}
-.hub-btn .hb-bar i{background:var(--caramel);border-radius:5px}
-.hub-btn .hb-arrow{color:var(--caramel)}
-.hub-btn.hub-result{border:none;box-shadow:0 10px 22px rgba(123,82,70,.30)}
-.hub-btn.hub-result .hb-ic{background:var(--caramel)}
-.hub-btn.hub-result .hb-arrow{color:#ecd9c6}
-.hub-lock{border:none;background:#fff;box-shadow:var(--shadow)}
+.hub-btn .hb-ic{width:44px;height:44px;border-radius:50%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;
+  font-family:'Noto Sans KR',sans-serif;font-size:15px;font-weight:700}
+.hub-btn .hb-body b{font-size:17px}
+.hub-btn .hb-bar{height:6px;border-radius:3px}
+.hub-btn .hb-bar i{background:var(--accent);border-radius:3px}
+.hub-btn .hb-arrow{color:var(--tan)}
+.hub-btn .hb-check{border-radius:999px}
+.hub-btn.hub-result{border:1px solid var(--brand)}
+.hub-btn.hub-result .hb-ic{background:var(--tan);color:var(--ink)}
 /* 탭 */
-.res-tabs button{border:none;border-radius:999px;box-shadow:0 2px 8px rgba(123,82,70,.12);color:var(--brand)}
-.res-tabs button.on{color:#fff}
-.ev-tabs button{border:none;border-radius:20px;box-shadow:var(--shadow)}
+.res-tabs button{border-radius:6px;border:1px solid var(--line);color:var(--ink)}
+.res-tabs button.on{color:#fff;border-color:var(--brand)}
+.ev-tabs button{border-radius:10px;border:1px solid var(--line)}
+.ev-tabs button.on{border-color:var(--brand)}
 /* 표 */
-.tbl th,.adm-tbl th{font-family:'Noto Sans KR',sans-serif}
-/* 점수 버튼 */
-.pk-btns5 button{border-radius:50%}
-/* 선택 버튼 */
-.opt-wrap button{border-radius:999px}
-.opt-col button{border-radius:18px}
+.tbl th,.adm-tbl th{font-family:'Noto Sans KR',sans-serif;letter-spacing:.06em}
+/* 점수·선택 버튼 */
+.pk-btns5 button{border-radius:6px;border-width:1px}
+.opt-wrap button,.opt-col button,.t3-chip,.agree-box .chk{border-radius:6px}
+.opt-wrap button,.opt-col button,.agree-box .chk{border-width:1px;border-color:#d9cbbb}
 .opt-wrap button.on{background:var(--brand);border-color:var(--brand)}
-.agree-box .chk{border-radius:16px}
 .agree-box .chk.sub.on{background:var(--accent);border-color:var(--accent)}
 .fin-q .req{border-radius:999px}
+.ct-tg{border-radius:6px}
 /* 결과 */
-.res-group>h3{border-bottom:none;padding-bottom:2px}
-.res-group>h3::after{content:"";display:block;width:44px;height:4px;border-radius:2px;background:var(--caramel);margin-top:8px}
-.bar-track{background:var(--paper2)}
-.vote-bar{background:var(--brand);border-radius:8px 8px 0 0}
-.vote-plot{border-bottom-color:var(--line)}
-.ct-tg{border-radius:999px}
-.modal-x{background:var(--paper2);color:var(--brand)}
-.toast{box-shadow:0 8px 20px rgba(69,48,42,.25)}
+.res-group>h3{border-bottom:1px solid var(--accent);padding-bottom:10px}
+.pagedots i{background:var(--tan)}
+.pagedots i.on{background:var(--ink)}
+.modal-x{background:var(--paper2);color:var(--ink)}
 .bar-row .bv{width:auto;min-width:86px;white-space:nowrap}
 .adm-tbl td.l,.adm-tbl button{white-space:nowrap}
 .adm-tbl td{padding:8px 4px}
@@ -1330,7 +1331,7 @@ function renderSurveyPage(p){
   const groups=[g0];
   let h=surveyTabsHTML(p);
   h+=`<div class="sheet-head">
-    <div class="sheet-title">${esc(info.t)} <small>- ${esc(info.s)}</small></div>
+    <div class="sheet-title"><span class="num-badge">${String(g0.page).padStart(2,"0")}</span>${esc(info.t)} <small>- ${esc(info.s)}</small></div>
     <div class="sheet-desc">${esc(info.d)} · 점수 칸을 누르면 점수를, 장 이름을 누르면 정보·코멘트 창이 열려요</div>
   </div>`;
   for(const g of groups){
@@ -1817,7 +1818,7 @@ function renderHub(){
   </div>
   <button class="hub-btn" id="hubTaste">
     ${tasteDone?'<span class="hb-check">✓ 완료</span>':""}
-    <span class="hb-ic">🍶</span>
+    <span class="hb-ic">01</span>
     <span class="hb-body">
       <b>맛 평가</b><small>장 ${nItems}종 채점 · ${need===1?"최애 장":"최애 TOP3"} 고르기</small>
       <span class="hb-bar"><i style="width:${tastePct}%"></i></span>
@@ -1826,7 +1827,7 @@ function renderHub(){
   </button>
   <button class="hub-btn" id="hubMeet">
     ${meetDone?'<span class="hb-check">✓ 완료</span>':""}
-    <span class="hb-ic">📝</span>
+    <span class="hb-ic">02</span>
     <span class="hb-body">
       <b>모임 평가</b><small>행사 만족도와 의견 (1분)</small>
       <span class="hb-bar"><i style="width:${meetPct}%"></i></span>
@@ -1835,7 +1836,7 @@ function renderHub(){
   </button>
   ${unlocked
     ? `<button class="hub-btn hub-result" id="hubResult">
-        <span class="hb-ic">📊</span>
+        <span class="hb-ic">03</span>
         <span class="hb-body"><b>결과 보기</b><small>${EV.jbti?"나의 장BTI와 실시간 전체 집계":"모두의 최애 장과 실시간 전체 집계"}</small></span>
         <span class="hb-arrow">›</span></button>
       <div class="hub-crit"><div class="hl-row ok">✓ 맛평가 50% 이상 · 최애 ${need}개 · 모임평가 100% 조건을 모두 채웠어요</div></div>`
@@ -1947,7 +1948,7 @@ function renderResults(){
   if(meResp && EV.jbti) h+=jbtiCardHTML(meResp, meName);
   if(EV.vote) h+=voteHTML(mePid);
   for(const g of GROUPS){
-    h+=`<div class="res-group" id="resg-${g.key}"><h3>${esc(g.name)}${g.hanja?" "+g.hanja:""} <small style="font-size:13px;font-weight:400">${g.sub?esc(g.sub)+" · ":""}${g.cnt}</small></h3><div class="rg-sub"></div>`;
+    h+=`<div class="res-group" id="resg-${g.key}"><h3><span class="num-badge">${String(g.page).padStart(2,"0")}</span>${esc(g.name)}${g.hanja?" "+g.hanja:""} <small style="font-size:13px;font-weight:400">${g.sub?esc(g.sub)+" · ":""}${g.cnt}</small></h3><div class="rg-sub"></div>`;
     // 명예의 전당 (분야별 1위)
     if(EV.hof) h+=hofHTML(g, meResp);
     // 그룹 레이더: 따로보기에서 전체 평균 위에 내 점수 겹침
