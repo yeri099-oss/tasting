@@ -426,6 +426,22 @@ td.score:active{background:#eae4d8}
 .itemedit-row .no{width:26px;font-size:12px;color:#6b6459;text-align:right}
 .itemedit-row input{flex:1;padding:8px;border:1px solid var(--line);border-radius:7px;font-size:13px}
 
+/* 최애 장 투표 그래프 */
+.vote{background:#fff;border:1px solid var(--line);border-radius:16px;padding:18px 16px 12px;margin:18px 0 6px;font-family:'Noto Sans KR',sans-serif}
+.vote-head{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin-bottom:6px}
+.vote-head h4{font-size:16px;font-weight:800;font-family:'Nanum Myeongjo',serif}
+.vote-head span{font-size:12px;color:#6b6459}
+.vote-row{padding:9px 0;border-top:1px dashed var(--line)}
+.vote-row:first-of-type{border-top:none}
+.vote-name{font-size:13.5px;font-weight:700;color:var(--ink);word-break:keep-all;line-height:1.5}
+.vote-name .hof-no{margin-right:6px;font-size:11.5px}
+.vote-me{display:inline-block;margin-left:6px;font-size:10.5px;font-weight:700;color:#fff;background:var(--red);border-radius:9px;padding:1px 8px;vertical-align:1px}
+.vote-line{display:flex;align-items:center;gap:10px;margin-top:6px}
+.vote-track{flex:1;height:18px;background:var(--paper2);border-radius:0 4px 4px 0}
+.vote-fill{display:block;height:100%;min-width:2px;background:var(--accent);border-radius:0 4px 4px 0;transition:width .4s}
+.vote-val{width:86px;flex-shrink:0;text-align:right;font-size:12.5px;color:#6b6459}
+.vote-val b{font-size:14px;color:var(--ink)}
+.vote-empty{text-align:center;color:#8a8378;font-size:13px;padding:16px 0 10px}
 /* 행사 선택 탭 / 장 구성 편집 */
 .ev-tabs{display:flex;gap:8px;flex-wrap:wrap;margin:2px 0 10px;font-family:'Noto Sans KR',sans-serif}
 .ev-tabs button{flex:1;min-width:130px;padding:11px 14px;border-radius:12px;border:1.5px solid var(--line);background:#fff;
@@ -589,7 +605,7 @@ td.score:active{background:#eae4d8}
     </div>
     <div id="admStruct" style="display:none;margin-top:22px">
       <h3 style="font-size:16px;font-weight:800;margin-bottom:6px">장 구성 관리 (분류와 장 목록)</h3>
-      <div class="adm-note">분류(예: 청장, 된장)를 만들고 그 안에 장을 추가하세요. 분류 하나가 설문 한 페이지가 됩니다. 장BTI 계열은 최애 TOP3로 취향 유형을 판정할 때 쓰여요. 고친 뒤에는 맨 아래 <b>장 구성 저장</b>을 눌러야 반영됩니다. 설명과 사진은 저장 후 '장 정보 관리'에서 넣을 수 있어요.</div>
+      <div class="adm-note">분류(예: 청장, 된장)를 만들고 그 안에 장을 추가하세요. 분류 하나가 설문 한 페이지가 됩니다. <span id="stCatNote">장BTI 계열은 최애 TOP3로 취향 유형을 판정할 때 쓰여요. </span>고친 뒤에는 맨 아래 <b>장 구성 저장</b>을 눌러야 반영됩니다. 설명과 사진은 저장 후 '장 정보 관리'에서 넣을 수 있어요.</div>
       <div id="stRows"></div>
       <button class="st-add" id="stAddGroup" style="margin-top:10px">+ 분류 추가</button>
       <div><button class="btn-main" id="stSave" style="max-width:340px">장 구성 저장</button></div>
@@ -746,13 +762,14 @@ const COL = { resp:"jangApp_responses", phone:"jangApp_phones", meta:"jangApp_me
    행사마다 데이터가 따로 쌓입니다. 같은 컬렉션을 쓰되 문서 이름 앞에 행사 접두사를 붙여 구분해요.
    - 옹기뜸골(1회차): 접두사 없음 = 기존 데이터 그대로. 구성 고정, 참여 접수 종료
    - 아미산쑥티(2회차): 접두사 "amisan_". 장 구성과 행사 정보는 관리자 화면에서 입력
+   topN = 최애로 고르는 개수, jbti = 장BTI 카드, hof = 명예의 전당, vote = 최애 장 투표 그래프
    참석자는 ACTIVE_EVENT 행사로만 들어옵니다. 다음 행사를 추가하려면 EVENTS에 항목을 더하고 ACTIVE_EVENT를 바꾸면 됩니다. */
 const EVENTS = {
-  onggi:{ id:"onggi", prefix:"", label:"옹기뜸골", fixed:true,
+  onggi:{ id:"onggi", prefix:"", label:"옹기뜸골", fixed:true, topN:3, jbti:true, hof:true, vote:false,
     title:"옹기뜸골", sub:"전통장 20가지 테이스팅", date:"2026.09.06(일) 18:30",
     items:ONGGI_ITEMS, groups:ONGGI_GROUPS,
     catNames:{jin:"10년 이상 숙성장", cheong:"맑고 가벼운 청장", mid:"3~5년 중장·통일간장", ryu:"된장·막장·어육장 계열"} },
-  amisan:{ id:"amisan", prefix:"amisan_", label:"아미산쑥티", fixed:false,
+  amisan:{ id:"amisan", prefix:"amisan_", label:"아미산쑥티", fixed:false, topN:1, jbti:false, hof:false, vote:true,
     title:"아미산쑥티", sub:"전통장 테이스팅", date:"",
     catNames:{jin:"오래 숙성한 깊은 장", cheong:"맑고 가벼운 장", mid:"균형 잡힌 중간 숙성 장", ryu:"된장·장류 계열"} }
 };
@@ -791,8 +808,8 @@ function normGroups(raw){
 }
 function allNos(){ return GROUPS.flatMap(g=>g.items); }
 function dn(no){ return DN[no] ?? no; }
-function top3Need(){ return Math.min(3, allNos().length); }
-function validTop3(resp){ return (resp?.top3||[]).map(Number).filter(no=>DN[no]!=null).slice(0,3); }
+function top3Need(){ return Math.min(EV.topN, allNos().length); }   // 최애로 골라야 하는 개수
+function validTop3(resp){ return (resp?.top3||[]).map(Number).filter(no=>DN[no]!=null).slice(0,EV.topN); }
 function evFull(){ return (EVC.title+" "+(EVC.sub||"")).trim(); }
 function renderCover(){
   $("coverTitle").textContent=EVC.title;
@@ -1089,20 +1106,17 @@ function demoSeed(){
   // 아미산쑥티(진행 행사) - 샘플 구성. ?demo=empty 로 열면 장 구성이 비어 있는 상태를 볼 수 있음
   if(/[?&]demo=empty/.test(location.search)) return;
   demoDB.meta["amisan_config"]={
-    nextNo:11,
+    nextNo:5,
     groups:[
-      {key:"ga", name:"간장", sub:"샘플 분류입니다", cat:"cheong", items:[1,2,3]},
-      {key:"gb", name:"묵은 간장", sub:"샘플 분류입니다", cat:"jin", items:[4,5]},
-      {key:"gc", name:"된장", sub:"샘플 분류입니다", cat:"ryu", items:[6,7,8]},
-      {key:"gd", name:"고추장", sub:"샘플 분류입니다", cat:"mid", items:[9,10]}
+      {key:"ga", name:"간장", sub:"샘플 분류입니다", cat:"cheong", items:[1,2]},
+      {key:"gb", name:"된장", sub:"샘플 분류입니다", cat:"ryu", items:[3,4]}
     ],
-    items:{1:"샘플 햇간장",2:"샘플 2년 간장",3:"샘플 3년 간장",4:"샘플 7년 간장",5:"샘플 씨간장",
-      6:"샘플 햇된장",7:"샘플 묵은 된장",8:"샘플 쑥된장",9:"샘플 찹쌀고추장",10:"샘플 보리고추장"}
+    items:{1:"샘플 햇간장",2:"샘플 묵은 간장",3:"샘플 햇된장",4:"샘플 묵은 된장"}
   };
-  ["정하늘","오민서"].forEach((nm,i)=>{
+  ["정하늘","오민서","한서준"].forEach((nm,i)=>{
     const pid="amisan_demo"+i, scores={};
-    for(let no=1;no<=10;no++){ scores[no]={}; for(const [a] of ATTRS) scores[no][a]=rnd(); }
-    demoDB.resp[pid]={name:nm, scores, comments:{[2+i]:"쑥 향이 은은하게 올라와요"}, top3:[[4,5,1],[6,7,9]][i], meet:meets[i]};
+    for(let no=1;no<=4;no++){ scores[no]={}; for(const [a] of ATTRS) scores[no][a]=rnd(); }
+    demoDB.resp[pid]={name:nm, scores, comments:{[1+i]:"쑥 향이 은은하게 올라와요"}, top3:[[2],[3],[2]][i], meet:meets[i]};
     demoDB.phone[pid]={name:nm, phone:"010-9876-000"+i};
   });
   demoDB.meta["amisan_item_1"]={desc:"샘플 설명입니다. 관리자 화면의 장 정보 관리에서 설명과 사진을 넣을 수 있어요.", img:""};
@@ -1360,10 +1374,10 @@ function renderTop3Page(){
   const t3=validTop3(myResp);
   let h=surveyTabsHTML(TOP3_PAGE);
   h+=`<div class="sheet-head">
-    <div class="sheet-title">최애 TOP3 <small>- 오늘의 인생 간장</small></div>
-    <div class="sheet-desc">가장 마음에 들었던 장 ${need}가지를 골라주세요. 나의 장BTI 판정에 사용됩니다</div>
+    <div class="sheet-title">${need===1 ? "오늘의 최애 장 <small>- 딱 하나만 고른다면</small>" : "최애 TOP3 <small>- 오늘의 인생 간장</small>"}</div>
+    <div class="sheet-desc">가장 마음에 들었던 장 ${need}가지를 골라주세요. ${EV.jbti ? "나의 장BTI 판정에 사용됩니다" : "다른 참석자들은 무엇을 골랐는지 결과에서 볼 수 있어요"}</div>
   </div>
-  <div class="group-sub">🏆 오늘의 최애 장 <span class="t3-cnt" id="t3cnt">${t3.length}/${need} 선택</span></div>`;
+  <div class="group-sub">🏆 ${need===1?"하나를 골라주세요":"오늘의 최애 장"} <span class="t3-cnt" id="t3cnt">${t3.length}/${need} 선택</span></div>`;
   for(const g of GROUPS){
     h+=`<div class="t3-glabel">${esc(g.name)}</div><div class="t3-grid">`;
     for(const no of g.items){
@@ -1379,7 +1393,8 @@ function renderTop3Page(){
     myResp.top3 = validTop3(myResp);
     if(myResp.top3.includes(no)) myResp.top3=myResp.top3.filter(x=>x!==no);
     else{
-      if(myResp.top3.length>=need){ toast(need+"가지까지만 고를 수 있어요. 다른 선택을 해제해 주세요"); return; }
+      if(need===1) myResp.top3=[];            // 하나만 고르는 행사: 누른 장으로 바로 바꿈
+      else if(myResp.top3.length>=need){ toast(need+"가지까지만 고를 수 있어요. 다른 선택을 해제해 주세요"); return; }
       myResp.top3.push(no);
     }
     saveMeet({top3:myResp.top3});
@@ -1530,6 +1545,7 @@ const JBTI_TYPES={
 };
 function jangCatOf(no){ const g=GROUPS.find(g=>g.items.includes(+no)); return g?g.cat:"mid"; }   // 분류에 지정된 장BTI 계열
 function jangTypeOf(resp){
+  if(!EV.jbti) return null;
   const t=validTop3(resp); if(t.length<3) return null;
   const c={cheong:0,mid:0,jin:0,ryu:0};
   t.forEach(no=>c[jangCatOf(no)]++);
@@ -1675,7 +1691,7 @@ function updateNav(){
   else if(curPage===MEET_PAGE){ prev.textContent="홈으로"; next.textContent="완료"; }
   else if(curPage===TOP3_PAGE){ prev.textContent="이전"; next.textContent="저장하고 홈으로"; }
   else if(curPage===FIRST_SURVEY){ prev.textContent="홈으로"; next.textContent="다음"; }
-  else{ prev.textContent="이전"; next.textContent = curPage===LAST_SURVEY ? "최애 TOP3 고르기" : "다음"; }
+  else{ prev.textContent="이전"; next.textContent = curPage===LAST_SURVEY ? (top3Need()===1 ? "최애 장 고르기" : "최애 TOP3 고르기") : "다음"; }
   const dots=GROUPS.map((_,i)=>FIRST_SURVEY+i).concat(TOP3_PAGE);
   $("pageDots").innerHTML = (curPage>=FIRST_SURVEY&&curPage<=TOP3_PAGE)
     ? dots.map(i=>`<i class="${i===curPage?'on':''}"></i>`).join("") : "";
@@ -1693,7 +1709,7 @@ function renderHub(){
   const unlocked=finalComplete();
   const crit=[
     {ok:tasteHalf(pr), label:`맛평가 50% 이상 완료 (지금 ${pr.pct}%)`},
-    {ok:t3n===need, label:`최애 ${need}개 모두 고르기 (지금 ${t3n}/${need})`},
+    {ok:t3n===need, label:`최애 ${need}개 ${need===1?"":"모두 "}고르기 (지금 ${t3n}/${need})`},
     {ok:meetPct===100, label:`모임평가 전체 작성 (지금 ${meetPct}%)`}
   ];
   $("hubWrap").innerHTML=`
@@ -1705,7 +1721,7 @@ function renderHub(){
     ${tasteDone?'<span class="hb-check">✓ 완료</span>':""}
     <span class="hb-ic">🍶</span>
     <span class="hb-body">
-      <b>맛 평가</b><small>장 ${nItems}종 채점 · 최애 TOP3 고르기</small>
+      <b>맛 평가</b><small>장 ${nItems}종 채점 · ${need===1?"최애 장":"최애 TOP3"} 고르기</small>
       <span class="hb-bar"><i style="width:${tastePct}%"></i></span>
       <span class="hb-pct">${tastePct}% 진행 ${tasteDone?"":`(채점 ${pr.filled}/${pr.total} · 최애 ${t3n}/${need})`}</span>
     </span><span class="hb-arrow">›</span>
@@ -1722,7 +1738,7 @@ function renderHub(){
   ${unlocked
     ? `<button class="hub-btn hub-result" id="hubResult">
         <span class="hb-ic">📊</span>
-        <span class="hb-body"><b>결과 보기</b><small>나의 장BTI와 실시간 전체 집계</small></span>
+        <span class="hb-body"><b>결과 보기</b><small>${EV.jbti?"나의 장BTI와 실시간 전체 집계":"모두의 최애 장과 실시간 전체 집계"}</small></span>
         <span class="hb-arrow">›</span></button>
       <div class="hub-crit"><div class="hl-row ok">✓ 맛평가 50% 이상 · 최애 ${need}개 · 모임평가 100% 조건을 모두 채웠어요</div></div>`
     : `<div class="hub-lock"><b>🔒 결과 보기가 열리는 기준</b>
@@ -1782,6 +1798,27 @@ function hofHTML(g, meResp){
       ${ATTRS.map(([a,l])=>`<option value="${a}" ${a===sel?"selected":""}>${l}</option>`).join("")}
     </select></div>${rows}</div>`;
 }
+/* 최애 장 투표: 참석자들이 최애로 고른 장을 많이 고른 순서로 보여주는 막대 그래프 */
+function voteHTML(mePid){
+  const cnt={}; let voters=0;
+  for(const pid in allResp){
+    const t=validTop3(allResp[pid]); if(!t.length) continue;
+    voters++; t.forEach(no=>{ cnt[no]=(cnt[no]||0)+1; });
+  }
+  const meResp = mePid ? (allResp[mePid] || (mePid===me?.pid?myResp:null)) : null;
+  const mine=new Set(validTop3(meResp));
+  const rows=allNos().map((no,i)=>({no, i, c:cnt[no]||0})).sort((a,b)=>b.c-a.c||a.i-b.i);
+  let h=`<div class="vote" id="voteBox"><div class="vote-head"><h4>🏆 오늘의 최애 장</h4><span>${voters}명 선택</span></div>`;
+  if(!voters) h+=`<div class="vote-empty">아직 최애 장을 고른 참석자가 없습니다</div>`;
+  else for(const r of rows){
+    const pct=Math.round(r.c/voters*100);
+    h+=`<div class="vote-row" data-no="${r.no}" title="${esc(itemName(r.no))}: ${r.c}명 (${pct}%)">
+      <div class="vote-name"><span class="hof-no" style="background:var(--ink)">${dn(r.no)}번</span>${esc(itemName(r.no))}${mine.has(r.no)?'<span class="vote-me">내 선택</span>':""}</div>
+      <div class="vote-line"><span class="vote-track"><span class="vote-fill" style="width:${r.c/voters*100}%"></span></span><span class="vote-val"><b>${r.c}명</b> ${pct}%</span></div>
+    </div>`;
+  }
+  return h+`</div>`;
+}
 function agg(no, a){
   const vals=[];
   for(const pid in allResp){ const v=scoreOf(allResp[pid],no,a); if(v) vals.push(v); }
@@ -1804,11 +1841,12 @@ function renderResults(){
   }
 
   let h="";
-  if(meResp) h+=jbtiCardHTML(meResp, meName);
+  if(meResp && EV.jbti) h+=jbtiCardHTML(meResp, meName);
+  if(EV.vote) h+=voteHTML(mePid);
   for(const g of GROUPS){
     h+=`<div class="res-group" id="resg-${g.key}"><h3>${esc(g.name)}${g.hanja?" "+g.hanja:""} <small style="font-size:13px;font-weight:400">${g.sub?esc(g.sub)+" · ":""}${g.cnt}</small></h3><div class="rg-sub"></div>`;
     // 명예의 전당 (분야별 1위)
-    h+=hofHTML(g, meResp);
+    if(EV.hof) h+=hofHTML(g, meResp);
     // 그룹 레이더: 따로보기에서 전체 평균 위에 내 점수 겹침
     h+=`<div class="radar-pair"><div class="chart-card" id="reschart-${g.key}-avg"></div></div>`;
     // 항목 카드
@@ -1965,6 +2003,7 @@ function renderAdmin(){
     : `<b>${esc(EVC.title)}</b>${EVC.date?" "+esc(EVC.date):""} 행사입니다. 등록된 장 <b>${nItems}종</b>, 참여 접수 <b>${EVC.closed?"마감":"진행 중"}</b>`
       + (nItems?"":`<br><b style="color:var(--red)">'장 구성 관리'에서 분류와 장 목록을 먼저 등록해 주세요. 등록 전에는 참석자가 설문을 시작할 수 없습니다.</b>`);
   $("btnAdmEvInfo").style.display=$("btnAdmStruct").style.display = EV.fixed ? "none" : "";
+  $("btnAdmCsv2").textContent = EV.jbti ? "요약 CSV (TOP3·장BTI·모임평가)" : "요약 CSV (최애 장·모임평가)";
   const pids=Object.keys(allResp).sort((a,b)=>(allResp[a].name||"").localeCompare(allResp[b].name||"","ko"));
   if(!pids.length){ rows.innerHTML=`<tr><td colspan="5" style="padding:24px;color:#8a8378">${gotSnap?"아직 참석자가 없습니다":"불러오는 중…"}</td></tr>`; renderAdmMeet(); return; }
   rows.innerHTML=pids.map(pid=>{
@@ -2222,13 +2261,14 @@ function stSync(){   // 입력칸 내용을 작업본에 반영
     const g=stDraft.groups[gi]; if(!g) return;
     g.name=ge.querySelector(".st-gname").value.trim();
     g.sub=ge.querySelector(".st-gsub").value.trim();
-    g.cat=ge.querySelector(".st-gcat").value;
+    const catSel=ge.querySelector(".st-gcat"); if(catSel) g.cat=catSel.value;
     ge.querySelectorAll(".st-item").forEach((ie,ii)=>{ if(g.items[ii]) g.items[ii].name=ie.querySelector("input").value.trim(); });
   });
 }
 function stHasScores(no){ return Object.values(allResp).some(r=>r.scores&&r.scores[no]&&Object.keys(r.scores[no]).length); }
 function renderStruct(){
   let seq=0;
+  $("stCatNote").style.display = EV.jbti ? "" : "none";
   $("stRows").innerHTML=stDraft.groups.map((g,gi)=>`
     <div class="iedit st-group" data-gi="${gi}">
       <div class="st-ghead">
@@ -2238,8 +2278,8 @@ function renderStruct(){
         <button class="st-btn danger" data-act="gdel">분류 삭제</button>
       </div>
       <input class="st-gsub" placeholder="분류 설명 (예: 숙성 1~3년, 맑고 가벼운 맛)" maxlength="60" value="${esc(g.sub)}">
-      <div class="st-catrow"><span>장BTI 계열</span>
-        <select class="st-gcat hub-sel">${CAT_OPTS.map(([k,l])=>`<option value="${k}" ${g.cat===k?"selected":""}>${l}</option>`).join("")}</select></div>
+      ${EV.jbti ? `<div class="st-catrow"><span>장BTI 계열</span>
+        <select class="st-gcat hub-sel">${CAT_OPTS.map(([k,l])=>`<option value="${k}" ${g.cat===k?"selected":""}>${l}</option>`).join("")}</select></div>` : `<div style="height:8px"></div>`}
       ${g.items.map((it,ii)=>`<div class="itemedit-row st-item" data-ii="${ii}">
         <span class="no">${++seq}</span><input placeholder="장 이름 (예: 3년 숙성 간장)" maxlength="60" value="${esc(it.name)}">
         <button class="st-btn" data-act="iup" title="위로">↑</button>
@@ -2311,15 +2351,16 @@ function admCsv(){
 }
 function admCsvSummary(){
   const BOM="﻿";
-  let rows=[["이름","전화번호","채점 진행률","장BTI","최애1","최애2","최애3","만족도","이유·소감(1-1)","장 개수 의견","적정 가격대","가격 직접기입","재참여 의사","아이디어","개인정보 동의","폐기 요청","초상권 동의","사진 수신 메일","알게 된 경로",...(MEET_CFG.custom||[]).map(c=>c.title)]];
+  const favCols = EV.topN===1 ? ["최애 장"] : [...Array(EV.topN)].map((_,i)=>"최애"+(i+1));
+  let rows=[["이름","전화번호","채점 진행률",...(EV.jbti?["장BTI"]:[]),...favCols,"만족도","이유·소감(1-1)","장 개수 의견","적정 가격대","가격 직접기입","재참여 의사","아이디어","개인정보 동의","폐기 요청","초상권 동의","사진 수신 메일","알게 된 경로",...(MEET_CFG.custom||[]).map(c=>c.title)]];
   const pids=Object.keys(allResp).sort((a,b)=>(allResp[a].name||"").localeCompare(allResp[b].name||"","ko"));
   for(const pid of pids){
     const r=allResp[pid], m=r.meet||{}, t3=validTop3(r);
     const type=jangTypeOf(r);
     rows.push([
       r.name||"", admPhones[pid]?.phone||"", myProgress(r).pct+"%",
-      type?type.name:"",
-      ...[0,1,2].map(i=>t3[i]? dn(t3[i])+"번 "+itemName(t3[i]) : ""),
+      ...(EV.jbti?[type?type.name:""]:[]),
+      ...favCols.map((_,i)=>t3[i]? dn(t3[i])+"번 "+itemName(t3[i]) : ""),
       m.sat? SAT_L[m.sat]:"",
       m.why||"", m.cnt? CNT_L[m.cnt]:"", m.price? PRICE_L[m.price]:"", m.priceEtc||"", m.again? AGAIN_L[m.again]:"", m.idea||"",
       m.agreePriv?"동의":"", m.discard?"폐기 요청":"", m.agreePhoto?"동의":"", m.photoMail||"",
@@ -2389,7 +2430,7 @@ function bindEvents(){
     }
     if(curPage===TOP3_PAGE){
       go(HUB);
-      if(validTop3(myResp).length<top3Need()) toast("최애 "+top3Need()+"가지를 다 고르면 장BTI가 만들어져요");
+      if(validTop3(myResp).length<top3Need()) toast(EV.jbti ? "최애 "+top3Need()+"가지를 다 고르면 장BTI가 만들어져요" : "최애 장을 골라야 결과를 볼 수 있어요");
       return;
     }
     go(curPage+1);
