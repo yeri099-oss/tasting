@@ -14,9 +14,12 @@
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="theme-color" content="#fbf5e6">
+<link rel="preconnect" href="https://www.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://identitytoolkit.googleapis.com" crossorigin>
+<link rel="preconnect" href="https://firestore.googleapis.com" crossorigin>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;500;700&family=Outfit:wght@500;700&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;500;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
 <script defer src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
 <script defer src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
 <script defer src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
@@ -33,7 +36,7 @@
   --paper2:#f1e9d5;
   --line:#ddd3bd;
   --tint:#fffdf6;
-  --sel:#3d3428; --prog:#7fb0d6;
+  --sel:#3d3428; --prog:#7fb0d6; --prog-d:#3f79ab; --prog-l:#e7f0f8;
   --f:'Noto Serif KR','Noto Serif CJK KR','Nanum Myeongjo','AppleMyungjo','Batang',serif;
   --red:#c0392b;
   --green:#2b2a28;
@@ -585,20 +588,25 @@ body{background:var(--cream)}
 .hub-btn.mod{display:block;position:relative;width:100%;max-width:none;margin:0 0 14px;padding:16px;
   background:var(--card);border:1.5px solid var(--ink);border-radius:24px;box-shadow:none;text-align:left;color:var(--ink)}
 .hub-btn.mod:active{background:var(--paper2)}
-.hub-btn.mod .pill-tag{background:var(--ink);color:#fff}
-.hub-btn.mod.hub-result{background:var(--ink);border:1.5px solid var(--ink)}
-.hub-btn.mod.hub-result:active{background:#000}
+.hub-btn.mod .pill-tag{background:var(--prog);color:var(--ink)}
+.hub-btn.mod .pill-tag.done{background:var(--card)}
+.hub-btn.mod .mod-num small{color:var(--prog-d)}
+.hub-btn.mod .pbar{background:var(--prog-l)}
+.hub-btn.mod .tile{background:var(--prog-l);border-color:transparent}
+.hub-btn.mod .tile b small{color:var(--prog-d)}
+.hub-btn.mod.hub-result{background:var(--prog);border:1.5px solid var(--ink)}
+.hub-btn.mod.hub-result:active{background:#6ea3cc}
 .hub-btn.mod.hub-result .mod-num{font-size:34px}
-.hub-btn.mod.hub-result .pill-tag{background:var(--card);color:var(--ink)}
-.hub-btn.mod.hub-result .mod-label,.hub-btn.mod.hub-result .mod-label b{color:#fff}
-.hub-btn .hb-check{top:-11px;right:16px;background:var(--ink);color:#fff;border:1.5px solid var(--ink);border-radius:999px;box-shadow:none;font-weight:700}
+.hub-btn.mod.hub-result .pill-tag{background:var(--ink);color:#fff}
+.hub-btn.mod.hub-result .mod-label,.hub-btn.mod.hub-result .mod-label b{color:var(--ink)}
+.hub-btn .hb-check{top:-11px;right:16px;background:var(--prog);color:var(--ink);border:1.5px solid var(--ink);border-radius:999px;box-shadow:none;font-weight:700}
 .hub-lock{max-width:none;margin:0;padding:16px 18px;font-size:13px;line-height:1.5}
 .hub-lock b{color:var(--ink);font-size:14px;font-weight:700;margin-bottom:10px;text-align:left}
 .hl-row{display:flex;align-items:center;gap:9px;margin:7px 0;font-size:13px;color:var(--ink);text-align:left;word-break:keep-all}
 .hl-row.ok{color:var(--ink);font-weight:700}
 .hl-ck{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;flex-shrink:0;border:1.5px solid var(--ink);border-radius:50%;
   background:var(--card);font-size:12px;font-weight:700}
-.hl-row.ok .hl-ck{background:var(--ink);color:#fff}
+.hl-row.ok .hl-ck{background:var(--prog);color:var(--ink)}
 .hub-crit{max-width:none;margin:0}
 .hub-crit .hl-row{justify-content:center;font-size:12px;text-align:center}
 
@@ -1113,7 +1121,7 @@ function renderCover(){
 }
 function cacheCover(){
   if(EV.fixed) return;
-  try{ localStorage.setItem("jangCover_"+EV.id, JSON.stringify({title:EVC.title, sub:EVC.sub, date:EVC.date})); }catch(e){}
+  try{ localStorage.setItem("jangCover_"+EV.id, JSON.stringify({title:EVC.title, sub:EVC.sub, date:EVC.date, blocked:isClosed()||!allNos().length})); }catch(e){}
 }
 function applyEvent(id, cfg){
   EV=EVENTS[id]; RAW_CFG=cfg||{}; cfg=RAW_CFG;
@@ -1163,6 +1171,11 @@ async function phonePid(phone){
 }
 function itemName(no){ return ITEMS[no] || DEFAULT_ITEMS[no] || ("장 "+dn(no)); }
 function maskName(n){ n=String(n||"익명").trim(); return (n[0]||"익")+"**"; }
+function refreshInfoUI(){
+  if(isAdmin || !me && !viewPid) return;
+  if(curPage>=FIRST_SURVEY && curPage<=LAST_SURVEY) renderSurveyPage(curPage);
+  else if(curPage===RESULT_PAGE) renderResults();
+}
 function hasInfo(no){ const i=ITEM_INFO[no]; return !!(i && ((i.desc&&i.desc.trim()) || i.img)); }
 function openInfo(no, opts){
   if(opts===true) opts={scores:true};
@@ -1229,7 +1242,7 @@ function myProgress(resp){
 let db=null, auth=null;
 const store = {
   async init(evId){
-    if(DEMO){ demoSeed(); await this.loadMeta(evId); return; }
+    if(DEMO){ demoSeed(); await this.loadMeta(evId, true); return; }
     // 전용 앱 이름으로 초기화 → 업무일지·매출·발주 앱과 로그인 저장소를 완전히 분리
     const fbApp = firebase.initializeApp(FIREBASE_CONFIG, "jangTasting");
     auth = fbApp.auth(); db = fbApp.firestore();
@@ -1244,38 +1257,37 @@ const store = {
       b.classList.add("on");
       throw e;
     }
-    await this.loadMeta(evId);
+    await this.loadMeta(evId, true);
   },
-  /* 행사 설정(장 구성·문항·행사 정보) + 장 정보(설명·사진) 불러오기 */
-  async loadMeta(evId){
-    const ev=EVENTS[evId], cfgId=ev.prefix+"config", itemPre=ev.prefix+"item_";
-    let cfg={}; const info={}; metaErr=false;
-    if(DEMO){
-      cfg=demoDB.meta[cfgId]||{};
-      for(const k in demoDB.meta) if(k.startsWith(itemPre)) info[+k.slice(itemPre.length)]=demoDB.meta[k];
-    }else{
-      const col=db.collection(COL.meta);
-      try{
-        const FP=firebase.firestore.FieldPath.documentId();
-        const [c, qs]=await Promise.all([
-          col.doc(cfgId).get(),
-          col.where(FP, ">=", col.doc(itemPre)).where(FP, "<", col.doc(itemPre+"\uf8ff")).get()
-        ]);
-        if(c.exists) cfg=c.data();
-        qs.forEach(d=>{ info[+d.id.slice(itemPre.length)]=d.data(); });
-      }catch(e){
-        try{ // 범위 조회가 막혀 있으면 전체를 읽어 걸러냄
-          const qs=await col.get();
-          qs.forEach(d=>{
-            if(d.id===cfgId) cfg=d.data();
-            else if(d.id.startsWith(itemPre)) info[+d.id.slice(itemPre.length)]=d.data();
-          });
-        }catch(e2){ metaErr=true; }
-      }
+  /* 행사 설정(장 구성·문항·행사 정보) 불러오기. 작은 문서 하나라 빠름.
+     장 정보(설명·사진)는 용량이 커서 따로 읽음 - bg=true면 기다리지 않고 뒤에서 읽어 화면에 반영 */
+  infoP: Promise.resolve(),
+  async loadMeta(evId, bg){
+    const ev=EVENTS[evId], cfgId=ev.prefix+"config";
+    let cfg={}; metaErr=false;
+    if(DEMO) cfg=demoDB.meta[cfgId]||{};
+    else{
+      try{ const c=await db.collection(COL.meta).doc(cfgId).get(); if(c.exists) cfg=c.data(); }
+      catch(e){ metaErr=true; }
     }
     applyEvent(evId, cfg);
     if(!metaErr) cacheCover();
+    ITEM_INFO={};
+    this.infoP=this.loadInfo(evId);
+    if(!bg) await this.infoP;
+  },
+  async loadInfo(evId){
+    const itemPre=EVENTS[evId].prefix+"item_"; const info={};
+    if(DEMO){ for(const k in demoDB.meta) if(k.startsWith(itemPre)) info[+k.slice(itemPre.length)]=demoDB.meta[k]; }
+    else{
+      const col=db.collection(COL.meta);
+      await Promise.all(allNos().map(async no=>{
+        try{ const d=await col.doc(itemPre+no).get(); if(d.exists) info[no]=d.data(); }catch(e){}
+      }));
+    }
+    if(EV.id!==evId) return;      // 그 사이 다른 행사로 바뀜
     ITEM_INFO=info;
+    refreshInfoUI();
   },
   /* 행사 설정 저장. fields를 주면 그 필드는 통째로 교체, 아니면 병합 */
   async saveConfig(partial, fields){
@@ -2039,7 +2051,7 @@ function renderHub(){
     <span class="mod-top">
       <span class="mod-num">${tastePct}<small>%</small></span>
       <span class="mod-label"><b>맛 평가</b>장 ${nItems}종 채점 · ${need===1?"최애 장":"최애 TOP3"} 고르기</span>
-      <span class="pill-tag">${tasteDone?"다시 보기":"하러 가기"} ›</span>
+      <span class="pill-tag${tasteDone?" done":""}">${tasteDone?"다시 보기":"하러 가기"} ›</span>
     </span>
     ${bar(tastePct)}
     <span class="tiles">
@@ -2052,7 +2064,7 @@ function renderHub(){
     <span class="mod-top">
       <span class="mod-num">${meetPct}<small>%</small></span>
       <span class="mod-label"><b>모임 평가</b>행사 만족도와 의견 (1분)</span>
-      <span class="pill-tag">${meetDone?"다시 보기":"하러 가기"} ›</span>
+      <span class="pill-tag${meetDone?" done":""}">${meetDone?"다시 보기":"하러 가기"} ›</span>
     </span>
     ${bar(meetPct)}
   </button>
@@ -2711,14 +2723,18 @@ function admCsvSummary(){
 }
 
 /* ═══════════════ 로그인 / 부팅 ═══════════════ */
+let bootReady=false, pendingStart=false;
 async function doStart(){
-  if(isClosed()){ toast("행사가 종료되어 새로 참여할 수 없습니다"); return; }
-  if(!allNos().length){ toast("설문을 준비하고 있습니다. 잠시 후 다시 접속해 주세요"); return; }
   const name=$("inName").value.trim();
   const phone=normPhone($("inPhone").value);
   const err=$("loginErr"); err.classList.remove("on");
   if(!name){ err.textContent="이름을 입력해 주세요"; err.classList.add("on"); return; }
   if(!(phone.length===10||phone.length===11)){ err.textContent="전화번호를 정확히 입력해 주세요 (예: 010-1234-5678)"; err.classList.add("on"); return; }
+  if(!bootReady){   // 아직 접속 중이면 표시만 해 두고, 접속이 끝나는 즉시 boot에서 이어서 진행
+    pendingStart=true; $("btnStart").disabled=true; $("btnStart").textContent="접속 중… 곧 시작합니다"; return;
+  }
+  if(isClosed()){ toast("행사가 종료되어 새로 참여할 수 없습니다"); return; }
+  if(!allNos().length){ toast("설문을 준비하고 있습니다. 잠시 후 다시 접속해 주세요"); return; }
   $("btnStart").disabled=true; $("btnStart").textContent="확인 중…";
   try{
     const pid=EV.prefix+await phonePid(phone);   // 행사별로 응답이 따로 저장됨
@@ -2815,7 +2831,7 @@ function bindEvents(){
   $("btnAdmCsv2").onclick=admCsvSummary;
   $("btnAdmEvInfo").onclick=()=>togglePanel("admEvInfo", renderEvInfo);
   $("btnAdmStruct").onclick=()=>togglePanel("admStruct", openStruct);
-  $("btnAdmItems").onclick=()=>togglePanel("admItemEdit", renderItemEdit);
+  $("btnAdmItems").onclick=async()=>{ await store.infoP; togglePanel("admItemEdit", renderItemEdit); };
   $("btnAdmMeetQ").onclick=()=>togglePanel("admMeetQ", renderMeetQEdit);
   $("stAddGroup").onclick=()=>{ stSync(); stAddGroup(); renderStruct(); };
   $("stSave").onclick=saveStruct;
@@ -2840,7 +2856,20 @@ function earlyPaint(){
   if(c.sub!=null) EVC.sub=c.sub;
   if(c.date!=null) EVC.date=c.date;
   renderCover();
-  const b=$("btnStart"); b.disabled=true; b.textContent="접속 준비 중…";   // 접속이 끝나면 boot에서 다시 켬
+  // 지난번에 참여가 막혀 있던 행사(마감·준비 중)면 접속 확인이 끝날 때까지 버튼을 잠가 둠
+  $("btnStart").onclick=doStart;    // 접속 스크립트를 기다리지 않고 바로 누를 수 있게 여기서 연결
+  if(c.blocked){ const b=$("btnStart"); b.disabled=true; b.textContent="접속 준비 중…"; }
+  try{
+    const saved=JSON.parse(localStorage.getItem(lsKey())||"null");
+    if(saved&&saved.pid&&saved.name){ $("inName").value=saved.name; $("inPhone").value=saved.phone||""; }
+  }catch(e){}
+  // 접속이 오래 걸리면 이유를 알려줌 (기다리면 이어서 진행됨)
+  setTimeout(()=>{
+    const nb=$("netBanner");
+    if(bootReady || nb.classList.contains("on")) return;
+    nb.innerHTML="접속이 평소보다 오래 걸리고 있습니다.<br>와이파이나 데이터 연결을 확인하고, 계속 안 되면 <b>새로고침</b> 해주세요.";
+    nb.dataset.slow="1"; nb.classList.add("on");
+  }, 10000);
 }
 async function boot(){
   bindEvents();
@@ -2850,9 +2879,12 @@ async function boot(){
   try{ await store.init(rid ? eventOfDoc(rid) : ACTIVE_EVENT); }
   catch(e){
     const nb=$("netBanner");
-    if(!nb.classList.contains("on")){ nb.innerHTML="접속 준비 중 문제가 발생했습니다.<br>잠시 후 <b>새로고침</b> 해주세요."; nb.classList.add("on"); }
+    if(!nb.classList.contains("on") || nb.dataset.slow){ nb.innerHTML="접속 준비 중 문제가 발생했습니다.<br>잠시 후 <b>새로고침</b> 해주세요."; nb.classList.add("on"); }
+    if(!rid){ const b=$("btnStart"); b.disabled=false; b.textContent="새로고침"; b.onclick=()=>location.reload(); }
     return;
   }
+  bootReady=true;
+  { const nb=$("netBanner"); if(nb.dataset.slow){ nb.classList.remove("on"); delete nb.dataset.slow; } }
   if(rid){
     viewPid=rid;
     // 결과 보기 전용 모드. 접수 중인 행사의 본인 링크일 때만 설문으로 돌아갈 수 있음
@@ -2884,11 +2916,7 @@ async function boot(){
     $("loginBox").prepend(n);
     return;
   }
-  // 이어하기
-  try{
-    const saved=JSON.parse(localStorage.getItem(lsKey())||"null");
-    if(saved&&saved.pid&&saved.name){ $("inName").value=saved.name; $("inPhone").value=saved.phone||""; }
-  }catch(e){}
+  if(pendingStart){ pendingStart=false; doStart(); }   // 접속 전에 이미 시작을 눌렀으면 바로 진행
 }
 earlyPaint();
 if(document.readyState==="loading") document.addEventListener("DOMContentLoaded", boot); else boot();
