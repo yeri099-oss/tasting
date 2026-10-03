@@ -230,7 +230,16 @@ td.score:active{background:#eae4d8}
 /* ── 코멘트 모달 ── */
 .modal{position:fixed;inset:0;z-index:110;display:none;align-items:center;justify-content:center;padding:20px;background:rgba(20,17,12,.5)}
 .modal.on{display:flex}
-.modal .mbox{background:#fff;border-radius:14px;width:100%;max-width:420px;padding:20px}
+.modal .mbox{background:#fff;border-radius:14px;width:100%;max-width:420px;padding:20px;
+  max-height:calc(100dvh - 40px);overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
+/* 정보 창: 제목(✕)과 아래 버튼은 고정, 가운데 내용만 스크롤 */
+#infoModal .mbox{position:relative;display:flex;flex-direction:column;padding:0;overflow:hidden}
+#infoModal .info-head{flex-shrink:0;padding:18px 56px 10px 20px}
+#infoModal .info-body{flex:1;min-height:0;padding:0 20px 4px;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
+#infoModal .mrow{flex-shrink:0;margin-top:0;padding:12px 20px 16px;border-top:1px solid var(--line)}
+.modal-x{position:absolute;top:10px;right:10px;width:38px;height:38px;border:none;border-radius:50%;
+  background:var(--paper2);color:#4a453d;font-size:17px;line-height:1;font-family:'Noto Sans KR',sans-serif}
+.modal-x:active{background:#e6dfd2}
 .mbox h3{font-size:16px;font-weight:800;margin-bottom:2px}
 .mbox .mi{font-size:12.5px;color:#8a8378;margin-bottom:12px;font-family:'Noto Sans KR',sans-serif}
 .mbox textarea{width:100%;height:96px;border:1px solid var(--line);border-radius:10px;padding:10px;font-size:15px;resize:none;outline:none}
@@ -705,13 +714,16 @@ td.score:active{background:#eae4d8}
 <!-- 간장 정보 보기 -->
 <div class="modal" id="infoModal">
   <div class="mbox">
-    <h3 id="infoName" style="line-height:1.5"></h3>
-    <img id="infoImg" alt="간장 사진" style="display:none">
-    <div id="infoDesc" class="info-desc"></div>
-    <div id="infoScores" style="display:none"></div>
-    <div id="infoCmt" style="display:none">
-      <div style="font-size:13px;font-weight:700;margin:12px 0 6px;border-top:1px dashed var(--line);padding-top:10px">✎ 한줄 코멘트</div>
-      <textarea id="infoCmtText" placeholder="맛에 대한 느낌을 자유롭게 적어주세요" maxlength="200"></textarea>
+    <button class="modal-x" id="infoX" aria-label="닫기">✕</button>
+    <div class="info-head"><h3 id="infoName" style="line-height:1.5"></h3></div>
+    <div class="info-body" id="infoBody">
+      <img id="infoImg" alt="장 사진" style="display:none">
+      <div id="infoDesc" class="info-desc"></div>
+      <div id="infoScores" style="display:none"></div>
+      <div id="infoCmt" style="display:none">
+        <div style="font-size:13px;font-weight:700;margin:12px 0 6px;border-top:1px dashed var(--line);padding-top:10px">✎ 한줄 코멘트</div>
+        <textarea id="infoCmtText" placeholder="맛에 대한 느낌을 자유롭게 적어주세요" maxlength="200"></textarea>
+      </div>
     </div>
     <div class="mrow"><button id="infoClose">닫기</button><button class="ok" id="infoCmtSave" style="display:none">코멘트 저장</button></div>
   </div>
@@ -929,6 +941,7 @@ function openInfo(no, opts){
     };
   } else { cbox.style.display="none"; $("infoCmtSave").style.display="none"; }
   $("infoModal").classList.add("on");
+  $("infoBody").scrollTop=0;
   if(opts.comment) setTimeout(()=>$("infoCmtText").focus(),80);
 }
 function itemShort(no){ const n=itemName(no); return n.length>14 ? n.slice(0,14)+"…" : n; }
@@ -2473,6 +2486,23 @@ function bindEvents(){
   $("cmtSave").onclick=saveCmt;
   $("hubClose").onclick=()=>$("cmtHub").classList.remove("on");
   $("infoClose").onclick=()=>$("infoModal").classList.remove("on");
+  $("infoX").onclick=()=>$("infoModal").classList.remove("on");
+  // 정보만 보는 창은 바깥(어두운 부분)을 눌러도 닫힘. 코멘트를 쓰는 중에는 실수로 닫히지 않게 제외
+  $("infoModal").addEventListener("click",e=>{
+    if(e.target===$("infoModal") && $("infoCmt").style.display==="none") $("infoModal").classList.remove("on");
+  });
+  // 창(팝업)이 떠 있는 동안 뒤 화면이 스크롤되지 않게 잠금
+  let lockY=0, locked=false;
+  const syncScrollLock=()=>{
+    const open=!!document.querySelector(".modal.on, .dim.on");
+    if(open===locked) return;
+    locked=open;
+    const b=document.body.style;
+    if(open){ lockY=window.scrollY; b.position="fixed"; b.top=(-lockY)+"px"; b.left="0"; b.right="0"; b.width="100%"; }
+    else{ b.position=b.top=b.left=b.right=b.width=""; window.scrollTo(0,lockY); }
+  };
+  const mo=new MutationObserver(syncScrollLock);
+  document.querySelectorAll(".modal, .dim").forEach(el=>mo.observe(el,{attributes:true,attributeFilter:["class"]}));
   $("btnShare").onclick=shareResult;
   $("btnCopy").onclick=copyLink;
   $("btnAdmResult").onclick=()=>{ viewPid=null; PAGE_IDS.forEach(id=>$(id).classList.remove("on")); $("page-admin").classList.remove("on"); $("page-result").classList.add("on"); curPage=RESULT_PAGE; renderResults(); addAdminBack(); };
