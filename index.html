@@ -867,6 +867,7 @@ body{background:var(--cream)}
       <button id="btnAdmResult">전체 결과 보기</button>
       <button id="btnAdmCsv">채점표 CSV</button>
       <button id="btnAdmCsv2">요약 CSV (TOP3·장BTI·모임평가)</button>
+      <button id="btnAdmCsv3">코멘트·최애·모임평가 엑셀</button>
       <button id="btnAdmEvInfo">행사 정보</button>
       <button id="btnAdmStruct">장 구성 관리</button>
       <button id="btnAdmItems">장 정보 관리</button>
@@ -2745,10 +2746,13 @@ function admCsv(){
   a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv;charset=utf-8"}));
   a.download="전통장테이스팅_"+EV.label+"_채점표.csv"; a.click();
 }
-function admCsvSummary(){
+/* 요약 CSV. withComments면 점수(진행률·장BTI) 대신 장마다 적은 코멘트를 한 사람 한 줄로 넣음 */
+function admCsvSummary(withComments){
+  withComments = withComments===true;
   const BOM="﻿";
+  const nos=allNos();
   const favCols = EV.perGroup ? GROUPS.map(g=>"최애 "+g.name) : EV.topN===1 ? ["최애 장"] : [...Array(EV.topN)].map((_,i)=>"최애"+(i+1));
-  let rows=[["이름","전화번호","채점 진행률",...(EV.jbti?["장BTI"]:[]),...favCols,"만족도","이유·소감(1-1)","장 개수 의견","적정 가격대","가격 직접기입","재참여 의사","아이디어",
+  let rows=[["이름","전화번호",...(withComments ? nos.map(no=>dn(no)+"번 "+itemName(no)+" 코멘트") : ["채점 진행률",...(EV.jbti?["장BTI"]:[])]),...favCols,"만족도","이유·소감(1-1)","장 개수 의견","적정 가격대","가격 직접기입","재참여 의사","아이디어",
     ...(meetOn("agreePriv")?["개인정보 동의","폐기 요청"]:[]), ...(meetOn("agreePhoto")?["초상권 동의","사진 수신 메일"]:[]), ...(meetOn("channel")?["알게 된 경로"]:[]),
     ...(MEET_CFG.custom||[]).map(c=>c.title)]];
   const pids=Object.keys(allResp).sort((a,b)=>(allResp[a].name||"").localeCompare(allResp[b].name||"","ko"));
@@ -2756,8 +2760,8 @@ function admCsvSummary(){
     const r=allResp[pid], m=r.meet||{}, t3=validTop3(r);
     const type=jangTypeOf(r);
     rows.push([
-      r.name||"", admPhones[pid]?.phone||"", myProgress(r).pct+"%",
-      ...(EV.jbti?[type?type.name:""]:[]),
+      r.name||"", admPhones[pid]?.phone||"",
+      ...(withComments ? nos.map(no=>r.comments?.[no]||"") : [myProgress(r).pct+"%", ...(EV.jbti?[type?type.name:""]:[])]),
       ...(EV.perGroup ? GROUPS.map(g=>t3.find(no=>g.items.includes(no))) : favCols.map((_,i)=>t3[i])).map(no=>no? dn(no)+"번 "+itemName(no) : ""),
       m.sat? SAT_L[m.sat]:"",
       m.why||"", m.cnt? CNT_L[m.cnt]:"", m.price? PRICE_L[m.price]:"", m.priceEtc||"", m.again? AGAIN_L[m.again]:"", m.idea||"",
@@ -2770,7 +2774,7 @@ function admCsvSummary(){
   const csv=BOM+rows.map(row=>row.map(c=>`"${String(c).replace(/"/g,'""')}"`).join(",")).join("\r\n");
   const a=document.createElement("a");
   a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv;charset=utf-8"}));
-  a.download="전통장테이스팅_"+EV.label+"_요약.csv"; a.click();
+  a.download="전통장테이스팅_"+EV.label+(withComments?"_코멘트·최애·모임평가.csv":"_요약.csv"); a.click();
 }
 
 /* ═══════════════ 로그인 / 부팅 ═══════════════ */
@@ -2879,7 +2883,8 @@ function bindEvents(){
   $("btnCopy").onclick=copyLink;
   $("btnAdmResult").onclick=()=>{ viewPid=null; PAGE_IDS.forEach(id=>$(id).classList.remove("on")); $("page-admin").classList.remove("on"); $("page-result").classList.add("on"); curPage=RESULT_PAGE; renderResults(); addAdminBack(); };
   $("btnAdmCsv").onclick=admCsv;
-  $("btnAdmCsv2").onclick=admCsvSummary;
+  $("btnAdmCsv2").onclick=()=>admCsvSummary();
+  $("btnAdmCsv3").onclick=()=>admCsvSummary(true);
   $("btnAdmEvInfo").onclick=()=>togglePanel("admEvInfo", renderEvInfo);
   $("btnAdmStruct").onclick=()=>togglePanel("admStruct", openStruct);
   $("btnAdmItems").onclick=async()=>{ await store.infoP; togglePanel("admItemEdit", renderItemEdit); };
